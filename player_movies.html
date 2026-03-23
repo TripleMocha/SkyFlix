@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VNCEFLIX - Player</title>
+<link rel="icon" href="img/logo.png" type="image/png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+/* Header Bar */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: 4px 12px;
+  background: #0A1120;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 50px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+#closeBtn {
+  background: #1b2436;
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.9rem;
+  padding: 5px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+#closeBtn:hover { background: #e50914; }
+
+/* Player Wrapper */
+.player-wrapper {
+  position: fixed;
+  top: 50px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#loading {
+  position: absolute;
+  color: #fff;
+  font-size: 1.2rem;
+  text-align: center;
+  z-index: 5;
+}
+#errorMsg {
+  position: absolute;
+  color: #ff4b4b;
+  font-size: 1rem;
+  text-align: center;
+  padding: 20px;
+  background: rgba(0,0,0,0.8);
+  border-radius: 8px;
+  display: none;
+  z-index: 5;
+}
+
+/* Video Frame */
+#playerFrame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease-in;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <button id="closeBtn">Return to Site</button>
+</header>
+
+<div class="player-wrapper">
+  <div id="loading">🎬 Loading Movie...</div>
+  <div id="errorMsg">❌ Movie not available. Please try another.</div>
+  <iframe
+    id="playerFrame"
+    allowfullscreen
+    allow="autoplay; fullscreen"
+    loading="lazy"
+    referrerpolicy="no-referrer">
+  </iframe>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, query, where, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+// --- Firebase Config ---
+const firebaseConfig = {
+  apiKey: "AIzaSyBeCgogR5-ZgaU9eD_XwzH_L5LkT0TOcPc",
+  authDomain: "vnce-7b54c.firebaseapp.com",
+  projectId: "vnce-7b54c",
+  storageBucket: "vnce-7b54c.appspot.com",
+  messagingSenderId: "137661927526",
+  appId: "1:137661927526:web:e649aceeb57126a2945da7"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// --- Get URL params ---
+const qs = new URLSearchParams(location.search);
+const movieId = qs.get("id");
+const movieTitle = qs.get("title") ? decodeURIComponent(qs.get("title")) : "Movie Title";
+const moviePoster = qs.get("poster") ? decodeURIComponent(qs.get("poster")) : "";
+
+// --- DOM Elements ---
+const frame = document.getElementById("playerFrame");
+const closeBtn = document.getElementById("closeBtn");
+const loading = document.getElementById("loading");
+const errorMsg = document.getElementById("errorMsg");
+
+// --- Return to View Genres page ---
+closeBtn.onclick = () => {
+  if (movieId) {
+    window.location.href = `view_genres.html?id=${movieId}`;
+  } else {
+    window.location.href = "view_genres.html";
+  }
+};
+
+// --- VidFast URL ---
+function getVidfastURL(id) {
+  return `https://vidfast.pro/movie/${id}?autoPlay=true`;
+}
+
+// --- Save to localStorage for Continue Watching ---
+function saveToLocalContinueWatching(id, title, poster, type="movie") {
+  let list = JSON.parse(localStorage.getItem("continueWatching")) || [];
+  list = list.filter(item => item.id !== id); // remove duplicate
+  list.unshift({ id, title, poster_path: poster, type, progress: 0 });
+  if(list.length > 20) list = list.slice(0,20);
+  localStorage.setItem("continueWatching", JSON.stringify(list));
+}
+
+// --- Log to Firebase ---
+async function logContinueWatching(id, title, poster) {
+  const user = auth.currentUser;
+  if (!user) return;
+  const ref = collection(db, "users", user.uid, "continueWatching");
+  const q = query(ref, where("id", "==", id));
+  const snap = await getDocs(q);
+
+  if (snap.empty) {
+    await addDoc(ref, { id, title, poster_path: poster, progress: 0, lastWatched: Date.now() });
+  } else {
+    const docId = snap.docs[0].id;
+    await updateDoc(doc(db, "users", user.uid, "continueWatching", docId), { lastWatched: Date.now() });
+  }
+}
+
+// --- Load Movie ---
+function loadMovie(id) {
+  loading.style.display = "block";
+  errorMsg.style.display = "none";
+  frame.style.opacity = 0;
+
+  frame.src = getVidfastURL(id);
+
+  const failTimeout = setTimeout(() => {
+    loading.style.display = "none";
+    errorMsg.style.display = "block";
+  }, 8000);
+
+  frame.onload = () => {
+    clearTimeout(failTimeout);
+    loading.style.display = "none";
+    frame.style.opacity = 1;
+
+    // ✅ Save to localStorage for Continue Watching carousel
+    saveToLocalContinueWatching(movieId, movieTitle, moviePoster, "movie");
+  };
+}
+
+// --- Initialize ---
+if (movieId) {
+  loadMovie(movieId);
+} else {
+  errorMsg.textContent = "❌ Invalid movie ID.";
+  errorMsg.style.display = "block";
+}
+
+// --- Log Continue Watching in Firebase after auth ---
+onAuthStateChanged(auth, (user) => {
+  if (user && movieId) {
+    logContinueWatching(movieId, movieTitle, moviePoster);
+  }
+});
+</script>
+
+</body>
+</html>

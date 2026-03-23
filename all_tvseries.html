@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VNCEFLIX - TV Series</title>
+<meta name="description" content="VNCEFLIX — Stream TV Shows online.">
+<link rel="icon" type="image/png" href="img/logo.png">
+
+<!-- Bootstrap & Boxicons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+<style>
+/* Your existing CSS unchanged... */
+body { background-color: #0A1120; color: #fff; margin: 0; padding-bottom:70px; }
+#preloader-overlay {position:fixed; inset:0; background: rgba(0,0,0,0.9); display:flex; justify-content:center; align-items:center; z-index:9999;}
+.four-box-spinner { display:flex; flex-wrap:wrap; gap:5px; width:50px; height:50px; }
+.four-box-spinner div { width:20px;height:20px;background:red; animation: boxFade 1.2s infinite ease-in-out;}
+.four-box-spinner div:nth-child(2){animation-delay:0.2s;}
+.four-box-spinner div:nth-child(3){animation-delay:0.4s;}
+.four-box-spinner div:nth-child(4){animation-delay:0.6s;}
+@keyframes boxFade {0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.3;transform:scale(0.7);}}
+
+/* NAVBAR */
+.navbar { transition: all 0.3s ease; background-color:transparent; box-shadow:0 0 0 rgba(0,0,0,0);}
+.navbar.scrolled{background-color:#0A1120;box-shadow:0 3px 10px rgba(0,0,0,0.5);}
+.navbar .nav-link {color:#fff!important;font-weight:500;transition:all 0.3s;}
+.navbar .nav-link.active {font-weight:700;}
+.navbar .container-fluid {padding:0 60px;}
+@media(max-width:768px){.navbar .container-fluid{padding:0 15px;}}
+.profile-dropdown .dropdown-menu{background:#111;border:none;}
+.profile-dropdown .dropdown-item{color:#fff;}
+.profile-dropdown .dropdown-item:hover{background:#222;}
+
+/* BOTTOM NAV MOBILE */
+.bottom-nav{display:none;}
+@media(max-width:768px){.bottom-nav{display:flex; justify-content:space-around; align-items:center; position:fixed; bottom:0; left:0; right:0; background:#0A1120; padding:.5rem 0; border-top:1px solid #222; z-index:999;} }
+.bottom-nav a{color:#fff;font-size:.85rem;text-decoration:none;text-align:center;flex:1;transition:transform .2s,color .2s;}
+.bottom-nav a:hover{color:#E50914; transform:scale(1.1);}
+.bottom-nav i{display:block;font-size:1.4rem;margin-bottom:2px;}
+
+/* HERO CAROUSEL */
+.hero-section{position:relative;width:100%;height:90vh;overflow:hidden;}
+.hero-slide{position:absolute;top:0;left:0;width:100%;height:100%;background-size:cover;background-position:center;opacity:0;transition:opacity 1s ease; display:flex;align-items:flex-end;}
+.hero-slide.active{opacity:1;z-index:2;}
+.hero-overlay{position:relative; bottom:5%; left:5%; max-width:600px; z-index:3;}
+.hero-overlay h1{font-size:3rem;font-weight:800;text-shadow:2px 2px 4px rgba(0,0,0,0.8);}
+.hero-overlay p{margin:1rem 0; font-size:1rem; color:#ddd; max-height:150px; overflow:hidden;}
+.hero-buttons button{margin-right:10px; padding:.6rem 1.4rem; border:none; border-radius:4px; font-weight:600;}
+.hero-buttons .btn-play{background:#fff;color:#000;}
+.hero-buttons .btn-info{background:rgba(109,109,110,0.7);color:#fff;}
+.hero-fade{position:absolute;bottom:0;left:0;right:0;height:25vh;background: linear-gradient(to top, #0A1120 0%, rgba(10,17,32,0) 100%);}
+
+/* CAROUSEL SECTIONS */
+.carousel-section{padding:1rem 5%;}
+.carousel-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;}
+.carousel-container{display:flex; overflow-x:auto; overflow-y:hidden; gap:1rem; scroll-behavior:smooth; white-space:nowrap;}
+.carousel-container.numbered { padding-left:70px; }
+.carousel-container::-webkit-scrollbar{display:none;}
+.movie-card{flex:0 0 auto;width:160px;border-radius:8px;overflow:hidden;background:#111; cursor:pointer; transition:transform .3s; transform-origin:center top;}
+.movie-card img{width:100%; display:block;}
+.movie-card:hover{transform:scale(1.05);}
+
+/* TOP 10 STYLE ONLY */
+.top10-card {position: relative; flex: 0 0 auto; width: 140px; height: 220px; margin-right: 32px;}
+.top10-poster {width: 100%; height: 100%; object-fit: cover; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.6); position: relative; z-index: 2; transition: transform 0.3s ease;}
+.top10-card:hover .top10-poster { transform: scale(1.05); }
+.top10-number {position: absolute; bottom: 0; left: -48px; font-size: 100px; font-weight: 900; color: #111; -webkit-text-stroke: 3px #E50914; z-index: 1; line-height: 1; font-family: Arial Black, sans-serif; white-space: nowrap;}
+.top10-card:hover .top10-number { transform: scale(1.05); }
+
+.arrow-btn{background: rgba(0,0,0,0.5); border:none; color:#fff; font-size:1.5rem; padding:.5rem .8rem; cursor:pointer; border-radius:50%; transition:background .3s;}
+.arrow-btn:hover{background:rgba(0,0,0,0.8);}
+</style>
+</head>
+<body>
+
+<div id="preloader-overlay">
+  <div class="four-box-spinner"><div></div><div></div><div></div><div></div></div>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center" href="#"><img src="img/vnceflix.png" height="30"></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="all_movies.html">Movies</a></li>
+        <li class="nav-item"><a class="nav-link active" href="all_tvseries.html">TV Shows</a></li>
+        <li class="nav-item"><a class="nav-link" href="vivamax.html">Vivamax</a></li>
+        <li class="nav-item"><a class="nav-link" href="genres.html">Genres</a></li>
+        <li class="nav-item"><a class="nav-link" href="mylist.html">My List</a></li>
+        <li class="nav-item"><a class="nav-link" href="iptv.html">IPTV</a></li>
+        <li class="nav-item"><a class="nav-link" href="live_sports.html">Live Sports</a></li>
+      </ul>
+      <div class="d-flex align-items-center">
+        <i class="bx bx-search text-white fs-4 me-3"></i>
+        <i class="bx bx-bell text-white fs-4 me-3"></i>
+        <div class="dropdown profile-dropdown">
+          <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
+            <i class="bx bx-user-circle fs-3"></i>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="#">Administrator</a></li>
+            <li><a class="dropdown-item" href="Auth/login.html">Sign Out</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<section class="hero-section" id="hero-carousel"></section>
+<div id="special-carousels"></div>
+<div id="tv-carousels"></div>
+
+<script>
+const TMDB_API_KEY = "9389ba9923daf721d382d253701c7ca7";
+const TMDB_BASE = "https://api.themoviedb.org/3";
+const TMDB_IMG = "https://image.tmdb.org/t/p/w500";
+const TMDB_IMG_BACKDROP = "https://image.tmdb.org/t/p/original";
+
+window.addEventListener("load",()=>{document.getElementById("preloader-overlay").style.display="none";});
+window.addEventListener("scroll",()=>{document.querySelector(".navbar").classList.toggle("scrolled",window.scrollY>50);});
+
+function createMovieCard(tv,number=null){
+  const div=document.createElement("div");
+  div.dataset.id=tv.id;
+  div.onclick=()=>window.location.href=`view_tvseries.html?id=${tv.id}`;
+  const poster=tv.poster_path ? TMDB_IMG+tv.poster_path : "img/poster-placeholder.png";
+  if(number){
+    div.className="top10-card";
+    div.innerHTML=`<div class="top10-number">${number}</div><img class="top10-poster" src="${poster}" alt="${tv.name}">`;
+  }else{
+    div.className="movie-card";
+    div.innerHTML=`<img src="${poster}" alt="${tv.name}">`;
+  }
+  return div;
+}
+
+function createCarousel(title,shows,numbered=false,target="tv-carousels"){
+  if(shows.length===0) return;
+  const container=document.createElement("div");
+  container.className="carousel-section";
+  container.innerHTML=`
+    <div class="carousel-header">
+      <h2>${title}</h2>
+      <div>
+        <button class="arrow-btn" id="${title}-prev">&#8249;</button>
+        <button class="arrow-btn" id="${title}-next">&#8250;</button>
+      </div>
+    </div>
+    <div class="carousel-container ${numbered?'numbered':''}" id="${title}-carousel"></div>
+  `;
+  document.getElementById(target).appendChild(container);
+  const carousel=document.getElementById(`${title}-carousel`);
+  shows.forEach((tv,i)=>carousel.appendChild(createMovieCard(tv,numbered?i+1:null)));
+  document.getElementById(`${title}-prev`).onclick=()=>carousel.scrollBy({left:-300,behavior:"smooth"});
+  document.getElementById(`${title}-next`).onclick=()=>carousel.scrollBy({left:300,behavior:"smooth"});
+}
+
+// HERO
+async function fetchHero(){
+  const res=await fetch(`${TMDB_BASE}/trending/tv/week?api_key=${TMDB_API_KEY}`);
+  const data=await res.json();
+  const hero=document.getElementById("hero-carousel");
+  hero.innerHTML="";
+  data.results.slice(0,5).forEach((tv,i)=>{
+    if(!tv.backdrop_path) return;
+    const div=document.createElement("div");
+    div.className="hero-slide"+(i===0?" active":"");
+    div.style.backgroundImage=`url(${TMDB_IMG_BACKDROP+tv.backdrop_path})`;
+    div.innerHTML=`<div class="hero-overlay"><h1>${tv.name}</h1><p>${tv.overview||"No description available."}</p>
+      <div class="hero-buttons">
+        <button class="btn-play" onclick="window.location.href='player.html?id=${tv.id}'"><i class="bx bx-play"></i> Play</button>
+        <button class="btn-info" onclick="window.location.href='view_tvseries.html?id=${tv.id}'"><i class="bx bx-info-circle"></i> More Info</button>
+      </div></div><div class="hero-fade"></div>`;
+    hero.appendChild(div);
+  });
+  let current=0;
+  setInterval(()=>{
+    const slides=document.querySelectorAll(".hero-slide");
+    slides[current]?.classList.remove("active");
+    current=(current+1)%slides.length;
+    slides[current]?.classList.add("active");
+  },6000);
+}
+
+async function fetchMarvelTV() {
+  // Accurate list of MCU TV series TMDb IDs
+  const mcuIDs = [
+    85271, // WandaVision
+    88396, // The Falcon and the Winter Soldier
+    84958, // Loki
+    91363, // What If...?
+    88329, // Hawkeye
+    92749, // Moon Knight
+    92782, // Ms. Marvel
+    114472, // Secret Invasion
+    114471, // Placeholder ID if you want 9th
+    202555  // Placeholder ID if you want 10th
+  ];
+
+  // Filter out invalid/placeholder IDs
+  const validIDs = mcuIDs.filter(id => id !== 99999 && id !== 99998);
+
+  const promises = validIDs.map(id =>
+    fetch(`${TMDB_BASE}/tv/${id}?api_key=${TMDB_API_KEY}`).then(r => r.json())
+  );
+
+  const shows = await Promise.all(promises);
+  createCarousel("Marvel Cinematic Universe", shows.slice(0, 10));
+}
+
+
+// DC TV Shows
+async function fetchDCTV() {
+  // Popular DC Universe TV shows TMDb IDs
+  const dcIDs = [
+    1412,   // Arrow
+    60735,   // The Flash
+    62688,   // Supergirl
+    62643,  // Legends of Tomorrow
+    89247,  // Batwoman
+    75450,  // Stargirl
+    4604,  // Titans
+    60708,  // Doom Patrol
+    80986, // Pennyworth
+    79501   // Gotham
+  ];
+
+  const promises = dcIDs.map(id =>
+    fetch(`${TMDB_BASE}/tv/${id}?api_key=${TMDB_API_KEY}`).then(r => r.json())
+  );
+
+  const shows = await Promise.all(promises);
+  createCarousel("DC Universe", shows.slice(0, 10));
+}
+
+
+// Top 10 Today
+async function fetchTop10(){
+  const res=await fetch(`${TMDB_BASE}/trending/tv/day?api_key=${TMDB_API_KEY}`);
+  const data=await res.json();
+  createCarousel("Top 10 TV Shows Today",data.results.slice(0,10),true);
+}
+
+// Top 10 Most Watched
+async function fetchTop10MostWatched() {
+  const topWatchedNames = [
+    "Friends","Game of Thrones","Breaking Bad","The Big Bang Theory","The Sopranos",
+    "The Simpsons","Seinfeld","The Walking Dead","Grey's Anatomy","NCIS"
+  ];
+  const promises = topWatchedNames.map(name =>
+    fetch(`${TMDB_BASE}/search/tv?query=${encodeURIComponent(name)}&api_key=${TMDB_API_KEY}`)
+      .then(res=>res.json())
+      .then(data=>data.results[0]||null)
+  );
+  const shows = (await Promise.all(promises)).filter(tv=>tv);
+  createCarousel("Top 10 Most Watched TV Series Of All Time", shows, true);
+}
+
+async function fetchTopNetflix() {
+  const netflixNames = [
+    "Wednesday","Stranger Things","DAHMER – Monster: The Jeffrey Dahmer Story",
+    "Bridgerton","The Queen's Gambit","The Night Agent","Fool Me Once",
+    "You","Outer Banks","Lockwood & Co"
+  ];
+  const promises = netflixNames.map(name =>
+    fetch(`${TMDB_BASE}/search/tv?query=${encodeURIComponent(name)}&api_key=${TMDB_API_KEY}`)
+      .then(res=>res.json())
+      .then(data=>data.results[0]||null)
+  );
+  const shows = (await Promise.all(promises)).filter(tv=>tv);
+
+  createCarousel("Top Netflix TV Series", shows.slice(0,10)); // 10 shows, horizontal scroll
+}
+
+
+// Top Anime
+async function fetchTopAnime(){
+  const res=await fetch(`${TMDB_BASE}/discover/tv?with_genres=16&with_original_language=ja&sort_by=popularity.desc&api_key=${TMDB_API_KEY}`);
+  const data=await res.json();
+  createCarousel("Top Anime",data.results.slice(0,10),false,"special-carousels");
+}
+
+// Coming Soon
+async function fetchComingSoon(){
+  const today=new Date().toISOString().split("T")[0];
+  const res=await fetch(`${TMDB_BASE}/discover/tv?first_air_date.gte=${today}&sort_by=popularity.desc&api_key=${TMDB_API_KEY}`);
+  const data=await res.json();
+  createCarousel("Coming Soon",data.results.slice(0,10),false,"special-carousels");
+}
+// Pinoy TV Series (exclude Vivamax, TBonx, and Cinepop)
+async function fetchPinoyTV() {
+  try {
+    const res = await fetch(
+      `${TMDB_BASE}/discover/tv?with_original_language=tl&sort_by=popularity.desc&api_key=${TMDB_API_KEY}`
+    );
+    const data = await res.json();
+
+    // Keywords or IDs related to TBonx and Cinepop
+    const excludeKeywords = [
+      "vivamax",
+      "tbonx",
+      "cinepop",
+      "dear utol",
+      "maria’s diary",
+      "marias diary",
+      "secret confessions",
+      "loverboi",
+    ];
+
+    // Optional: Add known TMDB IDs to skip completely
+    const excludeIDs = [296801, 290039, 290041, 290042, 290043];
+
+    // Filter out Vivamax, TBonx, and Cinepop-related shows
+    const filteredShows = data.results.filter(tv => {
+      const name = (tv.name || "").toLowerCase();
+      const overview = (tv.overview || "").toLowerCase();
+      const matchesKeyword = excludeKeywords.some(k => name.includes(k) || overview.includes(k));
+      const isExcludedID = excludeIDs.includes(tv.id);
+      return !matchesKeyword && !isExcludedID;
+    });
+
+    createCarousel("Top Pinoy TV Series", filteredShows.slice(0, 10));
+  } catch (error) {
+    console.error("Error fetching Pinoy TV Series:", error);
+  }
+}
+
+// Genres
+async function fetchAllGenres(){
+  const genreRes=await fetch(`${TMDB_BASE}/genre/tv/list?api_key=${TMDB_API_KEY}`);
+  const genreData=await genreRes.json();
+  let genres=genreData.genres.filter(g=>!["news","animation"].includes(g.name.toLowerCase()));
+  const realityIndex=genres.findIndex(g=>g.name.toLowerCase()==="reality");
+  let reality=null;
+  if(realityIndex>-1){reality=genres.splice(realityIndex,1)[0];}
+  for(let genre of genres){
+    const res=await fetch(`${TMDB_BASE}/discover/tv?with_genres=${genre.id}&sort_by=popularity.desc&api_key=${TMDB_API_KEY}`);
+    const data=await res.json();
+    createCarousel(genre.name,data.results.slice(0,10));
+  }
+  if(reality){
+    const res=await fetch(`${TMDB_BASE}/discover/tv?with_genres=${reality.id}&sort_by=popularity.desc&api_key=${TMDB_API_KEY}`);
+    const data=await res.json();
+    createCarousel(reality.name,data.results.slice(0,10));
+  }
+}
+
+(async function(){
+  await fetchHero();
+  await fetchTop10();
+  await fetchTop10MostWatched();
+  await fetchTopNetflix(); // <-- added here
+  await fetchMarvelTV();
+  await fetchDCTV();
+  await fetchPinoyTV();
+  await fetchComingSoon();
+  await fetchTopAnime();
+  await fetchAllGenres();
+})();
+
+</script>
+</body>
+</html>

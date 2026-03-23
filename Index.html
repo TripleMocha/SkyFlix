@@ -1,0 +1,1284 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>VNCEFLIX</title>
+<meta name="description" content="VNCEFLIX — Stream Movies & TV Shows online with no ads. Watch the latest releases, trending titles, and timeless classics anytime, anywhere.">
+
+<link rel="icon" type="image/png" href="img/logo.png">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+<style>
+body { 
+  background-color:#0A1120; 
+  color:#fff; 
+  margin:0; 
+  padding:0;
+}
+#preloader-overlay {
+  position:fixed; inset:0; 
+  background:rgba(0,0,0,0.9); 
+  display:flex; 
+  justify-content:center; 
+  align-items:center; 
+  z-index:9999;
+}
+.four-box-spinner { display:flex; flex-wrap:wrap; gap:5px; width:50px; height:50px; }
+.four-box-spinner div { width:20px; height:20px; background:red; animation:boxFade 1.2s infinite ease-in-out; }
+.four-box-spinner div:nth-child(2){animation-delay:0.2s;}
+.four-box-spinner div:nth-child(3){animation-delay:0.4s;}
+.four-box-spinner div:nth-child(4){animation-delay:0.6s;}
+@keyframes boxFade {0%,100%{opacity:1; transform:scale(1);}50%{opacity:0.3; transform:scale(0.7);}}
+
+.navbar {
+  background-color: rgba(10, 17, 32, 0.0); 
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: none;
+  z-index: 1050;
+}
+.navbar.scrolled {
+  background-color: rgba(10, 17, 32, 0.95); 
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+}
+.navbar .nav-link { color:#fff !important; font-weight:500; }
+.navbar .nav-link.active { font-weight:700; }
+.navbar .container-fluid { padding:0 60px; }
+@media(max-width:768px){ .navbar .container-fluid{ padding:0 15px; } }
+.profile-dropdown .dropdown-menu{background:#111;border:none;}
+.profile-dropdown .dropdown-item{color:#fff;}
+.profile-dropdown .dropdown-item:hover{background:#222;}
+
+.hero-section{
+  position:relative;
+  width:100%;
+  height:90vh;
+  overflow:hidden;
+}
+
+.hero-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;          
+  background-position: top center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 1s ease;
+  display: flex;
+  align-items: flex-end;
+}
+
+
+@media (max-width: 768px) {
+  .hero-slide {
+    background-position: top center;
+  }
+}
+
+
+.hero-slide.active{
+  opacity:1;
+  z-index:2;
+}
+
+.hero-overlay{
+  position:absolute;
+  bottom:18%;
+  left:5%;
+  max-width:650px;
+  z-index:3;
+}
+
+
+.hero-logo{
+  max-width:420px;
+  margin-bottom:15px;
+}
+
+.hero-logo img {
+  max-width: 50vw; 
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+
+.hero-title{
+  font-size:3rem;
+  font-weight:800;
+  margin-bottom:10px;
+  text-shadow:2px 2px 6px rgba(0,0,0,0.8);
+}
+
+.hero-overlay p {
+  margin: 1rem 0;
+  font-size: 1.1rem;
+  color: #fff;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+  max-width: 500px;
+  line-height: 1.5;
+  font-family: 'Oswald', Arial, sans-serif;
+  font-weight: 700;
+  
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  position: relative;
+}
+
+.see-more {
+  color: #E50914;
+  cursor: pointer;
+  font-weight: 700;
+  margin-left: 5px;
+  user-select: none;
+}
+
+
+.hero-fade{
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  height:25vh;
+  background:linear-gradient(to top,#0A1120 0%,rgba(10,17,32,0)100%);
+}
+
+.hero-arrows{
+  position:absolute;
+  top:50%;
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  transform:translateY(-50%);
+  z-index:5;
+}
+
+.hero-arrows button{
+  background:rgba(0,0,0,0.4);
+  border:none;
+  color:#fff;
+  font-size:2rem;
+  padding:10px 14px;
+  cursor:pointer;
+  border-radius:50%;
+}
+
+.hero-dots{
+  position:absolute;
+  bottom:30px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:8px;
+}
+
+.hero-dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.5);
+  cursor:pointer;
+}
+
+.hero-dot.active{
+  background:#fff;
+}
+
+.hero-buttons{
+  display:flex;
+  gap:12px;
+  margin-top:15px;
+}
+
+.btn-play {
+  background: #fff;
+  color: #000;
+  border: none;
+  padding: 10px 22px;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-play i {
+  font-size: 2.0rem;   
+}
+
+.btn-play:hover{
+  background:#e6e6e6;
+}
+
+.btn-info{
+  background:rgba(109,109,110,0.7);
+  color:#fff;
+  border:none;
+  padding:10px 22px;
+  font-size:1rem;
+  font-weight:600;
+  border-radius:4px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  cursor:pointer;
+  transition:all .2s ease;
+}
+
+.btn-info:hover{
+  background:rgba(109,109,110,0.9);
+}
+
+
+.hero-arrows button {
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%) translateX(0);
+}
+
+
+
+#hero-prev, #hero-next {
+  opacity: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: opacity 0.4s ease, left 0.4s ease, right 0.4s ease;
+  z-index: 5;
+  pointer-events: none; 
+}
+
+#hero-prev { left: -80px; } 
+#hero-next { right: -80px; } 
+
+.hero-section:hover #hero-prev {
+  left: 30px; 
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.hero-section:hover #hero-next {
+  right: 30px; 
+  opacity: 1;
+  pointer-events: auto; 
+}
+
+.hero-arrows {
+  pointer-events: none;
+}
+.hero-section:hover .hero-arrows {
+  pointer-events: auto;
+}
+
+.carousel-section{padding:1rem 5%;}
+.carousel-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;}
+.carousel-container{display:flex; overflow-x:auto; overflow-y:hidden; gap:1rem; scroll-behavior:smooth; white-space:nowrap;}
+.carousel-container.numbered { padding-left:70px; }
+.carousel-container::-webkit-scrollbar{display:none;}
+.movie-card{flex:0 0 auto;width:160px;border-radius:8px;overflow:hidden;background:#111; cursor:pointer; transition:transform .3s; transform-origin:center top; position:relative;}
+.movie-card img{width:100%; display:block;}
+.movie-card:hover{transform:scale(1.05);}
+
+.release-badge { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.7); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; z-index: 4; font-weight:700; }
+.new-badge { position:absolute; top:8px; left:8px; background:#E50914; color:#fff; padding:2px 6px; border-radius:3px; font-size:0.7rem; z-index:5; font-weight:700; text-transform:uppercase; }
+
+
+.top10-card { position: relative; flex: 0 0 auto; width:140px; height:220px; margin-right:32px; cursor: pointer; }
+.top10-poster {width:100%; height:100%; object-fit:cover; border-radius:6px; box-shadow:0 4px 10px rgba(0,0,0,0.6); position: relative; z-index:2; transition: transform 0.3s ease;}
+.top10-card:hover .top10-poster { transform: scale(1.05); }
+.top10-number {position:absolute; bottom:0; left:-48px; font-size:100px; font-weight:900; color:#111; -webkit-text-stroke:3px #E50914; z-index:1; line-height:1; font-family: Arial Black, sans-serif; white-space:nowrap;}
+.top10-card:hover .top10-number { transform: scale(1.05); }
+
+.arrow-btn{background: rgba(0,0,0,0.5); border:none; color:#fff; font-size:1.5rem; padding:.5rem .8rem; cursor:pointer; border-radius:50%; transition:background .3s;}
+.arrow-btn:hover{background:rgba(0,0,0,0.8);}
+
+@media(max-width:768px){
+  .hero-overlay h1{font-size:2rem;}
+  .top10-number{font-size:64px; left:-36px;}
+}
+
+.footer {
+  position: relative;
+  background-color: #0A1120;
+  color: #aaa;
+  font-size: 1rem;
+  line-height: 1.6;
+  padding: 60px 0; 
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 150px;
+  background: linear-gradient(to bottom, #0A1120 0%, rgba(10,17,32,0) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.footer-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;   
+  gap: 20px;
+}
+
+.footer-left img {
+  display: block;
+}
+
+.footer-left span {
+  display: inline-block;
+  max-width: 700px;
+}
+
+.footer-right {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .footer-inner {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    padding: 0 20px;
+  }
+  .footer-left {
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .footer-right {
+    text-align: center;
+    margin-top: 0;
+  }
+}
+
+#scrollTopBtn {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  z-index: 999;
+  width: 48px;
+  height: 48px;
+  background-color: #b71c1c;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: none; 
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s, transform 0.2s;
+  color: #fff;
+  font-size: 24px;
+  text-align: center;
+}
+
+#scrollTopBtn:hover {
+  background-color: #880e0e;
+  transform: scale(1.05);
+}
+
+
+#scrollTopBtn::after {
+  content: '↑';
+  font-size: 20px;
+  line-height: 1;
+}
+/* =========================
+   MOBILE VIEW
+========================= */
+@media (max-width: 768px) {
+
+  .hero-section {
+    height: 45vh; 
+  }
+
+  .hero-slide {
+    align-items: flex-end;
+    background-position: center top;
+  }
+
+  .hero-overlay {
+    bottom: 10%;
+    left: 5%;
+    max-width: 90%;
+  }
+
+  .hero-overlay h1 {
+    font-size: 1.6rem;
+    line-height: 1.2;
+  }
+
+  .hero-overlay p {
+    font-size: 0.85rem;
+    margin: 0.5rem 0;
+    max-height: 2.6em;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .hero-buttons button {
+    padding: 0.4rem 0.9rem;
+    font-size: 0.85rem;
+    font-family: Arial, sans-serif;
+  }
+
+  .hero-buttons .btn-info {
+    display: none;
+  }
+
+  .hero-fade {
+    height: 18vh;
+  }
+}
+/* =========================
+   MOBILE NAVBAR DROPDOWN BG
+========================= */
+@media (max-width: 991px) {
+
+
+  .navbar-collapse {
+    background-color: #0A1120;
+    padding: 1rem 1.5rem;
+    border-radius: 0 0 12px 12px;
+  }
+
+
+  .navbar-nav .nav-item {
+    margin: 0.4rem 0;
+  }
+
+ 
+  .navbar-nav .nav-link {
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+  }
+
+  .navbar-nav .nav-link:active,
+  .navbar-nav .nav-link:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+.movie-card {
+  position: relative;
+}
+.progress-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 6px;
+  width: 100%;
+  background: rgba(255,255,255,0.2);
+  border-radius: 0 0 6px 6px;
+}
+.progress-bar {
+  height: 100%;
+  background: #E50914;
+  border-radius: 0 0 6px 6px;
+  transition: width 0.3s ease;
+}
+.recommend-arrows-container {
+  display: none;
+  gap: 8px;
+}
+/* =========================
+   MOBILE NUMBERED CAROUSEL (TOP 10)
+========================= */
+@media (max-width: 768px) {
+
+
+  .carousel-container.numbered {
+    display: flex !important;
+    overflow-x: auto;
+    gap: 0.6rem;
+    scroll-behavior: smooth;
+    white-space: nowrap;
+    scroll-snap-type: x mandatory;
+    padding-left: 12px; 
+  }
+
+  .top10-card {
+    flex: 0 0 calc((100vw - 32px) / 3);
+    max-width: calc((100vw - 32px) / 3);
+    scroll-snap-align: start;
+    position: relative; 
+  }
+
+ 
+  .top10-card img,
+  .top10-poster {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-radius: 6px;
+    display: block;
+    position: relative;
+    z-index: 2; 
+    margin-left: -5%; 
+  }
+
+ 
+  .top10-number {
+    position: absolute;
+    bottom: 12px;   
+    left: 0;        
+    font-size: 48px;
+    font-weight: bold;
+    color: white;
+    -webkit-text-stroke: 2px #E50914;
+    z-index: 3;     
+    pointer-events: none;
+  }
+
+
+  .top10-card:first-child .top10-number {
+    left: 0;      
+  }
+  .top10-card:first-child img,
+  .top10-card:first-child .top10-poster {
+    margin-left: 0; 
+  }
+
+}
+.poster-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.recently-added-badge {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #dc2626; 
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 2px;
+  z-index: 10;
+  text-align: center;
+}
+
+/* Continue Watching card */
+.continue-card{
+  flex:0 0 auto;
+  width:160px;
+  border-radius:8px;
+  overflow:hidden;
+  background:#111;
+  cursor:pointer;
+  transition:transform .3s;
+  transform-origin:center top;
+  position:relative;
+}
+
+.continue-card img{
+  width:100%;
+  display:block;
+}
+
+.continue-card:hover{
+  transform:scale(1.05);
+}
+
+/* Hover overlay */
+.continue-overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,0.55);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  transition:opacity .25s ease;
+  z-index:5;
+}
+
+.continue-card:hover .continue-overlay{
+  opacity:1;
+}
+
+/* Play button */
+.continue-play{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  background:#fff;
+  color:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  box-shadow:0 4px 12px rgba(0,0,0,.4);
+}
+
+/* Remove button */
+.remove-btn{
+  position:absolute;
+  top:6px;
+  right:6px;
+  background:rgba(0,0,0,0.75);
+  color:#fff;
+  border:none;
+  border-radius:50%;
+  width:22px;
+  height:22px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  font-weight:bold;
+  cursor:pointer;
+  z-index:20;
+
+  opacity:0;
+  transform:scale(.8);
+  transition:opacity .25s ease, transform .25s ease;
+  transition-delay:.25s;
+}
+
+.continue-card:hover .remove-btn{
+  opacity:1;
+  transform:scale(1);
+}
+
+#continue-watching {
+  position: relative;
+}
+
+#continue-watching .recommend-arrows-container {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  transform: translateY(-50%);
+  pointer-events: none; 
+}
+
+#continue-watching .recommend-arrows-container .arrow-btn {
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: background 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
+  opacity: 0; 
+}
+
+#continue-watching:hover .recommend-arrows-container .arrow-btn.show {
+  opacity: 1; 
+}
+
+#continue-watching .recommend-arrows-container .arrow-btn:hover {
+  background: rgba(0,0,0,0.8);
+  transform: scale(1.1);
+}
+
+.recommend-arrows-container {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none; 
+}
+
+.recommend-arrows-container button {
+  background: rgba(0,0,0,0.5);
+  border: none;
+  color: white;
+  font-size: 2rem;
+  padding: 0.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+  pointer-events: all; 
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.recommend-arrows-container button.show {
+  opacity: 1;
+}
+
+html, body {
+  overflow-x: hidden;
+}
+
+
+#hero-prev { left: 0; }
+#hero-next { right: 0; }
+
+
+@media(max-width:768px) {
+  .top10-card img,
+  .top10-poster {
+    margin-left: 0 !important;
+  }
+}
+
+
+.carousel-container.numbered {
+  padding-left: 12px; 
+}
+
+
+.hero-overlay {
+  max-width: 90vw; 
+  left: 5%;
+}
+</style>
+</head>
+<body>
+
+<div id="preloader-overlay">
+  <div class="four-box-spinner"><div></div><div></div><div></div><div></div></div>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center" href="#"><img src="img/vnceflix.png" height="30"></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="all_movies.html">Movies</a></li>
+        <li class="nav-item"><a class="nav-link" href="all_tvseries.html">TV Shows</a></li>
+        <li class="nav-item"><a class="nav-link" href="vivamax.html">Vivamax</a></li>
+        <li class="nav-item"><a class="nav-link" href="genres.html">Genres</a></li>
+        <li class="nav-item"><a class="nav-link" href="mylist.html">My List</a></li>
+        <li class="nav-item"><a class="nav-link" href="iptv.html">Live TV</a></li>
+        <li class="nav-item"><a class="nav-link" href="live_sports.html">Live Sports</a></li>
+        <li class="nav-item"><a class="nav-link" href="manga.html">Manga</a></li>
+      </ul>
+      <div class="d-flex align-items-center">
+        <i class="bx bx-search text-white fs-4 me-3"></i>
+        <i class="bx bx-bell text-white fs-4 me-3"></i>
+        <div class="dropdown profile-dropdown">
+          <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
+            <i class="bx bx-user-circle fs-3"></i>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item d-none" id="adminBtn" href="administrator.html">Administrator</a></li>
+            <li><a class="dropdown-item" id="signOutBtn" href="Auth/login.html">Sign Out</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<section class="hero-section" id="hero-carousel"></section>
+
+<div id="continue-watching" class="carousel-section" style="display:none;">
+  <div class="carousel-header"><h2>Continue Watching</h2></div>
+  <div class="recommend-arrows-container">
+    <button class="arrow-btn" id="continue-prev">&#8249;</button>
+    <button class="arrow-btn" id="continue-next">&#8250;</button>
+  </div>
+  <div class="carousel-container" id="continue-watching-carousel"></div>
+</div>
+
+
+<div id="upcoming-carousels"></div>
+
+
+<div id="recently-added-carousels"></div>
+
+
+<div id="movie-carousels"></div>
+
+<footer class="footer text-white">
+  <div class="container-fluid">
+    <div class="footer-inner d-flex justify-content-between align-items-start flex-wrap">
+      <div class="footer-left d-flex align-items-start gap-3">
+        <img src="img/vnceflix.png" alt="VNCEFLIX" height="50">
+        <span>
+          VNCEFLIX does not store any files on its server. It only links to media which is hosted on 3rd party services like Vidsrc, Vidfast, Streamtape and more.
+        </span>
+      </div>
+      <div class="footer-right text-end">
+        &copy; 2025 VNCEFLIX. All rights not reserved.
+      </div>
+    </div>
+  </div>
+</footer>
+
+<button id="scrollTopBtn" title="Go to top"></button>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+const TMDB_KEY = "9389ba9923daf721d382d253701c7ca7";
+const TMDB = "https://api.themoviedb.org/3";
+const IMG = "https://image.tmdb.org/t/p/w500";
+const BACKDROP = "https://image.tmdb.org/t/p/original";
+
+
+window.addEventListener("load", () => { 
+  document.getElementById("preloader-overlay").style.display="none"; 
+  updateNavbarTransparency();
+});
+
+function updateNavbarTransparency() {
+  const navbar = document.querySelector(".navbar");
+  if (window.scrollY > 50) {
+    navbar.classList.add("scrolled");
+  } else {
+    navbar.classList.remove("scrolled");
+  }
+}
+window.addEventListener("scroll", updateNavbarTransparency);
+
+
+function dayDiff(dateStr) {
+  if (!dateStr) return null;
+  const d = new Date(dateStr), t = new Date();
+  return Math.round((t - d)/(1000*60*60*24));
+}
+function isNewItem(dateStr) {
+  const diff = dayDiff(dateStr);
+  return diff !== null && diff >= 0 && diff <= 30; 
+}
+
+function createCard(item, number=null) {
+
+  const isMovie = !!item.title;
+  const title = isMovie ? item.title : item.name || "Unknown";
+  const poster = item.poster_path ? IMG + item.poster_path : "img/poster-placeholder.png";
+  const redirect = isMovie ? `view_genres.html?id=${item.id}` : `view_tvseries.html?id=${item.id}`;
+
+  const div = document.createElement("div");
+
+  if(number){
+    div.className="top10-card";
+    div.innerHTML=`
+      <div class="top10-number">${number}</div>
+      <div class="poster-wrapper">
+        <img class="top10-poster" src="${poster}" alt="${title}">
+      </div>
+    `;
+  } else {
+    div.className="movie-card";
+    div.innerHTML=`
+      <div class="poster-wrapper">
+        <img src="${poster}" alt="${title}">
+      </div>
+    `;
+  }
+
+  const wrapper = div.querySelector(".poster-wrapper");
+
+  if(wrapper && isNewItem(item.release_date || item.first_air_date)){
+    const badge = document.createElement("div");
+    badge.className="recently-added-badge";
+    badge.textContent="Recently Added";
+    wrapper.appendChild(badge);
+  }
+
+  div.onclick = () => window.location.href = redirect;
+
+  return div;
+}
+
+
+function createCarousel(title, items, opts={}) {
+
+  if(!items?.length) return;
+
+  const target = opts.target || "movie-carousels";
+  const numbered = !!opts.numbered;
+
+  const section = document.createElement("div");
+  section.className = "carousel-section";
+
+  const safeTitle = title.replace(/\s+/g,"-").toLowerCase();
+
+  section.innerHTML = `
+    <div class="carousel-header">
+      <h2>${title}</h2>
+      <div>
+        <button class="arrow-btn" id="${safeTitle}-prev">&#8249;</button>
+        <button class="arrow-btn" id="${safeTitle}-next">&#8250;</button>
+      </div>
+    </div>
+    <div class="carousel-container ${numbered?'numbered':''}" id="${safeTitle}-carousel"></div>
+  `;
+
+  document.getElementById(target).appendChild(section);
+
+  const container = document.getElementById(`${safeTitle}-carousel`);
+
+  items.forEach((it,idx)=>{
+    container.appendChild(createCard(it, numbered ? idx+1 : null));
+  });
+
+  const scrollAmount = 320;
+
+  document.getElementById(`${safeTitle}-prev`).onclick = ()=>{
+    container.scrollBy({left:-scrollAmount,behavior:"smooth"});
+  };
+
+  document.getElementById(`${safeTitle}-next`).onclick = ()=>{
+    container.scrollBy({left:scrollAmount,behavior:"smooth"});
+  };
+}
+
+
+async function loadHero() {
+  const hero = document.getElementById("hero-carousel");
+  const [trendingMoviesRes, trendingTVRes, nowPlayingRes] = await Promise.all([
+    fetch(`${TMDB}/trending/movie/week?api_key=${TMDB_KEY}`).then(r => r.json()).catch(() => ({ results: [] })),
+    fetch(`${TMDB}/trending/tv/week?api_key=${TMDB_KEY}`).then(r => r.json()).catch(() => ({ results: [] })),
+    fetch(`${TMDB}/movie/now_playing?api_key=${TMDB_KEY}`).then(r => r.json()).catch(() => ({ results: [] }))
+  ]);
+
+  let combined = [...(trendingMoviesRes.results||[]), ...(trendingTVRes.results||[]), ...(nowPlayingRes.results||[])];
+
+  const bannedGenres = [10767, 10766, 10763];
+  combined = combined.filter(item => !(item.genre_ids && item.genre_ids.some(g => bannedGenres.includes(g))));
+
+  const map = new Map();
+  combined.forEach(item => map.set(item.id, item));
+  combined = Array.from(map.values()).sort((a,b)=>(b.popularity||0)-(a.popularity||0)).slice(0,6);
+
+  hero.innerHTML=`
+    <div class="hero-arrows">
+      <button id="hero-prev">&#10094;</button>
+      <button id="hero-next">&#10095;</button>
+    </div>
+    <div class="hero-dots"></div>
+  `;
+  const dotsContainer = hero.querySelector(".hero-dots");
+
+  for(let i=0;i<combined.length;i++){
+    const item = combined[i];
+    const type = item.title?"movie":"tv";
+
+    let logo=null;
+    try{
+      const imgResp=await fetch(`${TMDB}/${type}/${item.id}/images?api_key=${TMDB_KEY}`);
+      const imgData = await imgResp.json();
+      if(imgData.logos && imgData.logos.length){
+        logo = imgData.logos.find(l=>l.iso_639_1==="en") || imgData.logos[0];
+      }
+    }catch(e){}
+
+    const slide = document.createElement("div");
+    slide.className=`hero-slide ${i===0?"active":""}`;
+    slide.style.backgroundImage=`url(${BACKDROP + item.backdrop_path})`;
+
+    const title = item.title||item.name;
+    const playUrl = type==="movie"?`player_movies.html?id=${item.id}`:`player_tvseries.html?id=${item.id}`;
+    const infoUrl = type==="movie"?`view_genres.html?id=${item.id}`:`view_tvseries.html?id=${item.id}`;
+
+    slide.innerHTML=`
+      <div class="hero-overlay">
+        ${logo?`<div class="hero-logo"><img src="https://image.tmdb.org/t/p/w500${logo.file_path}" alt="${title} Logo"></div>`:`<h1 class="hero-title">${title}</h1>`}
+        <p>${item.overview||""}</p>
+        <div class="hero-buttons">
+          <button class="btn-play"><i class="bx bx-play"></i> Play</button>
+          <button class="btn-info"><i class="bx bx-info-circle"></i> More Info</button>
+        </div>
+      </div>
+      <div class="hero-fade"></div>
+    `;
+
+    slide.querySelector(".btn-play").onclick=()=>window.location.href=playUrl;
+    slide.querySelector(".btn-info").onclick=()=>window.location.href=infoUrl;
+
+    hero.appendChild(slide);
+
+    const dot = document.createElement("div");
+    dot.className=`hero-dot ${i===0?"active":""}`;
+    dotsContainer.appendChild(dot);
+  }
+
+  let index=0;
+  const slides=()=>document.querySelectorAll(".hero-slide");
+  const dots=()=>document.querySelectorAll(".hero-dot");
+
+  function showSlide(i){
+    slides()[index].classList.remove("active");
+    dots()[index].classList.remove("active");
+    index=i;
+    slides()[index].classList.add("active");
+    dots()[index].classList.add("active");
+  }
+
+  function next(){ showSlide((index+1)%slides().length); }
+  function prev(){ showSlide((index-1+slides().length)%slides().length); }
+
+  let timer=setInterval(next,6000);
+  hero.addEventListener("mouseenter",()=>clearInterval(timer));
+  hero.addEventListener("mouseleave",()=>timer=setInterval(next,6000));
+
+  document.getElementById("hero-next").onclick=next;
+  document.getElementById("hero-prev").onclick=prev;
+  dots().forEach((dot,i)=>dot.onclick=()=>showSlide(i));
+}
+
+/* Load all other carousels */
+async function loadCarousels() {
+  const providerNetflix = 8;
+  const regionPH = "PH";
+
+  const endpoints = [
+
+    /* TRENDING */
+    {
+      title: "Trending Now",
+      movie: `${TMDB}/trending/movie/week?api_key=${TMDB_KEY}`,
+      tv: `${TMDB}/trending/tv/week?api_key=${TMDB_KEY}`
+    },
+
+    /* MOVIES */
+    {
+      title: "Popular Movies",
+      movie: `${TMDB}/movie/popular?api_key=${TMDB_KEY}`
+    },
+    {
+      title: "Top 10 Movies Today",
+      movie: `${TMDB}/trending/movie/day?api_key=${TMDB_KEY}`
+    },
+    {
+      title: "Top Rated Movies",
+      movie: `${TMDB}/movie/top_rated?api_key=${TMDB_KEY}`
+    },
+    {
+      title: "Now In Theaters",
+      movie: `${TMDB}/movie/now_playing?api_key=${TMDB_KEY}`
+    },
+
+    /* TV */
+    {
+      title: "Popular TV Shows",
+      tv: `${TMDB}/tv/popular?api_key=${TMDB_KEY}`
+    },
+    {
+  title:"Top 10 TV Shows Today",
+  tv:`${TMDB}/trending/tv/day?api_key=${TMDB_KEY}`
+},
+    {
+      title: "Top Rated TV Shows",
+      tv: `${TMDB}/tv/top_rated?api_key=${TMDB_KEY}`
+    },
+
+    /* NETFLIX */
+    {
+      title: "Top Netflix Today",
+      movie: `${TMDB}/discover/movie?with_watch_providers=${providerNetflix}&watch_region=${regionPH}&sort_by=popularity.desc&api_key=${TMDB_KEY}`,
+      tv: `${TMDB}/discover/tv?with_watch_providers=${providerNetflix}&watch_region=${regionPH}&sort_by=popularity.desc&api_key=${TMDB_KEY}`
+    },
+
+    /* MOVIE GENRES */
+    {
+      title: "Action & Adventure Movies",
+      movie: `${TMDB}/discover/movie?with_genres=28,12&sort_by=popularity.desc&api_key=${TMDB_KEY}`
+    },
+    {
+      title: "Comedy Movies",
+      movie: `${TMDB}/discover/movie?with_genres=35&sort_by=popularity.desc&api_key=${TMDB_KEY}`
+    },
+    {
+      title: "Drama Movies",
+      movie: `${TMDB}/discover/movie?with_genres=18&sort_by=popularity.desc&api_key=${TMDB_KEY}`
+    },
+    {
+      title: "Horror Movies",
+      movie: `${TMDB}/discover/movie?with_genres=27&sort_by=popularity.desc&api_key=${TMDB_KEY}`
+    },
+
+    /* TV GENRES */
+    {
+      title: "Comedy TV Shows",
+      tv: `${TMDB}/discover/tv?with_genres=35&sort_by=popularity.desc&api_key=${TMDB_KEY}`
+    },
+    {
+      title: "Drama TV Shows",
+      tv: `${TMDB}/discover/tv?with_genres=18&sort_by=popularity.desc&api_key=${TMDB_KEY}`
+    },
+    {
+      title: "Crime TV Shows",
+      tv: `${TMDB}/discover/tv?with_genres=80&sort_by=popularity.desc&api_key=${TMDB_KEY}`
+    },
+   {
+  title:"Sci-Fi & Fantasy TV Shows",
+  tv:`${TMDB}/discover/tv?with_genres=10765&sort_by=popularity.desc&api_key=${TMDB_KEY}`
+},
+
+  ];
+
+  for(const cat of endpoints){
+    const [mRes,tRes] = await Promise.all([
+      cat.movie?fetch(cat.movie).then(r=>r.json()).catch(()=>({results:[]})):Promise.resolve({results:[]}),
+      cat.tv?fetch(cat.tv).then(r=>r.json()).catch(()=>({results:[]})):Promise.resolve({results:[]}),
+    ]);
+    const combined=[...(mRes.results||[]),...(tRes.results||[])];
+    if(!combined.length) continue;
+    createCarousel(cat.title, combined.slice(0,20), {numbered:cat.title.includes("Top 10")});
+  }
+}
+
+
+async function loadAnime(){
+  const [tvRes,mRes] = await Promise.all([
+    fetch(`${TMDB}/discover/tv?with_genres=16&with_original_language=ja&sort_by=popularity.desc&api_key=${TMDB_KEY}`).then(r=>r.json()).catch(()=>({results:[]})),
+    fetch(`${TMDB}/discover/movie?with_genres=16&with_original_language=ja&sort_by=popularity.desc&api_key=${TMDB_KEY}`).then(r=>r.json()).catch(()=>({results:[]}))
+  ]);
+  const combined = [...(tvRes.results||[]).slice(0,8),...(mRes.results||[]).slice(0,6)];
+  createCarousel("Top Anime", combined.slice(0,16));
+}
+
+/* INIT */
+(async function init(){
+  await loadHero();
+  loadContinueWatching();
+  await loadCarousels();
+  await loadAnime();
+})();
+
+/* Scroll Top */
+const scrollTopBtn=document.getElementById("scrollTopBtn");
+window.addEventListener("scroll",()=>scrollTopBtn.style.display=(window.scrollY>300)?"flex":"none");
+scrollTopBtn.addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}));
+
+
+function loadContinueWatching() {
+  const itemsRaw = JSON.parse(localStorage.getItem("continueWatching")) || [];
+  const section = document.getElementById("continue-watching");
+
+  if (!itemsRaw.length) { 
+    section.style.display = "none"; 
+    return;
+  }
+
+  const map = new Map();
+  itemsRaw.forEach(item => map.set(item.id, item));
+  const items = Array.from(map.values());
+
+  section.style.display = "block";
+
+  const container = document.getElementById("continue-watching-carousel");
+  const arrows = section.querySelector(".recommend-arrows-container");
+  const leftArrow = document.getElementById("continue-prev");
+  const rightArrow = document.getElementById("continue-next");
+
+  container.innerHTML = "";
+
+  items.forEach(item => {
+    if (!item.poster_path) return;
+
+    const div = document.createElement("div");
+    div.className = "continue-card";
+
+    const redirect = item.type === "movie"
+      ? `view_genres.html?id=${item.id}`
+      : item.type === "tv"
+      ? `view_tvseries.html?id=${item.id}`
+      : `view_vivamax.html?id=${item.id}`;
+
+    div.innerHTML = `
+      <img src="${item.poster_path}" alt="${item.title}">
+      <div class="continue-overlay">
+        <div class="continue-play">
+          <i class="bx bx-play"></i>
+        </div>
+      </div>
+      ${item.progress ? `
+        <div class="progress-overlay">
+          <div class="progress-bar" style="width:${item.progress}%"></div>
+        </div>` : ""}
+      <button class="remove-btn">&times;</button>
+    `;
+
+    const removeBtn = div.querySelector(".remove-btn");
+    removeBtn.onclick = (e) => {
+      e.stopPropagation();
+      const filtered = itemsRaw.filter(i => i.id !== item.id);
+      localStorage.setItem("continueWatching", JSON.stringify(filtered));
+      loadContinueWatching();
+    };
+
+    div.onclick = () => window.location.href = redirect;
+    container.appendChild(div);
+  });
+
+  if (items.length > 10) {
+    arrows.style.display = "flex";
+
+    const scrollAmount = Math.min(container.clientWidth / 1.5, 300);
+
+    const updateArrows = () => {
+      const scrollLeft = container.scrollLeft;
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      if (scrollLeft > 0) leftArrow.classList.add("show");
+      else leftArrow.classList.remove("show");
+      if (scrollLeft < maxScroll - 1) rightArrow.classList.add("show");
+      else rightArrow.classList.remove("show");
+    };
+
+   
+    leftArrow.classList.remove("show");
+    rightArrow.classList.remove("show");
+
+
+    container.addEventListener("mouseenter", () => {
+      const scrollLeft = container.scrollLeft;
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      if (scrollLeft < maxScroll - 1) rightArrow.classList.add("show");
+    });
+
+    container.addEventListener("mouseleave", () => {
+      leftArrow.classList.remove("show");
+      rightArrow.classList.remove("show");
+    });
+
+   
+    leftArrow.onclick = () => {
+      container.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+      setTimeout(updateArrows, 200);
+    };
+    rightArrow.onclick = () => {
+      container.scrollBy({ left: scrollAmount, behavior: "smooth" });
+      setTimeout(updateArrows, 200);
+    };
+
+    
+    container.addEventListener("scroll", updateArrows);
+
+  } else {
+    arrows.style.display = "none";
+  }
+}
+</script>
+</body>
+</html>

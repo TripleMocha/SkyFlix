@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VNCEFLIX - Browse</title>
+<link rel="icon" type="image/png" href="img/logo.png">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<style>
+body {
+  background-color: #0A1120;
+  color: #fff;
+  margin: 0;
+  padding-bottom: 70px;
+  font-family: 'Arial', sans-serif;
+}
+
+/* ==================== PRELOADER ==================== */
+#preloader-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+.four-box-spinner { display: flex; flex-wrap: wrap; gap: 5px; width: 50px; height: 50px; }
+.four-box-spinner div { width: 20px; height: 20px; background: #E50914; animation: boxFade 1.2s infinite ease-in-out; }
+.four-box-spinner div:nth-child(2){animation-delay:0.2s;}
+.four-box-spinner div:nth-child(3){animation-delay:0.4s;}
+.four-box-spinner div:nth-child(4){animation-delay:0.6s;}
+@keyframes boxFade {0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.3;transform:scale(0.7);}}
+
+/* ==================== NAVBAR ==================== */
+.navbar { transition: all .3s ease; background-color: transparent; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 999; }
+.navbar.scrolled { background-color: #0A1120; box-shadow: 0 3px 10px rgba(0,0,0,.5); }
+.navbar .nav-link { color: #fff !important; font-weight: 500; transition: .3s; }
+.navbar .nav-link.active { font-weight: 700; }
+.navbar .container-fluid { padding: 0 5%; }
+@media(max-width:768px){.navbar .container-fluid{padding:0 15px;}}
+
+/* ==================== SEARCH ==================== */
+#searchContainer {
+  display: flex;
+  justify-content: center; /* center horizontally on desktop */
+  align-items: center;
+  margin: 90px 0 10px;
+  padding: 0 5%;
+  gap: 10px;
+  flex-wrap: wrap; /* allow wrapping on very small screens */
+}
+
+#searchContainer input {
+  width: 100%;
+  max-width: 500px;   /* desktop max width */
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #111;
+  color: #fff;
+  font-size: 1rem;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+#searchContainer input:focus {
+  outline: none;
+  border-color: #E50914;
+}
+
+/* ==================== MOBILE CONTROLS: filter + year ==================== */
+#mobileControls {
+  display: none;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0; /* prevent shrinking */
+}
+
+#filterToggle {
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #fff;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#filterToggle.active {
+  background:#E50914;
+  border-color:#E50914;
+}
+
+#yearSelectMobile {
+  background: #111;
+  border: 1px solid #333;
+  color: #fff;
+  padding: 0.45rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  appearance: none;
+}
+
+/* ==================== FILTERS WRAPPER ==================== */
+#filtersWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  padding: 0 5%;
+  margin-bottom: 15px;
+  gap: 0.5rem;
+}
+
+/* ==================== GENRES CONTAINER ==================== */
+#genresContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+/* ==================== GENRE BUTTONS ==================== */
+.genre-btn {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 80px;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background: #181818;
+  border: 1px solid #2a2a2a;
+  color: #bdbdbd;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: center;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  text-decoration: none; /* remove underline */
+}
+
+.genre-btn:hover { background: #222; color: #fff; }
+.genre-btn.active { background: #fff; color: #000; border-color: #fff; font-weight: 600; }
+
+/* ==================== MOBILE RESPONSIVE ==================== */
+@media (max-width: 768px) {
+  #searchContainer {
+    flex-direction: row;
+    justify-content: flex-start; /* align items left */
+    align-items: center;
+    flex-wrap: nowrap; /* keep search + controls in one row */
+  }
+
+  #searchContainer input {
+    max-width: calc(100% - 130px); /* leave space for mobileControls */
+    flex-grow: 1; /* input fills remaining space */
+    margin: 0;
+  }
+
+  #mobileControls { display: flex; }
+
+  #genresContainer {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  #filtersWrapper { padding: 0 5%; }
+  #yearContainer { display: none; } /* hide desktop year */
+}
+
+/* ==================== YEAR DROPDOWN ==================== */
+#yearContainer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  padding: 0 5%;
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+#yearSelect {
+  background: rgba(20, 20, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  padding: 0.45rem 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  appearance: none;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(6px);
+}
+
+#yearSelect:hover, #yearSelect:focus { border-color: #e50914; outline: none; }
+#yearSelect option { background: #111; color: #fff; }
+/* Hide desktop year dropdown on mobile */
+@media (max-width: 768px) {
+  #yearContainer {
+    display: none !important;
+  }
+}
+
+
+/* ==================== GRID ==================== */
+#grid { display: grid; gap: 1rem; padding: 0 5%; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+/* MOBILE GRID: 3 items per row */
+@media (max-width: 768px) {
+  #grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+
+/* MEDIA CARD */
+.media-card { background: #111; border-radius: 8px; overflow: hidden; cursor: pointer; transition: transform .3s ease, box-shadow .3s; position: relative; }
+.media-card:hover { transform: scale(1.05); box-shadow: 0 8px 20px rgba(0,0,0,0.7); }
+.media-card img { width: 100%; display: block; border-radius: 8px; }
+
+/* BADGES */
+.badge { position: absolute; font-size: .7rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; z-index: 2; top: 5px; left: 5px; }
+.badge-recent { background: #27ae60; color: #fff; }
+.badge-ongoing { background: #3498db; color: #fff; }
+.badge-soon-today { background: #27ae60; color: #fff; }
+.badge-soon-week { background: #f1c40f; color: #000; }
+.badge-soon-month { background: #3498db; color: #fff; }
+.badge-soon-later { background: #e74c3c; color: #fff; }
+
+/* SCROLL-UP */
+#scrollUp {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  background: #E50914;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 1.5rem;
+  z-index: 999;
+  display: none;
+  transition: transform .3s;
+}
+#scrollUp:hover { transform: scale(1.1); }
+/* Ensure mobile dropdown has dark background */
+.navbar-collapse {
+  background-color: #0A1120; /* dark navbar background */
+}
+
+@media (max-width: 768px) {
+  .navbar-collapse {
+    padding: 10px 15px; /* optional: padding for mobile menu */
+  }
+  .navbar-nav .nav-link {
+    color: #fff; /* ensure links are visible */
+  }
+}
+
+</style>
+</head>
+<body>
+
+<div id="preloader-overlay"><div class="four-box-spinner"><div></div><div></div><div></div><div></div></div></div>
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center" href="index.html">
+      <img src="img/vnceflix.png" height="30">
+    </a>
+
+    <!-- Hamburger toggle for mobile -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="all_movies.html">Movies</a></li>
+        <li class="nav-item"><a class="nav-link" href="all_tvseries.html">TV Shows</a></li>
+        <li class="nav-item"><a class="nav-link" href="vivamax.html">Vivamax</a></li>
+        <li class="nav-item"><a class="nav-link active" href="genres.html">Genres</a></li>
+        <li class="nav-item"><a class="nav-link" href="mylist.html">My List</a></li>
+        <li class="nav-item"><a class="nav-link" href="iptv.html">Live TV</a></li>
+        <li class="nav-item"><a class="nav-link" href="live_sports.html">Live Sports</a></li>
+      </ul>
+
+      <!-- Profile dropdown -->
+      <div class="d-flex align-items-center">
+        <div class="dropdown profile-dropdown">
+          <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
+            <i class="bx bx-user-circle fs-3"></i>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="#">Administrator</a></li>
+            <li><a class="dropdown-item" href="Auth/login.html">Sign Out</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div id="searchContainer">
+  <input type="text" id="searchInput" placeholder="Search movies or TV series...">
+  <div id="mobileControls">
+    <select id="yearSelectMobile"></select>
+    <i id="filterToggle" class="bx bx-filter-alt"></i>
+  </div>
+</div>
+
+<div id="filtersWrapper">
+  <div id="genresContainer"></div>
+</div>
+<div id="yearContainer"><select id="yearSelect"></select></div>
+
+<div id="grid"></div>
+<div id="loader">Loading...</div>
+<div id="scrollUp"><i class="bx bx-up-arrow-alt"></i></div>
+
+<script>
+// ===== TMDB CONFIG =====
+const TMDB_API_KEY = "9389ba9923daf721d382d253701c7ca7";
+const TMDB_BASE = "https://api.themoviedb.org/3";
+const TMDB_IMG = "https://image.tmdb.org/t/p/w500";
+
+let allItems = [], loadedIds = new Set(), isLoading = false;
+let searchText = "", currentGenre = "", currentYear = "";
+let pageCounters = {}, totalPages = {};
+const today = new Date();
+
+// PRELOADER
+window.addEventListener("load", () => document.getElementById("preloader-overlay").style.display = "none");
+
+// SCROLL NAVBAR + UP BUTTON
+window.addEventListener("scroll", () => {
+  document.querySelector(".navbar").classList.toggle("scrolled", window.scrollY > 50);
+  document.getElementById("scrollUp").style.display = window.scrollY > 500 ? "flex" : "none";
+});
+document.getElementById("scrollUp").addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+// MOBILE FILTER TOGGLE
+document.getElementById("filterToggle").addEventListener("click", () => {
+  const container = document.getElementById("genresContainer");
+  container.style.display = container.style.display === "flex" ? "none" : "flex";
+  document.getElementById("filterToggle").classList.toggle("active");
+});
+
+// INIT GENRES
+async function initGenres() {
+  const [resM, resT] = await Promise.all([
+    fetch(`${TMDB_BASE}/genre/movie/list?api_key=${TMDB_API_KEY}`),
+    fetch(`${TMDB_BASE}/genre/tv/list?api_key=${TMDB_API_KEY}`)
+  ]);
+  const [dataM, dataT] = await Promise.all([resM.json(), resT.json()]);
+  const genresMap = {};
+  [...(dataM.genres || []), ...(dataT.genres || [])].forEach(g => genresMap[g.id] = g.name);
+
+  const container = document.getElementById("genresContainer");
+  container.innerHTML = "";
+
+  const allBtn = document.createElement("button");
+  allBtn.className = "genre-btn active";
+  allBtn.textContent = "All Genres";
+  allBtn.onclick = () => {
+    currentGenre = "";
+    document.querySelectorAll(".genre-btn").forEach(b => b.classList.remove("active"));
+    allBtn.classList.add("active");
+    resetAndLoad();
+
+    // Close genres container on mobile
+    if (window.innerWidth <= 768) {
+      container.style.display = "none";
+      document.getElementById("filterToggle").classList.remove("active");
+    }
+  };
+  container.appendChild(allBtn);
+
+  Object.keys(genresMap).forEach(id => {
+    const btn = document.createElement("button");
+    btn.className = "genre-btn";
+    btn.textContent = genresMap[id];
+    btn.dataset.id = id;
+    btn.onclick = () => {
+      currentGenre = (currentGenre === id ? "" : id);
+      document.querySelectorAll(".genre-btn").forEach(b => b.classList.remove("active"));
+      if (currentGenre) btn.classList.add("active");
+      else allBtn.classList.add("active");
+      resetAndLoad();
+
+      // Close genres container on mobile
+      if (window.innerWidth <= 768) {
+        container.style.display = "none";
+        document.getElementById("filterToggle").classList.remove("active");
+      }
+    };
+    container.appendChild(btn);
+  });
+}
+
+// INIT YEARS
+function initYears() {
+  const desktopSelect = document.getElementById("yearSelect");
+  const mobileSelect = document.getElementById("yearSelectMobile");
+  const curY = today.getFullYear();
+
+  // Populate desktop year select
+  if (desktopSelect) {
+    desktopSelect.innerHTML = "<option value=''>All Years</option>";
+    for (let y = curY; y >= 1970; y--) {
+      const option = document.createElement("option");
+      option.value = y;
+      option.textContent = y;
+      desktopSelect.appendChild(option);
+    }
+    desktopSelect.onchange = () => {
+      currentYear = desktopSelect.value;
+      resetAndLoad();
+    };
+  }
+
+  // Populate mobile year select
+  if (mobileSelect) {
+    mobileSelect.innerHTML = "<option value=''>All Years</option>";
+    for (let y = curY; y >= 1970; y--) {
+      const option = document.createElement("option");
+      option.value = y;
+      option.textContent = y;
+      mobileSelect.appendChild(option);
+    }
+    mobileSelect.onchange = () => {
+      currentYear = mobileSelect.value;
+      resetAndLoad();
+    };
+  }
+}
+
+// SEARCH INPUT
+let searchTimeout;
+document.getElementById("searchInput").addEventListener("input", e => {
+  searchText = e.target.value.trim();
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => { resetAndLoad(); }, 300);
+});
+
+// RESET
+function resetAndLoad() {
+  allItems = [];
+  loadedIds.clear();
+  pageCounters = {};
+  totalPages = {};
+  loadData(true);
+}
+
+// FETCH SINGLE PAGE
+async function fetchData(url, page = 1) {
+  const res = await fetch(`${url}${url.includes('?') ? '&' : '?'}page=${page}`);
+  const data = await res.json();
+  return { results: data.results || [], total_pages: data.total_pages || 1 };
+}
+
+// LOAD DATA
+async function loadData(initial = false) {
+  if (isLoading) return;
+  isLoading = true;
+  document.getElementById("loader").style.display = "block";
+
+  const urls = [];
+
+  if (searchText) {
+    urls.push(`${TMDB_BASE}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(searchText)}`);
+    urls.push(`${TMDB_BASE}/search/tv?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(searchText)}`);
+  } else if (currentGenre || currentYear) {
+    let movieUrl = `${TMDB_BASE}/discover/movie?api_key=${TMDB_API_KEY}`;
+    let tvUrl = `${TMDB_BASE}/discover/tv?api_key=${TMDB_API_KEY}`;
+    if (currentGenre) { movieUrl += `&with_genres=${currentGenre}`; tvUrl += `&with_genres=${currentGenre}`; }
+    if (currentYear) { movieUrl += `&primary_release_year=${currentYear}`; tvUrl += `&first_air_date_year=${currentYear}`; }
+    urls.push(movieUrl, tvUrl);
+  } else {
+    urls.push(`${TMDB_BASE}/movie/popular?api_key=${TMDB_API_KEY}`);
+    urls.push(`${TMDB_BASE}/tv/popular?api_key=${TMDB_API_KEY}`);
+    urls.push(`${TMDB_BASE}/movie/upcoming?api_key=${TMDB_API_KEY}`);
+    urls.push(`${TMDB_BASE}/tv/on_the_air?api_key=${TMDB_API_KEY}`);
+  }
+
+  let newItems = [];
+  for (const url of urls) {
+    if (!pageCounters[url]) pageCounters[url] = 1;
+    if (!totalPages[url]) totalPages[url] = 1;
+
+    while (pageCounters[url] <= totalPages[url]) {
+      const { results, total_pages } = await fetchData(url, pageCounters[url]);
+      totalPages[url] = total_pages;
+      pageCounters[url]++;
+
+      results.forEach(item => {
+        if (!loadedIds.has(item.id)) { loadedIds.add(item.id); newItems.push(item); }
+      });
+
+      if (newItems.length >= 30) break;
+    }
+  }
+
+  allItems = [...allItems, ...newItems];
+  allItems.sort((a, b) => new Date(b.release_date || b.first_air_date || 0) - new Date(a.release_date || a.first_air_date || 0));
+
+  renderGrid();
+  isLoading = false;
+  document.getElementById("loader").style.display = "none";
+}
+
+// RENDER GRID
+function renderGrid() {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  allItems.forEach(m => {
+    const card = document.createElement("div"); card.className = "media-card";
+    const poster = m.poster_path ? TMDB_IMG + m.poster_path : "img/logo.png";
+    const link = m.name ? "view_tvseries.html?id=" + m.id : "view_genres.html?id=" + m.id;
+    card.onclick = () => window.location.href = link;
+
+    let badgeText = "", badgeClass = "";
+    const release = new Date(m.release_date || m.first_air_date || 0);
+    const diff = Math.ceil((release - today) / (1000 * 60 * 60 * 24));
+
+    if (m.title) {
+      if (diff < 0 && diff >= -7) { badgeText = "Recently Added"; badgeClass = "badge-recent"; }
+      else if (diff > 0) {
+        if (diff === 0) { badgeText = "Today"; badgeClass = "badge-soon-today"; }
+        else if (diff <= 7) { badgeText = "Next Week"; badgeClass = "badge-soon-week"; }
+        else if (diff <= 30) { badgeText = "Next Month"; badgeClass = "badge-soon-month"; }
+        else { badgeText = "Later"; badgeClass = "badge-soon-later"; }
+      }
+    } else if (m.name) {
+      if (diff < 0 && diff >= -7) { badgeText = "Recently Added"; badgeClass = "badge-recent"; }
+      else if (diff >= 0) { badgeText = "New Season | Ongoing"; badgeClass = "badge-ongoing"; }
+    }
+
+    card.innerHTML = `<img src="${poster}" alt="Poster">
+                      ${badgeText ? `<div class="badge ${badgeClass}">${badgeText}</div>` : ""}`;
+    grid.appendChild(card);
+  });
+}
+
+// INFINITE SCROLL
+window.addEventListener('scroll', () => {
+  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+    loadData();
+  }
+});
+
+// INIT
+(async function () {
+  await initGenres();
+  initYears();
+  loadData(true);
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

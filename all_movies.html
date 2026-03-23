@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VNCEFlix - All Movies</title>
+  <link rel="icon" type="image/png" href="img/logo.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #0A1120;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Loader */
+    #preloader-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+    .four-box-spinner { width: 50px; height: 50px; display: flex; flex-wrap: wrap; gap: 5px; }
+    .four-box-spinner div {
+      width: 20px; height: 20px; background-color: red;
+      animation: boxFade 1.2s infinite ease-in-out;
+    }
+    .four-box-spinner div:nth-child(2){animation-delay:0.2s;}
+    .four-box-spinner div:nth-child(3){animation-delay:0.4s;}
+    .four-box-spinner div:nth-child(4){animation-delay:0.6s;}
+    @keyframes boxFade {
+      0%,100%{opacity:1; transform:scale(1);}
+      50%{opacity:0.3; transform:scale(0.7);}
+    }
+
+    /* Navbar */
+    .navbar { transition: background-color 0.4s ease; background: transparent !important; }
+    .navbar.scrolled { background: #0A1120 !important; }
+    .navbar-brand img { height: 30px; }
+    .nav-link { color: #fff !important; margin: 0 10px; font-size: 1rem; }
+    .nav-link:hover { color: #e50914 !important; }
+    .navbar .bx { color: #fff; }
+
+    .dropdown-menu { background: #0A1120; }
+    .dropdown-menu a { color: #fff; }
+    .dropdown-menu a:hover { background: #333; }
+
+    /* Page Title */
+    .page-title {
+      margin-top: 90px;
+      margin-bottom: 10px;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+
+    /* Filters Section */
+    .filters {
+      background: rgba(31, 31, 31, 0.6);
+      backdrop-filter: blur(12px);
+      padding: 12px 18px;
+      margin: 15px auto 30px auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+      max-width: 1600px;
+      position: sticky;
+      top: 70px;
+      z-index: 98;
+      transition: transform 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
+    }
+    .filters.hidden { transform: translateY(-120%); opacity: 0; }
+    .filters.shrink { padding: 8px 14px; }
+
+    /* Search */
+    .search-wrapper { position: relative; flex-grow: 1; }
+    .search-wrapper input {
+      border-radius: 12px;
+      padding: 8px 38px;
+      font-size: 0.95rem;
+      background: #141414;
+      border: none;
+      color: #fff;
+      width: 100%;
+    }
+    .search-wrapper input::placeholder { color: #888; }
+    .search-wrapper i {
+      position: absolute; left: 12px; top: 50%;
+      transform: translateY(-50%); color: #888; font-size: 1.1rem;
+    }
+
+    /* Dropdowns */
+    .form-select {
+      background: #141414;
+      color: #fff;
+      border-radius: 12px;
+      border: none;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+    }
+
+    .filter-label {
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      margin-right: 5px;
+      white-space: nowrap;
+    }
+
+    /* Movie Grid */
+    .movie-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 15px;
+      max-width: 1600px;
+      margin: 20px auto;
+    }
+    .movie-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .movie-card:hover { transform: scale(1.08); }
+    .movie-card img { width: 100%; border-radius: 10px; display: block; }
+    .movie-title {
+      position: absolute; bottom: 0; width: 100%;
+      padding: 6px; background: rgba(0, 0, 0, 0.7);
+      color: #fff; text-align: center;
+      opacity: 0; transition: opacity 0.3s ease;
+      font-size: 0.85rem;
+    }
+    .movie-card:hover .movie-title { opacity: 1; }
+
+    /* No movies found */
+    #moviesContainer p {
+      text-align: center;
+      width: 100%;
+      grid-column: 1 / -1;
+      margin-top: 40px;
+      font-size: 1.2rem;
+      color: #aaa;
+    }
+
+    /* Responsive Grid */
+    @media (max-width: 1400px) { .movie-grid { grid-template-columns: repeat(6, 1fr); } }
+    @media (max-width: 1200px) { .movie-grid { grid-template-columns: repeat(5, 1fr); } }
+    @media (max-width: 992px)  { .movie-grid { grid-template-columns: repeat(4, 1fr); } }
+    @media (max-width: 768px)  { .movie-grid { grid-template-columns: repeat(4, 1fr); } }
+    @media (max-width: 576px)  { .movie-grid { grid-template-columns: repeat(4, 1fr); } } /* 4 per row mobile */
+  </style>
+</head>
+<body>
+  <!-- Preloader -->
+  <div id="preloader-overlay">
+    <div class="four-box-spinner"><div></div><div></div><div></div><div></div></div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-transparent px-3">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="Index.html">
+        <img src="img/vnceflix.png" alt="VNCEFLIX Logo" class="me-2" />
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+         <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link active" href="all_movies.html">Movies</a></li>
+        <li class="nav-item"><a class="nav-link" href="all_tvseries.html">TV Shows</a></li>
+        <li class="nav-item"><a class="nav-link" href="vivamax.html">Vivamax</a></li>
+        <li class="nav-item"><a class="nav-link" href="genres.html">Genres</a></li>
+        <li class="nav-item"><a class="nav-link" href="mylist.html">My List</a></li>
+        <li class="nav-item"><a class="nav-link" href="iptv.html">IPTV</a></li>
+        <li class="nav-item"><a class="nav-link" href="live_sports.html">Live Sports</a></li>
+        </ul>
+        <div class="d-flex align-items-center">
+          <i class="bx bx-bell text-white fs-4 me-3"></i>
+          <div class="dropdown profile-dropdown">
+            <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown">
+              <i class="bx bx-user-circle fs-3"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+              <li><a class="dropdown-item d-none" id="adminBtn" href="administrator.html">Administrator</a></li>
+              <li><a class="dropdown-item" id="signOutBtn" href="Auth/login.html">Sign Out</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Title -->
+  <div class="container">
+    <h2 class="page-title">All Movies</h2>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters mt-2" id="filtersBar">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+      <!-- Search -->
+      <div class="search-wrapper">
+        <i class="bx bx-search"></i>
+        <input type="text" id="searchInput" placeholder="Search movies...">
+      </div>
+
+      <!-- Filters -->
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <span class="filter-label"><i class="bx bx-filter-alt me-1"></i>Filter by:</span>
+        <select id="genreFilter" class="form-select w-auto">
+          <option value="">Genre: All</option>
+          <option>Action</option><option>Adventure</option><option>Animation</option>
+          <option>Biography</option><option>Comedy</option><option>Crime</option>
+          <option>Documentary</option><option>Drama</option><option>Family</option>
+          <option>Fantasy</option><option>History</option><option>Horror</option>
+          <option>Music</option><option>Mystery</option><option>Romance</option>
+          <option>Sci-Fi</option><option>Sport</option><option>Thriller</option>
+          <option>War</option><option>Western</option>
+        </select>
+        <select id="movieYear" class="form-select w-auto"><option value="">Year: All</option></select>
+        <select id="movieType" class="form-select w-auto">
+          <option value="">Type: All</option>
+          <option>Movie</option><option>TV Series</option><option>Vivamax</option>
+          <option>Pinoy Movies</option><option>Asian Movies</option><option>Bollywood</option>
+          <option>K-Drama</option><option>Anime</option>
+        </select>
+        <select id="sortOrder" class="form-select w-auto">
+          <option value="desc">Newest</option>
+          <option value="asc">Oldest</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <!-- Movies -->
+  <div class="container">
+    <div id="moviesContainer" class="movie-grid"></div>
+  </div>
+
+  <script type="module">
+  // ===================== Firebase Setup =====================
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, getDocs, query, orderBy, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBeCgogR5-ZgaU9eD_XwzH_L5LkT0TOcPc",
+    authDomain: "vnce-7b54c.firebaseapp.com",
+    projectId: "vnce-7b54c",
+    storageBucket: "vnce-7b54c.appspot.com",
+    messagingSenderId: "137661927526",
+    appId: "1:137661927526:web:e649aceeb57126a2945da7",
+    measurementId: "G-BBRNMV2ZG0",
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth();
+
+  // ===================== DOM Elements =====================
+  const moviesContainer = document.getElementById("moviesContainer");
+  const searchInput = document.getElementById("searchInput");
+  const genreFilter = document.getElementById("genreFilter");
+  const yearSelect = document.getElementById("movieYear");
+  const typeSelect = document.getElementById("movieType");
+  const sortOrderSelect = document.getElementById("sortOrder");
+  const filtersBar = document.getElementById("filtersBar");
+
+  let allMovies = [];
+  let lastScrollTop = 0;
+
+  // ===================== Fetch & Render Movies =====================
+  async function fetchMovies(order="desc") {
+    const q = query(collection(db, "movies"), orderBy("createdAt", order));
+    const snapshot = await getDocs(q);
+    allMovies = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    populateYearFilter(allMovies);
+    renderMovies(allMovies);
+    document.dispatchEvent(new Event("moviesLoaded"));
+  }
+
+  function populateYearFilter(movies) {
+    yearSelect.innerHTML = '<option value="">Year: All</option>';
+    const years = [...new Set(movies.map(m => m.movieYear))].sort((a,b)=>b-a);
+    years.forEach(year => {
+      const opt = document.createElement("option");
+      opt.value = year;
+      opt.textContent = year;
+      yearSelect.appendChild(opt);
+    });
+  }
+
+  function renderMovies(movies) {
+    moviesContainer.innerHTML = "";
+    if (!movies.length) {
+      moviesContainer.innerHTML = "<p>No movies found.</p>";
+      return;
+    }
+
+    movies.forEach(movie => {
+      const card = document.createElement("div");
+      card.className = "movie-card";
+      card.innerHTML = `
+        <img src="${movie.posterURL}" alt="${movie.movieName}">
+        <div class="movie-title">${movie.movieName}</div>
+      `;
+      card.addEventListener("click", () => {
+        window.location.href = `view_movie.html?id=${movie.id}`;
+      });
+      moviesContainer.appendChild(card);
+    });
+  }
+
+  // ===================== Filters =====================
+  function applyFilters() {
+    let filtered = [...allMovies];
+    const searchValue = searchInput.value.toLowerCase();
+    const genre = genreFilter.value;
+    const year = yearSelect.value;
+    const type = typeSelect.value;
+
+    if (searchValue) filtered = filtered.filter(m => m.movieName.toLowerCase().includes(searchValue));
+    if (genre) filtered = filtered.filter(m => m.genres?.includes(genre));
+    if (year) filtered = filtered.filter(m => m.movieYear == year);
+    if (type) filtered = filtered.filter(m => m.movieType === type);
+
+    renderMovies(filtered);
+  }
+
+  searchInput.addEventListener("input", applyFilters);
+  genreFilter.addEventListener("change", applyFilters);
+  yearSelect.addEventListener("change", applyFilters);
+  typeSelect.addEventListener("change", applyFilters);
+  sortOrderSelect.addEventListener("change", e => fetchMovies(e.target.value));
+
+  // ===================== Navbar & Filters Scroll Behavior =====================
+  window.addEventListener("scroll", () => {
+    const st = window.pageYOffset || document.documentElement.scrollTop;
+    const navbar = document.querySelector(".navbar");
+
+    navbar.classList.toggle("scrolled", st > 50);
+    filtersBar.classList.toggle("hidden", st > lastScrollTop);
+    filtersBar.classList.toggle("shrink", st > 80);
+
+    lastScrollTop = st <= 0 ? 0 : st;
+  });
+
+  // ===================== Preloader =====================
+  function hidePreloader() {
+    const preloader = document.getElementById("preloader-overlay");
+    if (preloader) {
+      preloader.style.opacity = "0";
+      setTimeout(() => { preloader.style.display = "none"; }, 500);
+    }
+  }
+  window.addEventListener("load", hidePreloader);
+  document.addEventListener("moviesLoaded", hidePreloader);
+
+  fetchMovies();
+
+  // ===================== Sign Out (with Toast + Preloader + Logging) =====================
+document.addEventListener("DOMContentLoaded", () => {
+  const signOutBtn = document.getElementById("signOutBtn");
+  const adminBtn = document.getElementById("adminBtn");
+
+  // Show admin button if user is admin
+  const userEmail = localStorage.getItem("userEmail");
+  if (userEmail === "vnceflix_admin@gmail.com" && adminBtn) adminBtn.classList.remove("d-none");
+
+  if (!signOutBtn) return;
+
+  // Create toast container
+  const toastContainer = document.createElement("div");
+  toastContainer.className = "toast-container position-fixed top-0 start-50 translate-middle-x mt-5";
+  document.body.appendChild(toastContainer);
+
+  const showToast = (message) => {
+    const toastEl = document.createElement("div");
+    toastEl.className = "toast align-items-center text-white px-3 py-2 bg-dark rounded";
+    toastEl.innerHTML = `<div>${message}</div>`;
+    toastContainer.appendChild(toastEl);
+
+    const toast = new bootstrap.Toast(toastEl, { delay: 2000 });
+    toast.show();
+    toastEl.addEventListener("hidden.bs.toast", () => toastEl.remove());
+  };
+
+  signOutBtn.addEventListener("click", async e => {
+    e.preventDefault();
+
+    // Show preloader
+    const preloader = document.getElementById("preloader-overlay");
+    if (preloader) { preloader.style.display = "flex"; preloader.style.opacity = "1"; }
+
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        let ipAddress = "-", location = "-";
+        try {
+          const res = await fetch("https://ipapi.co/json/");
+          if (res.ok) {
+            const data = await res.json();
+            ipAddress = data.ip || "-";
+            location = [data.city, data.region, data.country_name].filter(Boolean).join(", ") || "-";
+          }
+        } catch (err) { console.warn("IP fetch failed:", err); }
+
+        await addDoc(collection(db, "userActivity"), {
+          email: user.email,
+          action: "Logout",
+          timestamp: serverTimestamp(),
+          ipAddress,
+          device: navigator.userAgent || "-",
+          location
+        });
+      } catch (err) {
+        console.error("Error logging logout:", err);
+      }
+    }
+
+    try {
+      await signOut(auth);
+      localStorage.removeItem("userEmail");
+      adminBtn?.classList.add("d-none");
+      showToast("Signed out successfully ✅");
+
+      // Delay redirect so toast is visible
+      setTimeout(() => {
+        window.location.href = "Auth/login.html";
+      }, 800);
+
+    } catch (err) {
+      console.error("Sign out error:", err);
+      showToast("Failed to sign out ❌");
+    }
+  });
+});
+
+</script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

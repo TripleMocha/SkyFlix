@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VNCEFLIX - TV Series Details</title>
+<link rel="icon" href="img/logo.png" type="image/png">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+<style>
+body { background:#0A1120; color:#fff; margin:0; padding-bottom:70px; }
+
+/* NAVBAR */
+.navbar { transition: all .3s ease; background-color: rgba(10,17,32,0.1); box-shadow: none !important; z-index: 1050; }
+.navbar.scrolled { background-color: #0A1120 !important; box-shadow: 0 3px 10px rgba(0,0,0,0.5) !important; }
+.navbar .nav-link { color:#fff !important; font-weight:500; }
+.navbar .nav-link.active { font-weight:700; }
+.navbar .container-fluid { padding:0 60px; }
+@media(max-width:768px){ .navbar .container-fluid{ padding:0 15px; } }
+.profile-dropdown .dropdown-menu { background:#111; border:none; }
+.profile-dropdown .dropdown-item { color:#fff; }
+.profile-dropdown .dropdown-item:hover { background:#222; }
+
+/* HERO */
+.hero-tv { position: relative; width:100%; height:100vh; background-size: cover; background-position: center center; display:flex; align-items:flex-end; padding:0 5%; overflow:hidden; transition: background-image 0.5s ease; }
+.hero-fade { position:absolute; bottom:0; left:0; right:0; height:35%; background: linear-gradient(to top, #0A1120 0%, rgba(10,17,32,0) 100%); z-index:1; }
+.hero-tv .hero-overlay { position:absolute; inset:0; background: linear-gradient(to top, rgba(10,17,32,0.85) 0%, rgba(10,17,32,0.2) 50%, rgba(10,17,32,0.85) 100%); z-index:1; pointer-events:none; }
+
+/* TV Info Over Hero */
+#tv-info-container { display:flex; gap:1.5rem; z-index:2; position:relative; margin-bottom:3rem; }
+#tv-poster img { width:220px; border-radius:8px; flex-shrink:0; box-shadow: 0 5px 15px rgba(0,0,0,0.6); }
+#tv-info { max-width:700px; }
+#tv-info h1 { font-size:2.5rem; margin-bottom:0.5rem; text-shadow:0 2px 6px rgba(0,0,0,0.7); }
+#tv-info #tv-genres, #tv-info #tv-airdate { margin-bottom:0.5rem; color:#ccc; text-shadow:0 2px 6px rgba(0,0,0,0.7); }
+
+/* TV Meta & Buttons */
+#tv-meta { display:flex; flex-wrap:wrap; gap:1rem; align-items:center; color:#ccc; font-size:0.95rem; text-shadow:0 2px 6px rgba(0,0,0,0.7); }
+#tv-rating { display:flex; align-items:center; gap:0.3rem; color:#ccc; }
+#tv-rating small { font-size:0.9rem; text-shadow:0 2px 6px rgba(0,0,0,0.7); }
+.button-group { display:flex; gap:1rem; margin-bottom:1rem; }
+#play-btn, #mylist-btn { width:42px; height:42px; border-radius:50%; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:transform .25s; position:relative; font-size:20px; }
+#play-btn { background:#E50914; color:#fff; }
+#mylist-btn { background:rgba(109,109,110,.7); color:#fff; }
+#mylist-btn i { position:absolute; opacity:0; transition:opacity .3s ease; }
+#mylist-btn .bx-plus { opacity:1; }
+#mylist-btn.added .bx-plus { opacity:0; }
+#mylist-btn.added .bx-check { opacity:1; }
+#mylist-btn:hover { transform:scale(1.05); background:#333; }
+#mylist-btn[data-tooltip]:hover::after { content: attr(data-tooltip); position: absolute; bottom:120%; left:50%; transform:translateX(-50%); background: #111; padding:4px 8px; border-radius:4px; font-size:0.75rem; white-space:nowrap; }
+
+/* STAR STYLING */
+.stars { display:flex; gap:2px; align-items:center; }
+.stars span { font-size:1rem; color:#ccc; text-shadow:0 1px 3px rgba(0,0,0,0.7); }
+.stars span.filled { color:#E50914; }
+.stars span.half { position:relative; display:inline-block; color:#ccc; }
+.stars span.half::before { content:"★"; position:absolute; left:0; width:50%; overflow:hidden; color:#E50914; }
+
+/* SEASON / EPISODE LAYOUT */
+.season-episode-container { display:flex; gap:2rem; padding:2rem 5%; flex-wrap:wrap; align-items:flex-start; }
+.seasons { flex:1; display:flex; flex-direction:column; gap:1rem; max-height:500px; overflow-y:auto; scrollbar-width: thin; scrollbar-color: #E50914 transparent; margin-top:2rem; }
+.seasons::-webkit-scrollbar { width:6px; }
+.seasons::-webkit-scrollbar-track { background:transparent; }
+.seasons::-webkit-scrollbar-thumb { background:#E50914; border-radius:3px; }
+.season-button { display:flex; flex-direction:column; align-items:center; border:none; border-radius:6px; background:transparent; padding:0; gap:.3rem; }
+.season-button img { width:150px; height:225px; border-radius:6px; object-fit:cover; cursor:pointer; transition: transform .3s, border .3s; border:2px solid transparent; }
+.season-button img.active { transform:scale(1.05); border:2px solid #E50914; }
+.season-button img:hover { transform:scale(1.08); }
+.season-label { font-weight:600; font-size:.9rem; color:#fff; text-align:center; text-shadow:0 2px 6px rgba(0,0,0,0.7); }
+.season-label.active { color:#E50914; }
+.episodes { flex:3; display:grid; grid-template-columns:repeat(4,1fr); gap:.8rem; transition: opacity .3s ease; opacity:1; }
+.episodes.fade-out { opacity:0; }
+.episode-card { background:#222; border-radius:8px; overflow:hidden; cursor:pointer; position:relative; transition: transform .3s; height:140px; }
+.episode-card:hover { transform:scale(1.05); }
+.episode-card img { width:100%; height:100%; object-fit:cover; display:block; transition: transform .3s ease; }
+.episode-card:hover img { transform:scale(1.1); }
+.episode-card .overlay { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); color:#fff; display:flex; flex-direction:column; justify-content:center; align-items:center; opacity:0; transition:opacity .3s; font-size:.85rem; text-align:center; padding:5px; }
+.episode-card:hover .overlay { opacity:1; }
+.episode-card .ep-title { position:absolute; bottom:5px; width:100%; text-align:center; font-size:.8rem; font-weight:600; color:#fff; text-shadow:0 0 3px #000; }
+
+/* SIMILAR TV SHOWS CAROUSEL */
+.carousel-section { padding:1rem 5%; }
+.carousel-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+.carousel-container { display:flex; overflow-x:auto; gap:1rem; scroll-behavior:smooth; -webkit-overflow-scrolling:touch; }
+.carousel-container::-webkit-scrollbar { display:none; }
+.movie-card { flex:0 0 auto; width:160px; border-radius:8px; overflow:hidden; background:#111; cursor:pointer; transition:transform .3s; }
+.movie-card img { width:100%; display:block; }
+.movie-card:hover { transform:scale(1.05); }
+.arrow-btn { background: rgba(0,0,0,0.5); border:none; color:#fff; font-size:1.5rem; padding:.5rem .8rem; cursor:pointer; border-radius:50%; transition:background .3s; }
+.arrow-btn:hover { background: rgba(0,0,0,0.8); }
+
+/* FADE-BACKDROP TRANSITION */
+.hero-tv.fade-bg { opacity:0; transition: opacity 0.5s ease; }
+
+/* Toast Styles */
+.toast-container { position: fixed; top: 70px; left: 50%; transform: translateX(-50%); z-index: 9999; }
+.toast { background: #222; color: #fff; border-radius:6px; padding:0.7rem 1rem; margin-bottom:0.5rem; box-shadow:0 3px 10px rgba(0,0,0,0.5); opacity:0; transform:translateY(-20px); transition:all 0.5s ease; }
+.toast.show { opacity:1; transform:translateY(0); }
+
+/* ===============================
+   MOBILE LAYOUT ONLY (<768px)
+   =============================== */
+@media(max-width:768px){
+  .hero-tv { height:auto; padding:100px 5% 40px; flex-direction:column; align-items:center; text-align:center; }
+  #tv-info-container { flex-direction:column; align-items:center; justify-content:center; gap:1.2rem; width:100%; text-align:center; }
+  #tv-poster img { width:160px; height:auto; border-radius:10px; }
+  #tv-info { max-width:95%; }
+  #tv-info h1 { font-size:1.9rem; line-height:1.2; margin-top:0.5rem; }
+  #tv-meta { justify-content:center; gap:0.5rem; font-size:0.9rem; }
+  #tv-rating { justify-content:center; margin:0.3rem 0; }
+  .button-group { justify-content:center; flex-wrap:wrap; gap:0.8rem; }
+  #play-btn, #mylist-btn { width:46px; height:46px; }
+  .overview { margin-top:1rem; }
+  .overview h4 { font-size:1.1rem; font-weight:600; }
+  .overview p { font-size:0.9rem; line-height:1.5; color:#ddd; }
+  .season-episode-container { flex-direction:column; padding:1rem 5%; }
+  .seasons { flex-direction:row; overflow-x:auto; overflow-y:hidden; max-height:none; gap:0.6rem; justify-content:center; margin-top:1rem; }
+  .season-button img { width:110px; height:160px; }
+  .episodes { grid-template-columns:repeat(2,1fr); gap:0.7rem; }
+  .carousel-section { padding:1rem 4%; }
+  .carousel-header h2 { font-size:1.3rem; }
+  .movie-card { width:130px; }
+}
+
+/* EXTRA SMALL DEVICES (<480px) */
+@media(max-width:480px){
+  .hero-tv { padding:90px 1rem 40px; height:auto; }
+  #tv-poster img { width:130px; height:auto; }
+  #tv-info h1 { font-size:1.5rem; }
+  #tv-meta { font-size:0.85rem; }
+  .overview p { font-size:0.85rem; }
+  .button-group { flex-wrap:wrap; gap:0.6rem; justify-content:center; }
+  .episodes { grid-template-columns:repeat(2,1fr); gap:0.5rem; }
+  .season-button img { width:90px; height:135px; }
+  .carousel-section { padding:0.5rem 3%; }
+  .movie-card { width:110px; }
+}
+</style>
+</head>
+<body>
+<div class="toast-container" id="toast-container"></div>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center" href="#"><img src="img/vnceflix.png" height="30"></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="all_movies.html">Movies</a></li>
+        <li class="nav-item"><a class="nav-link active" href="all_tvseries.html">TV Shows</a></li>
+        <li class="nav-item"><a class="nav-link" href="vivamax.html">Vivamax</a></li>
+        <li class="nav-item"><a class="nav-link" href="genres.html">Genres</a></li>
+        <li class="nav-item"><a class="nav-link" href="mylist.html">My List</a></li>
+        <li class="nav-item"><a class="nav-link" href="iptv.html">Live TV</a></li>
+        <li class="nav-item"><a class="nav-link" href="live_sports.html">Live Sports</a></li>
+      </ul>
+      <div class="d-flex align-items-center">
+        <i class="bx bx-search text-white fs-4 me-3"></i>
+        <i class="bx bx-bell text-white fs-4 me-3"></i>
+        <div class="dropdown profile-dropdown">
+          <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
+            <i class="bx bx-user-circle fs-3"></i>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="#">Administrator</a></li>
+            <li><a class="dropdown-item" href="Auth/login.html">Sign Out</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<section class="hero-tv" id="hero-tv">
+  <div class="hero-fade"></div>
+  <div class="hero-overlay"></div> <!-- Add this overlay -->
+  <div id="tv-info-container">
+    <div id="tv-poster"><img id="poster-img" src="" alt="TV Poster"></div>
+    <div id="tv-info">
+      <h1 id="tv-name"></h1>
+      <div id="tv-meta">
+        <span id="tv-genres"></span>
+        <span id="tv-airdate"></span>
+      </div>
+      <span id="tv-rating"></span>
+      <div class="button-group">
+        <button id="play-btn"><i class='bx bx-play'></i></button>
+        <button id="mylist-btn" disabled data-tooltip="Add to My List"><i class='bx bx-plus'></i><i class='bx bx-check'></i></button>
+      </div>
+      <div class="overview">
+        <h4>Overview</h4>
+        <p id="tv-synopsis"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Season / Episode Section -->
+<div class="season-episode-container" id="season-episode-container"></div>
+
+<!-- Similar Shows Carousel -->
+<div id="similar-tv" class="carousel-section">
+  <div class="carousel-header">
+    <h2>Similar TV Shows</h2>
+    <div>
+      <button class="arrow-btn" id="similar-prev">&#8249;</button>
+      <button class="arrow-btn" id="similar-next">&#8250;</button>
+    </div>
+  </div>
+  <div class="carousel-container" id="similar-tv-carousel"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs, addDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = { apiKey:"AIzaSyBeCgogR5-ZgaU9eD_XwzH_L5LkT0TOcPc", authDomain:"vnce-7b54c.firebaseapp.com", projectId:"vnce-7b54c", storageBucket:"vnce-7b54c.appspot.com", messagingSenderId:"137661927526", appId:"1:137661927526:web:e649aceeb57126a2945da7" };
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+const TMDB_API_KEY = "9389ba9923daf721d382d253701c7ca7";
+const TMDB_BASE = "https://api.themoviedb.org/3";
+const TMDB_IMG = "https://image.tmdb.org/t/p/w500";
+const TMDB_IMG_BACKDROP = "https://image.tmdb.org/t/p/original";
+const FALLBACK_POSTER = "img/fallback_poster.jpg";
+const FALLBACK_THUMB = "img/fallback_thumb.jpg";
+const COMING_SOON_POSTER = "img/coming_soon.jpg"; // Your temporary poster for unreleased season/episode
+
+window.addEventListener("scroll", () => { document.querySelector(".navbar").classList.toggle("scrolled", window.scrollY > 50); });
+
+const urlParams = new URLSearchParams(window.location.search);
+const tvId = urlParams.get("id");
+
+function generateStars(voteAverage){
+  const stars=[]; const rating=voteAverage/2; const full=Math.floor(rating); const half=rating%1>=0.5;
+  for(let i=0;i<5;i++){ if(i<full) stars.push('<span class="filled">★</span>'); else if(i===full && half) stars.push('<span class="half">★</span>'); else stars.push('<span>☆</span>'); }
+  return stars.join("");
+}
+
+// Toast Function
+function showToast(message){
+  const toast=document.createElement("div"); toast.className="toast"; toast.textContent=message;
+  document.getElementById("toast-container").appendChild(toast);
+  setTimeout(()=>toast.classList.add("show"),100);
+  setTimeout(()=>{ toast.classList.remove("show"); setTimeout(()=>toast.remove(),500); },2000);
+}
+
+// My List Button
+function updateMyListState(btn, added){ btn.classList.toggle("added", added); }
+async function setupMyListButton(tv){
+  const btn=document.getElementById("mylist-btn"); btn.disabled=true;
+  onAuthStateChanged(auth, async (user)=>{
+    if(!user){ btn.disabled=false; return; }
+    const ref=collection(db,"users",user.uid,"mylist");
+    const q=query(ref, where("id","==",tv.id));
+    const snap=await getDocs(q);
+    updateMyListState(btn, !snap.empty);
+    btn.setAttribute("data-tooltip", snap.empty ? "Add to My List" : "Remove from My List");
+    btn.onclick=async ()=>{
+      const s2=await getDocs(q);
+      if(!s2.empty){ await deleteDoc(doc(db,"users",user.uid,"mylist",s2.docs[0].id)); updateMyListState(btn,false); btn.setAttribute("data-tooltip","Add to My List"); showToast("Removed from My List"); }
+      else { await addDoc(ref,{id:tv.id,title:tv.name,poster_path:tv.poster_path,addedAt:Date.now()}); updateMyListState(btn,true); btn.setAttribute("data-tooltip","Remove from My List"); showToast("Added to My List"); }
+    };
+    btn.disabled=false;
+  });
+}
+
+// Fetch TV Details
+async function fetchTVDetails(){
+  try{
+    const res=await fetch(`${TMDB_BASE}/tv/${tvId}?api_key=${TMDB_API_KEY}&language=en-US`);
+    const data=await res.json();
+    document.getElementById("hero-tv").style.backgroundImage=`url(${data.backdrop_path?TMDB_IMG_BACKDROP+data.backdrop_path:FALLBACK_POSTER})`;
+    document.getElementById("poster-img").src=data.poster_path?TMDB_IMG+data.poster_path:FALLBACK_POSTER;
+    document.getElementById("tv-name").textContent=data.name;
+    document.getElementById("tv-synopsis").textContent=data.overview||"No synopsis available.";
+    document.getElementById("tv-genres").textContent=data.genres.map(g=>g.name).join(", ");
+   document.getElementById("tv-rating").innerHTML = `<div class="stars">${generateStars(data.vote_average)}</div> <small>(${data.vote_average.toFixed(1)}/10)</small>`;
+    renderSeasons(data.seasons);
+    setupMyListButton(data);
+    fetchSimilar(data);
+    setupPlayButton(data);
+  } catch(e){ console.error(e); }
+}
+
+// Play Button: Play Season 1 Episode 1
+function setupPlayButton(tv){
+  const btn=document.getElementById("play-btn");
+  btn.onclick=()=>{ window.location.href=`player_tvseries.html?id=${tv.id}&season=1&episode=1`; };
+}
+
+function renderSeasons(seasons) {
+  const container = document.getElementById("season-episode-container");
+  container.innerHTML = "";
+
+  const seasonsDiv = document.createElement("div");
+  seasonsDiv.className = "seasons";
+
+  const episodesDiv = document.createElement("div");
+  episodesDiv.className = "episodes";
+
+  container.append(seasonsDiv, episodesDiv);
+
+  const today = new Date();
+
+  seasons.filter(s => s.season_number > 0).forEach((season, idx) => {
+    const btn = document.createElement("div");
+    btn.className = "season-button";
+
+    let poster = season.poster_path ? TMDB_IMG + season.poster_path : FALLBACK_POSTER;
+    // Check if season is unreleased
+    if (season.air_date) {
+      const releaseDate = new Date(season.air_date);
+      if (releaseDate > today) poster = COMING_SOON_POSTER;
+    } else {
+      poster = COMING_SOON_POSTER;
+    }
+
+    const img = document.createElement("img");
+    img.src = poster;
+    img.alt = season.name;
+    img.onerror = () => { img.src = COMING_SOON_POSTER; };
+
+    const label = document.createElement("span");
+    label.className = "season-label";
+    label.textContent = season.name;
+
+    img.onclick = () => switchSeason(season.season_number, label, episodesDiv, img);
+
+    btn.append(img, label);
+    seasonsDiv.appendChild(btn);
+
+    if (idx === 0) {
+      label.classList.add("active");
+      img.classList.add("active");
+      switchSeason(season.season_number, label, episodesDiv, img);
+    }
+  });
+}
+
+async function switchSeason(seasonNumber, activeLabel, episodesDiv, activeImg) {
+  document.querySelectorAll(".season-label").forEach(l => l.classList.remove("active"));
+  document.querySelectorAll(".season-button img").forEach(i => i.classList.remove("active"));
+  activeLabel.classList.add("active");
+  activeImg.classList.add("active");
+
+  const posterImg = document.getElementById("poster-img");
+  posterImg.src = activeImg.src;
+
+  episodesDiv.classList.add("fade-out");
+  await new Promise(r => setTimeout(r, 200));
+
+  try {
+    const resSeason = await fetch(`${TMDB_BASE}/tv/${tvId}/season/${seasonNumber}?api_key=${TMDB_API_KEY}&language=en-US`);
+    const seasonData = await resSeason.json();
+    const hero = document.getElementById("hero-tv");
+
+    if (seasonData.backdrop_path) {
+      hero.classList.add("fade-bg");
+      setTimeout(() => {
+        hero.style.backgroundImage = `url(${TMDB_IMG_BACKDROP + seasonData.backdrop_path})`;
+        hero.classList.remove("fade-bg");
+      }, 300);
+    }
+
+    episodesDiv.innerHTML = "";
+    const today = new Date();
+
+    seasonData.episodes.filter(ep => ep.episode_number > 0).forEach(ep => {
+      const div = document.createElement("div");
+      div.className = "episode-card";
+
+      const releaseDate = ep.air_date ? new Date(ep.air_date) : null;
+      const epImg = ep.still_path
+        ? TMDB_IMG + ep.still_path
+        : (releaseDate && releaseDate > today ? COMING_SOON_POSTER : FALLBACK_THUMB);
+
+      div.innerHTML = `
+        <img src="${epImg}" alt="S${seasonNumber}-E${ep.episode_number}" onerror="this.src='${FALLBACK_THUMB}'">
+        <div class="overlay">
+          <strong>${ep.name || `Episode ${ep.episode_number}`}</strong>
+          <div class="stars">${generateStars(ep.vote_average||0)}</div>
+          <small>${(ep.vote_average||0).toFixed(1)}/10 (${ep.vote_count||0} votes)</small>
+        </div>
+        <div class="ep-title">S${seasonNumber} - E${ep.episode_number}</div>
+      `;
+
+      div.onclick = () => window.location.href = `player_tvseries.html?id=${tvId}&season=${seasonNumber}&episode=${ep.episode_number}`;
+      episodesDiv.appendChild(div);
+    });
+
+    episodesDiv.classList.remove("fade-out");
+
+  } catch (e) { console.error("Error fetching season episodes:", e); }
+}
+
+async function fetchSimilar(tv) {
+  try {
+    const carousel = document.getElementById("similar-tv-carousel");
+    carousel.innerHTML = "";
+
+    let similarShows = [];
+
+    // 1️⃣ Prequel/Sequel: Check if the TV show belongs to a collection
+    if (tv.belongs_to_collection) {
+      const collectionRes = await fetch(
+        `${TMDB_BASE}/collection/${tv.belongs_to_collection.id}?api_key=${TMDB_API_KEY}&language=en-US`
+      );
+      const collectionData = await collectionRes.json();
+
+      // Filter out current TV show
+      similarShows = collectionData.parts.filter(p => p.id !== tv.id);
+
+      // Sort by popularity descending
+      similarShows.sort((a, b) => b.popularity - a.popularity);
+    }
+
+    // 2️⃣ Fallback: If less than 7 shows, fetch similar from TMDB API
+    if (similarShows.length < 7) {
+      const resSimilar = await fetch(
+        `${TMDB_BASE}/tv/${tv.id}/similar?api_key=${TMDB_API_KEY}&language=en-US`
+      );
+      const dataSimilar = await resSimilar.json();
+
+      similarShows = [
+        ...similarShows,
+        ...dataSimilar.results.filter(s => s.id !== tv.id)
+      ];
+    }
+
+    // 3️⃣ Fallback: If still empty, show popular TV series
+    if (similarShows.length === 0) {
+      const popularRes = await fetch(
+        `${TMDB_BASE}/tv/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`
+      );
+      const popularData = await popularRes.json();
+      similarShows = popularData.results.filter(s => s.id !== tv.id);
+    }
+
+    // Display up to 10 shows
+    similarShows.slice(0, 10).forEach(show => {
+      const div = document.createElement("div");
+      div.className = "movie-card";
+      div.innerHTML = `<img src="${show.poster_path ? TMDB_IMG + show.poster_path : FALLBACK_POSTER}" alt="${show.name}">`;
+      div.onclick = () => window.location.href = `view_tvseries.html?id=${show.id}`;
+      carousel.appendChild(div);
+    });
+
+    // Carousel controls
+    document.getElementById("similar-prev").onclick = () => carousel.scrollBy({ left: -300, behavior: "smooth" });
+    document.getElementById("similar-next").onclick = () => carousel.scrollBy({ left: 300, behavior: "smooth" });
+    carousel.addEventListener("wheel", e => {
+      e.preventDefault();
+      carousel.scrollBy({ left: e.deltaY, behavior: "smooth" });
+    });
+
+  } catch (e) {
+    console.error("Error fetching similar shows:", e);
+  }
+}
+fetchTVDetails();
+</script>
+</body>
+</html>

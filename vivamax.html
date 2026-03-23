@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VNCEFLIX - VIVAMAX</title>
+<meta name="description" content="VNCEFLIX — Stream Vivamax content">
+<link rel="icon" type="image/png" href="img/logo.png">
+
+<!-- Bootstrap & Boxicons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+<style>
+body { background-color:#0A1120; color:#fff; margin:0; padding-bottom:70px; }
+#preloader-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.9); display:flex; justify-content:center; align-items:center; z-index:9999; }
+.four-box-spinner { display:flex; flex-wrap:wrap; gap:5px; width:50px; height:50px; }
+.four-box-spinner div { width:20px; height:20px; background:red; animation:boxFade 1.2s infinite ease-in-out; }
+.four-box-spinner div:nth-child(2) { animation-delay:0.2s; }
+.four-box-spinner div:nth-child(3) { animation-delay:0.4s; }
+.four-box-spinner div:nth-child(4) { animation-delay:0.6s; }
+@keyframes boxFade {0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.3;transform:scale(0.7);}}
+
+/* NAVBAR */
+.navbar { transition: all .3s ease; background-color:transparent; box-shadow:none; }
+.navbar.scrolled { background-color:#0A1120; box-shadow:0 3px 10px rgba(0,0,0,0.5); }
+.navbar .nav-link { color:#fff!important; font-weight:500; transition: all .3s; }
+.navbar .nav-link.active { font-weight:700; }
+.navbar .container-fluid { padding:0 60px; }
+@media(max-width:768px){ .navbar .container-fluid{padding:0 15px;} }
+
+/* Bottom nav */
+.bottom-nav{display:none;}
+@media(max-width:768px){
+  .bottom-nav{display:flex; justify-content:space-around; align-items:center; position:fixed; bottom:0; left:0; right:0; background:#0A1120; padding:.5rem 0; border-top:1px solid #222; z-index:999;}
+}
+.bottom-nav a{color:#fff; font-size:.85rem; text-decoration:none; text-align:center; flex:1; transition:transform .2s,color .2s;}
+.bottom-nav a:hover{color:#E50914; transform:scale(1.1);}
+.bottom-nav i{display:block; font-size:1.4rem; margin-bottom:2px;}
+
+/* HERO CAROUSEL */
+.hero-section{position:relative; width:100%; height:90vh; overflow:hidden;}
+.hero-slide{position:absolute; top:0; left:0; width:100%; height:100%; background-size:cover; background-position:center; opacity:0; transition:opacity 1s ease; display:flex; align-items:flex-end;}
+.hero-slide.active{opacity:1; z-index:2;}
+.hero-overlay{position:relative; bottom:5%; left:5%; max-width:600px; z-index:3;}
+.hero-overlay h1{font-size:3rem; font-weight:800; text-shadow:2px 2px 4px rgba(0,0,0,0.8);}
+.hero-overlay p{margin:1rem 0; font-size:1rem; color:#ddd; max-height:150px; overflow:hidden;}
+.hero-buttons button{margin-right:10px; padding:.6rem 1.4rem; border:none; border-radius:4px; font-weight:600;}
+.hero-buttons .btn-play{background:#fff; color:#000;}
+.hero-buttons .btn-info{background:rgba(109,109,110,0.7); color:#fff;}
+.hero-fade{position:absolute; bottom:0; left:0; right:0; height:25vh; background:linear-gradient(to top,#0A1120 0%,rgba(10,17,32,0) 100%);}
+
+/* CAROUSEL STYLES */
+.carousel-section{padding:1rem 5%;}
+.carousel-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;}
+.carousel-container{display:flex; overflow-x:auto; overflow-y:hidden; gap:1rem; scroll-behavior:smooth; white-space:nowrap;}
+.carousel-container::-webkit-scrollbar{display:none;}
+.movie-card{flex:0 0 auto; width:160px; border-radius:8px; overflow:hidden; background:#111; cursor:pointer; transition:transform .3s;}
+.movie-card img{width:100%; display:block;}
+.movie-card:hover{transform:scale(1.05);}
+.number-badge{position:absolute; top:10px; left:10px; font-size:1.2rem; font-weight:700; color:#E50914; text-shadow:1px 1px 2px #000;}
+.arrow-btn{background:rgba(0,0,0,0.5); border:none; color:#fff; font-size:1.5rem; padding:.5rem .8rem; border-radius:50%; cursor:pointer;}
+.arrow-btn:hover{background:rgba(0,0,0,0.8);}
+
+/* Featured Carousel for TBONX + CINEPOP */
+.featured-card{flex:0 0 auto; width:250px; border-radius:10px; overflow:hidden; background:#111; cursor:pointer; transition:transform .3s;}
+.featured-card img{width:100%; display:block;}
+.featured-card:hover{transform:scale(1.05);}
+
+/* GRID for all Vivamax content */
+.vivamax-grid { display:grid; gap:1rem; padding:1rem 5%; margin-top:1rem; }
+@media (min-width:1200px) { .vivamax-grid { grid-template-columns: repeat(8,1fr); } }
+@media (min-width:1400px) { .vivamax-grid { grid-template-columns: repeat(9,1fr); } }
+.vivamax-card { border-radius:8px; overflow:hidden; background:#111; cursor:pointer; transition:transform .3s; }
+.vivamax-card img { width:100%; display:block; }
+.vivamax-card:hover { transform:scale(1.05); }
+
+/* Filter buttons */
+.filter-section{display:flex; justify-content:space-between; align-items:center; padding:0 5%; margin-top:2rem;}
+.filter-buttons button{margin-left:0.5rem; padding:.3rem .8rem; background:#222; color:#fff; border:none; border-radius:4px; cursor:pointer; transition:all .2s;}
+.filter-buttons button.active, .filter-buttons button:hover{background:#E50914;}
+
+.load-more-btn{display:block; margin:1rem auto; padding:.5rem 1rem; background:#222; color:#fff; border:none; border-radius:4px; cursor:pointer;}
+.load-more-btn:hover{background:#E50914;}
+</style>
+</head>
+<body>
+<div id="preloader-overlay">
+  <div class="four-box-spinner"><div></div><div></div><div></div><div></div></div>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center" href="#"><img src="img/vnceflix.png" height="30"></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="all_movies.html">Movies</a></li>
+        <li class="nav-item"><a class="nav-link" href="all_tvseries.html">TV Shows</a></li>
+        <li class="nav-item"><a class="nav-link active" href="vivamax.html">Vivamax</a></li>
+        <li class="nav-item"><a class="nav-link" href="genres.html">Genres</a></li>
+        <li class="nav-item"><a class="nav-link" href="mylist.html">My List</a></li>
+        <li class="nav-item"><a class="nav-link" href="iptv.html">IPTV</a></li>
+        <li class="nav-item"><a class="nav-link" href="live_sports.html">Live Sports</a></li>
+      </ul>
+      <div class="d-flex align-items-center">
+        <i class="bx bx-search text-white fs-4 me-3"></i>
+        <i class="bx bx-bell text-white fs-4 me-3"></i>
+        <div class="dropdown profile-dropdown">
+          <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
+            <i class="bx bx-user-circle fs-3"></i>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="#">Sign Out</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<section class="hero-section" id="hero-carousel"></section>
+<div id="vivamax-carousels"></div>
+
+<!-- Filter & Grid -->
+<div class="filter-section">
+  <h2>All Vivamax Content</h2>
+  <div class="filter-buttons">
+    <button id="filter-movies" class="active">Movies</button>
+    <button id="filter-tv">TV Series</button>
+  </div>
+</div>
+<div class="vivamax-grid" id="vivamax-grid"></div>
+<button id="load-more" class="load-more-btn">Load More</button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const TMDB_API_KEY = "9389ba9923daf721d382d253701c7ca7";
+const TMDB_BASE = "https://api.themoviedb.org/3";
+const TMDB_IMG = "https://image.tmdb.org/t/p/w500";
+const TMDB_IMG_BACKDROP = "https://image.tmdb.org/t/p/original";
+
+let vivamaxMovies = [], vivamaxTV = [];
+let currentType="movies", currentIndex=0, BATCH_SIZE=16;
+
+window.addEventListener("load",()=>document.getElementById("preloader-overlay").style.display="none");
+window.addEventListener("scroll",()=>document.querySelector(".navbar").classList.toggle("scrolled",window.scrollY>50));
+
+function createCard(item,type){
+  const div=document.createElement("div");
+  div.className="vivamax-card";
+  div.onclick=()=> window.location.href=(type==="movies"?`view_vivamax.html?id=${item.id}`:`view_tvseries.html?id=${item.id}`);
+  div.innerHTML=`<img src="${item.poster_path?TMDB_IMG+item.poster_path:''}" alt="${item.title||item.name}">`;
+  return div;
+}
+
+function createMovieCard(item,number=null,type="movies",featured=false){
+  const div=document.createElement("div");
+  div.className=featured?"featured-card":"movie-card";
+  div.onclick=()=> window.location.href=(type==="movies"?`view_vivamax.html?id=${item.id}`:`view_tvseries.html?id=${item.id}`);
+  div.innerHTML=`<div style="position:relative;">${number?`<div class="number-badge">${number}</div>`:""}<img src="${item.poster_path?TMDB_IMG+item.poster_path:''}" alt="${item.title||item.name}"></div>`;
+  return div;
+}
+
+function createCarousel(title,items,numbered=false,type="movies",featured=false){
+  const container=document.createElement("div");
+  container.className="carousel-section";
+  container.innerHTML=`<div class="carousel-header"><h2>${title}</h2>
+    <div><button class="arrow-btn" id="${title}-prev">&#8249;</button>
+    <button class="arrow-btn" id="${title}-next">&#8250;</button></div></div>
+    <div class="carousel-container" id="${title}-carousel"></div>`;
+  document.getElementById("vivamax-carousels").appendChild(container);
+
+  const carousel=document.getElementById(`${title}-carousel`);
+  items.forEach((item,i)=> carousel.appendChild(createMovieCard(item,numbered?i+1:null,type,featured)));
+
+  document.getElementById(`${title}-prev`).onclick=()=>carousel.scrollBy({left:-300,behavior:"smooth"});
+  document.getElementById(`${title}-next`).onclick=()=>carousel.scrollBy({left:300,behavior:"smooth"});
+}
+
+function isReleased(item){
+  const releaseDate=new Date(item.release_date||item.first_air_date||0);
+  return releaseDate<=new Date();
+}
+
+async function fetchHero(){
+  const [movieRes,tvRes]=await Promise.all([
+    fetch(`${TMDB_BASE}/discover/movie?with_companies=149142&sort_by=primary_release_date.desc&api_key=${TMDB_API_KEY}`),
+    fetch(`${TMDB_BASE}/discover/tv?with_companies=149142&sort_by=first_air_date.desc&api_key=${TMDB_API_KEY}`)
+  ]);
+  const combined=[...(await movieRes.json()).results.map(m=>({...m,type:'movie'})),...(await tvRes.json()).results.map(t=>({...t,type:'tv'}))];
+  const latest4=combined.filter(isReleased).sort((a,b)=>new Date(b.release_date||b.first_air_date)-new Date(a.release_date||a.first_air_date)).slice(0,4);
+
+  const hero=document.getElementById("hero-carousel"); hero.innerHTML="";
+  latest4.forEach((m,i)=>{
+    const div=document.createElement("div");
+    div.className="hero-slide"+(i===0?" active":"");
+    div.style.backgroundImage=`url(${TMDB_IMG_BACKDROP+m.backdrop_path})`;
+    div.innerHTML=`<div class="hero-overlay"><h1>${m.title||m.name}</h1><p>${m.overview||"No description available."}</p>
+      <div class="hero-buttons">
+        <button class="btn-play" onclick="window.location.href='${m.type==='tv'?`view_tvseries.html?id=${m.id}`:`player_vivamax.html?id=${m.id}`}'"><i class="bx bx-play"></i> Play</button>
+        <button class="btn-info" onclick="window.location.href='${m.type==='tv'?`view_tvseries.html?id=${m.id}`:`view_vivamax.html?id=${m.id}`}'"><i class="bx bx-info-circle"></i> More Info</button>
+      </div></div><div class="hero-fade"></div>`;
+    hero.appendChild(div);
+  });
+
+  let current=0;
+  setInterval(()=>{
+    const slides=document.querySelectorAll(".hero-slide");
+    slides[current]?.classList.remove("active");
+    current=(current+1)%slides.length;
+    slides[current]?.classList.add("active");
+  },6000);
+}
+
+async function fetchComingSoon(){
+  const today=(new Date()).toISOString().split("T")[0];
+  const [movieRes,tvRes]=await Promise.all([
+    fetch(`${TMDB_BASE}/discover/movie?with_companies=149142&primary_release_date.gte=${today}&sort_by=primary_release_date.asc&api_key=${TMDB_API_KEY}`),
+    fetch(`${TMDB_BASE}/discover/tv?with_companies=149142&first_air_date.gte=${today}&sort_by=first_air_date.asc&api_key=${TMDB_API_KEY}`)
+  ]);
+  const comingSoonItems=[...(await movieRes.json()).results.map(m=>({...m,type:'movie'})),...(await tvRes.json()).results.map(t=>({...t,type:'tv'}))];
+  createCarousel("Coming Soon on Vivamax",comingSoonItems.slice(0,10),false,null,false);
+}
+
+async function fetchRecentlyAdded() {
+  const [movieRes, tvRes] = await Promise.all([
+    fetch(`${TMDB_BASE}/discover/movie?with_companies=149142&sort_by=primary_release_date.desc&api_key=${TMDB_API_KEY}`),
+    fetch(`${TMDB_BASE}/discover/tv?with_companies=149142&sort_by=first_air_date.desc&api_key=${TMDB_API_KEY}`)
+  ]);
+
+  const movieData = await movieRes.json();
+  const tvData = await tvRes.json();
+
+  // Explicitly tag each type
+  const recentMovies = movieData.results.map(m => ({ ...m, type: "movie" })).filter(isReleased);
+  const recentTV = tvData.results.map(t => ({ ...t, type: "tv" })).filter(isReleased);
+
+  // Combine and sort by date
+  const recentItems = [...recentMovies, ...recentTV].sort((a, b) =>
+    new Date(b.release_date || b.first_air_date) - new Date(a.release_date || a.first_air_date)
+  );
+
+  createCarousel("Recently Added on Vivamax", recentItems.slice(0, 10), false, null, false);
+}
+
+async function fetchAllVivamax(){
+  const MOVIE_PAGES=15,TV_PAGES=5;
+  const grid=document.getElementById("vivamax-grid"); grid.innerHTML=`<div style="grid-column:1/-1; text-align:center; color:#ddd; margin:2rem 0;">Loading content...</div>`;
+
+  const fetchPages=async(type,pages)=>{
+    const promises=[]; for(let i=1;i<=pages;i++) promises.push(fetch(`${TMDB_BASE}/discover/${type}?with_companies=149142&sort_by=popularity.desc&page=${i}&api_key=${TMDB_API_KEY}`).then(res=>res.json()));
+    return (await Promise.all(promises)).flatMap(r=>r.results);
+  };
+
+  [vivamaxMovies,vivamaxTV]=await Promise.all([fetchPages("movie",MOVIE_PAGES),fetchPages("tv",TV_PAGES)]);
+
+  const tbonx=await (await fetch(`${TMDB_BASE}/tv/296801?api_key=${TMDB_API_KEY}`)).json();
+  const cinepopIDs=[290039,290041,290042,290043];
+  const cinepopShows=[];
+  for(const id of cinepopIDs){ const show=await (await fetch(`${TMDB_BASE}/tv/${id}?api_key=${TMDB_API_KEY}`)).json(); if(show.poster_path) cinepopShows.push(show); }
+
+  grid.innerHTML="";
+  createCarousel("Top 10 Vivamax Movies",vivamaxMovies.slice(0,10),true,"movies");
+  createCarousel("Top 10 Vivamax TV Series",vivamaxTV.slice(0,10),true,"tv");
+
+  const featuredTV=[]; if(tbonx.poster_path) featuredTV.push(tbonx); featuredTV.push(...cinepopShows);
+  createCarousel("Featured TV Shows",featuredTV,false,"tv",true);
+
+  renderGridLazy(currentType,true);
+}
+
+function renderGridLazy(type,reset=false){
+  const grid=document.getElementById("vivamax-grid");
+  if(reset){ grid.innerHTML=""; currentIndex=0; }
+  const data=type==="movies"?vivamaxMovies:vivamaxTV;
+  const slice=data.slice(currentIndex,currentIndex+BATCH_SIZE);
+  slice.forEach(item=>{ if(item.poster_path) grid.appendChild(createCard(item,type)); });
+  currentIndex+=slice.length;
+  document.getElementById("load-more").style.display=(currentIndex<data.length)?"block":"none";
+}
+
+document.getElementById("filter-movies").addEventListener("click",()=>{ currentType="movies"; document.querySelectorAll(".filter-buttons button").forEach(b=>b.classList.remove("active")); document.getElementById("filter-movies").classList.add("active"); renderGridLazy(currentType,true); });
+document.getElementById("filter-tv").addEventListener("click",()=>{ currentType="tv"; document.querySelectorAll(".filter-buttons button").forEach(b=>b.classList.remove("active")); document.getElementById("filter-tv").classList.add("active"); renderGridLazy(currentType,true); });
+document.getElementById("load-more").addEventListener("click",()=> renderGridLazy(currentType));
+
+(async function(){ await fetchHero(); await fetchComingSoon(); await fetchRecentlyAdded(); await fetchAllVivamax(); })();
+</script>
+</body>
+</html>

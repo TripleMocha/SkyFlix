@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VNCEFLIX - Vivamax Movie Details</title>
+<link rel="icon" href="img/logo.png" type="image/png">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+<style>
+body { background:#0A1120; color:#fff; margin:0; padding-bottom:70px; }
+
+/* NAVBAR */
+.navbar { transition: all 0.3s ease; background-color:transparent; box-shadow:0 0 0 rgba(0,0,0,0); }
+.navbar.scrolled { background-color:#0A1120; box-shadow:0 3px 10px rgba(0,0,0,0.5); }
+.navbar .nav-link { color:#fff!important; font-weight:500; transition:all 0.3s; }
+.navbar .nav-link.active { font-weight:700; }
+.navbar .container-fluid { padding:0 60px; }
+@media(max-width:768px){ .navbar .container-fluid{ padding:0 15px; } }
+.profile-dropdown .dropdown-menu { background:#111; border:none; }
+.profile-dropdown .dropdown-item { color:#fff; }
+.profile-dropdown .dropdown-item:hover { background:#222; }
+
+/* HERO */
+.hero-tv {
+  position: relative; width:100%; height:100vh;
+  background-size: cover; background-position: center center;
+  display:flex; align-items:flex-end; padding:0 5%; overflow:hidden;
+  transition: background-image 0.5s ease;
+}
+.hero-fade {
+  position:absolute; bottom:0; left:0; right:0; height:35%;
+  background: linear-gradient(to top, #0A1120 0%, rgba(10,17,32,0) 100%); z-index:1;
+}
+#tv-info-container { display:flex; gap:1.5rem; z-index:2; position:relative; margin-bottom:3rem; }
+#tv-poster img { width:220px; border-radius:8px; flex-shrink:0; }
+#tv-info { max-width:700px; }
+#tv-info h1 { font-size:2.5rem; margin-bottom:0.5rem; }
+#tv-info #tv-genres, #tv-info #tv-rating { margin-bottom:0.5rem; color:#ccc; }
+#mylist-btn, #play-btn { padding:.5rem 1rem; font-weight:600; border:none; border-radius:4px; cursor:pointer; margin-bottom:1rem; margin-right:.5rem; }
+.overview h4, .cast-section h4 { margin-bottom:0.5rem; }
+.overview p { color:#ccc; line-height:1.4; }
+
+/* STAR STYLING */
+.stars { display:flex; gap:2px; align-items:center; }
+.stars span { font-size:1rem; color:#ccc; }
+.stars span.filled { color:#E50914; }
+.stars span.half { position:relative; display:inline-block; color:#ccc; }
+.stars span.half::before {
+  content:"★"; position:absolute; left:0; width:50%; overflow:hidden; color:#E50914;
+}
+
+/* CAST CARDS */
+.cast-section { padding:1rem 5%; }
+.cast-list { display:flex; gap:0.8rem; overflow:hidden; position:relative; }
+.cast-card { flex:0 0 auto; width:100px; text-align:center; }
+.cast-card img { width:100%; border-radius:6px; margin-bottom:0.3rem; }
+
+/* ARROW BUTTONS FOR CAST */
+.cast-arrow { position:absolute; top:50%; transform:translateY(-50%); background: rgba(0,0,0,0.5); border:none; color:#fff; font-size:1.5rem; padding:.3rem .6rem; cursor:pointer; border-radius:50%; z-index:5; transition:background .3s; }
+.cast-arrow:hover { background: rgba(0,0,0,0.8); }
+.cast-prev { left:-15px; }
+.cast-next { right:-15px; }
+
+/* SIMILAR MOVIES CAROUSEL */
+.carousel-section { padding:1rem 5%; }
+.carousel-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+.carousel-container { display:flex; overflow-x:auto; gap:1rem; scroll-behavior:smooth; -webkit-overflow-scrolling:touch; }
+.carousel-container::-webkit-scrollbar { display:none; }
+.movie-card { flex:0 0 auto; width:160px; border-radius:8px; overflow:hidden; background:#111; cursor:pointer; transition:transform .3s; position:relative; }
+.movie-card img { width:100%; display:block; border-radius:8px; }
+.movie-card:hover { transform:scale(1.05); }
+.arrow-btn { background: rgba(0,0,0,0.5); border:none; color:#fff; font-size:1.5rem; padding:.5rem .8rem; cursor:pointer; border-radius:50%; transition:background .3s; }
+.arrow-btn:hover { background: rgba(0,0,0,0.8); }
+
+.hero-tv.fade-bg { opacity:0; transition: opacity 0.5s ease; }
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center" href="#"><img src="img/vnceflix.png" height="30"></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="all_movies.html">Movies</a></li>
+        <li class="nav-item"><a class="nav-link" href="all_tvseries.html">TV Shows</a></li>
+        <li class="nav-item"><a class="nav-link active" href="vivamax.html">Vivamax</a></li>
+        <li class="nav-item"><a class="nav-link" href="genres.html">Genres</a></li>
+        <li class="nav-item"><a class="nav-link" href="mylist.html">My List</a></li>
+        <li class="nav-item"><a class="nav-link" href="iptv.html">IPTV</a></li>
+        <li class="nav-item"><a class="nav-link" href="live_sports.html">Live Sports</a></li>
+      </ul>
+      <div class="d-flex align-items-center">
+        <i class="bx bx-search text-white fs-4 me-3"></i>
+        <i class="bx bx-bell text-white fs-4 me-3"></i>
+        <div class="dropdown profile-dropdown">
+          <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
+            <i class="bx bx-user-circle fs-3"></i>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="#">Sign Out</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero-tv" id="hero-tv">
+  <div class="hero-fade"></div>
+  <div id="tv-info-container">
+    <div id="tv-poster"><img id="poster-img" src="" alt="Movie Poster"></div>
+    <div id="tv-info">
+      <h1 id="tv-name"></h1>
+      <div id="tv-genres"></div>
+      <div id="tv-rating"></div>
+      <button id="mylist-btn" class="btn btn-danger">My List</button>
+      <button id="play-btn" class="btn btn-success">Play</button>
+      <div class="overview">
+        <h4>Overview</h4>
+        <p id="tv-synopsis"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Cast Section -->
+<section class="cast-section">
+  <h4>Cast</h4>
+  <button class="cast-arrow cast-prev">&#8249;</button>
+  <button class="cast-arrow cast-next">&#8250;</button>
+  <div id="cast-list" class="cast-list"></div>
+</section>
+
+<!-- Similar Movies Carousel -->
+<div id="similar-movies" class="carousel-section">
+  <div class="carousel-header">
+    <h2>Similar Vivamax Movies</h2>
+    <div>
+      <button class="arrow-btn" id="similar-prev">&#8249;</button>
+      <button class="arrow-btn" id="similar-next">&#8250;</button>
+    </div>
+  </div>
+  <div class="carousel-container" id="similar-movies-carousel"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const TMDB_API_KEY = "9389ba9923daf721d382d253701c7ca7";
+const TMDB_BASE = "https://api.themoviedb.org/3";
+const TMDB_IMG = "https://image.tmdb.org/t/p/w500";
+const TMDB_IMG_BACKDROP = "https://image.tmdb.org/t/p/original";
+const FALLBACK_POSTER = "img/fallback_poster.jpg";
+
+window.addEventListener("scroll", () => {
+  document.querySelector(".navbar").classList.toggle("scrolled", window.scrollY > 50);
+});
+
+const urlParams = new URLSearchParams(window.location.search);
+const movieId = urlParams.get("id");
+
+// Generate stars
+function generateStars(voteAverage) {
+  const stars = [];
+  const rating = voteAverage / 2;
+  const full = Math.floor(rating);
+  const half = rating % 1 >= 0.5;
+  for(let i=0;i<5;i++){
+    if(i<full) stars.push('<span class="filled">★</span>');
+    else if(i===full && half) stars.push('<span class="half">★</span>');
+    else stars.push('<span>☆</span>');
+  }
+  return stars.join("");
+}
+
+// Fetch movie details
+async function fetchMovieDetails(){
+  try {
+    const res = await fetch(`${TMDB_BASE}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US`);
+    const data = await res.json();
+
+    document.getElementById("hero-tv").style.backgroundImage = `url(${data.backdrop_path ? TMDB_IMG_BACKDROP + data.backdrop_path : FALLBACK_POSTER})`;
+    document.getElementById("poster-img").src = data.poster_path ? TMDB_IMG + data.poster_path : FALLBACK_POSTER;
+    document.getElementById("tv-name").textContent = data.title;
+    document.getElementById("tv-synopsis").textContent = data.overview || "No synopsis available.";
+    document.getElementById("tv-genres").textContent = data.genres.map(g => g.name).join(", ");
+    document.getElementById("tv-rating").innerHTML = `<div class="stars">${generateStars(data.vote_average)}</div><small> (${data.vote_average.toFixed(1)}/10)</small>`;
+
+    document.getElementById("mylist-btn").onclick = () => alert(`${data.title} added to My List!`);
+    document.getElementById("play-btn").onclick = () => {
+      // Redirect to player page (with autoplay)
+      window.location.href = `player_vivamax.html?id=${movieId}`;
+    };
+
+    fetchCast();
+    fetchSimilarMovies();
+  } catch (e) {
+    console.error("Error fetching movie details:", e);
+  }
+}
+
+// Fetch cast
+async function fetchCast(){
+  try {
+    const res = await fetch(`${TMDB_BASE}/movie/${movieId}/credits?api_key=${TMDB_API_KEY}&language=en-US`);
+    const data = await res.json();
+    const castContainer = document.getElementById("cast-list");
+    castContainer.innerHTML = "";
+    data.cast.slice(0,15).forEach(member => {
+      const div = document.createElement("div");
+      div.className = "cast-card";
+      div.innerHTML = `
+        <img src="${member.profile_path ? TMDB_IMG+member.profile_path : FALLBACK_POSTER}" alt="${member.name}">
+        <small>${member.name}</small>
+      `;
+      castContainer.appendChild(div);
+    });
+
+    document.querySelector(".cast-prev").onclick = () => castContainer.scrollBy({ left:-300, behavior:"smooth" });
+    document.querySelector(".cast-next").onclick = () => castContainer.scrollBy({ left:300, behavior:"smooth" });
+  } catch (e) { console.warn("Cast not available", e); }
+}
+
+// Fetch similar Vivamax movies
+async function fetchSimilarMovies(){
+  try {
+    const res = await fetch(`${TMDB_BASE}/discover/movie?with_companies=149142&sort_by=popularity.desc&api_key=${TMDB_API_KEY}`);
+    const data = await res.json();
+    const carousel = document.getElementById("similar-movies-carousel");
+    carousel.innerHTML = "";
+    data.results.slice(0,10).forEach(movie => {
+      const div = document.createElement("div");
+      div.className = "movie-card";
+      div.innerHTML = `<img src="${movie.poster_path ? TMDB_IMG+movie.poster_path : FALLBACK_POSTER}" alt="${movie.title}">`;
+      div.onclick = () => window.location.href = `view_vivamax.html?id=${movie.id}`;
+      carousel.appendChild(div);
+    });
+
+    document.getElementById("similar-prev").onclick = () => carousel.scrollBy({ left:-300, behavior:"smooth" });
+    document.getElementById("similar-next").onclick = () => carousel.scrollBy({ left:300, behavior:"smooth" });
+  } catch (e) { console.error("Error fetching similar movies:", e); }
+}
+
+fetchMovieDetails();
+</script>
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VNCEFLIX - Live TV</title>
+<link rel="icon" href="img/logo.png" type="image/png">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body {
+  background: #0A1120;
+  color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* NAVBAR */
+.navbar {
+  transition: all .3s ease;
+  background-color: rgba(10,17,32,0.1);
+  box-shadow: none !important;
+  z-index: 1050;
+}
+.navbar.scrolled { background-color: #0A1120 !important; box-shadow: 0 3px 10px rgba(0,0,0,0.5) !important; }
+.navbar .nav-link { color:#fff !important; font-weight:500; }
+.navbar .nav-link.active { font-weight:700; }
+.navbar .container-fluid { padding:0 60px; }
+@media(max-width:768px){ .navbar .container-fluid{ padding:0 15px; } }
+
+/* IPTV WRAPPER */
+#iptv-wrapper {
+  padding: 90px 60px 20px;
+  height: calc(100vh - 90px);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+@media(max-width:768px){ #iptv-wrapper{ padding:90px 15px 20px; } }
+
+/* HEADER */
+#player-header {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 2px;
+  margin-bottom: 15px;
+  position: sticky;
+  top: 0;
+  background: #0A1120;
+  z-index: 2;
+  padding-bottom: 10px;
+}
+
+/* MAIN CONTAINER */
+#iptv-container {
+  display: flex;
+  flex: 1;
+  gap: 20px;
+  height: 100%;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+/* CHANNEL LIST */
+#channel-list {
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: rgba(20,25,40,0.95);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+}
+
+/* CHANNEL HEADER */
+#channel-header {
+  position: sticky;
+  top: 0;
+  background: #0A1120;
+  z-index: 2;
+  padding: 10px; /* added padding */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* added space between label and search */
+}
+#channel-header div:first-child {
+  font-weight: 700;
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+/* SEARCH INPUT */
+#searchInput {
+  width: 100%;
+  border-radius: 8px;
+  border: none;
+  padding: 6px 10px;
+  background: #1A1F3A;
+  color: #fff;
+}
+#searchInput::placeholder { color: #aaa; }
+#searchInput:focus { background: #212745; outline: none; }
+
+/* CHANNEL SCROLL */
+#channel-scroll {
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+}
+#channel-scroll::-webkit-scrollbar { width: 8px; }
+#channel-scroll::-webkit-scrollbar-track { background: #111; border-radius: 4px; }
+#channel-scroll::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #555, #888); border-radius: 4px; }
+
+/* CHANNEL CARDS */
+.channel-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: #1B2035;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.3s, background 0.2s;
+  border-radius: 8px;
+}
+.channel-card:hover { 
+  transform: translateY(-2px); 
+  box-shadow: 0 6px 20px rgba(0,0,0,0.6); 
+  background: linear-gradient(90deg, #232A4A, #1B2035);
+}
+.channel-card.active { 
+  border-left: 4px solid #e50914; 
+  background: linear-gradient(90deg, #222947, #1F243F); 
+}
+.channel-logo { width: 60px; height: 45px; object-fit: contain; border-radius: 4px; }
+.channel-name { font-weight: 600; font-size: 1rem; color: #fff; }
+
+/* PLAYER CONTAINER */
+#player-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: center;
+  position: relative;
+}
+.player-box {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+  transition: all 0.3s ease;
+}
+.player-box:hover { box-shadow: 0 10px 35px rgba(0,0,0,0.85); }
+#video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: linear-gradient(180deg, #000 0%, #111 100%);
+  transition: all 0.3s ease;
+}
+
+/* Select Label & Loading */
+#selectLabel, #loadingOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1.4rem;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+#selectLabel { color: #aaa; }
+#loadingOverlay { background: rgba(0,0,0,0.7); color: #fff; opacity: 0; }
+
+/* Toasts */
+#toast-container { position: fixed; top: 70px; left: 50%; transform: translateX(-50%); z-index: 9999; pointer-events: none; }
+.toast { background: rgba(230,0,20,0.95); color: #fff; padding: 10px 25px; border-radius: 8px; font-weight: 600; font-size: 0.95rem; margin-top: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); animation: slideDown 0.4s ease, fadeout 0.5s 2.5s forwards; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeout { from { opacity: 1; } to { opacity: 0; transform: translateY(-20px); } }
+
+/* RESPONSIVE */
+@media(max-width:992px) {
+  #iptv-container { flex-direction: column; }
+  #channel-list { width: 100%; flex-direction: row; overflow-x: auto; height: 100px; }
+  #channel-scroll { flex-direction: row; flex-wrap: nowrap; padding: 5px; gap: 6px; overflow-x: auto; overflow-y: hidden; }
+  .channel-card { min-width: 140px; flex-direction: column; justify-content: center; align-items: center; height: 80px; }
+  #player-container { height: calc(100% - 100px); }
+}
+</style>
+</head>
+<body>
+
+<div id="toast-container"></div>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center" href="index.html"><img src="img/vnceflix.png" height="30"></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="all_movies.html">Movies</a></li>
+        <li class="nav-item"><a class="nav-link" href="all_tvseries.html">TV Shows</a></li>
+        <li class="nav-item"><a class="nav-link" href="vivamax.html">Vivamax</a></li>
+        <li class="nav-item"><a class="nav-link" href="genres.html">Genres</a></li>
+        <li class="nav-item"><a class="nav-link" href="mylist.html">My List</a></li>
+        <li class="nav-item"><a class="nav-link active" href="iptv.html">Live TV</a></li>
+        <li class="nav-item"><a class="nav-link" href="live_sports.html">Live Sports</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div id="iptv-wrapper">
+  <div id="player-header">LIVE TV</div>
+  <div id="iptv-container">
+    <div id="channel-list">
+      <div id="channel-header">
+        <div>Channels</div>
+        <input id="searchInput" type="text" placeholder="Search channel...">
+      </div>
+      <div id="channel-scroll"><div id="channel-container"></div></div>
+    </div>
+    <div id="player-container">
+      <div class="player-box">
+        <video id="video" controls playsinline></video>
+        <div id="selectLabel">Select a Channel</div>
+        <div id="loadingOverlay">Loading...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.6/shaka-player.compiled.js"></script>
+<script>
+// JS Logic remains unchanged
+const channelContainer = document.getElementById("channel-container");
+const searchInput = document.getElementById("searchInput");
+const video = document.getElementById("video");
+const loadingOverlay = document.getElementById("loadingOverlay");
+const selectLabel = document.getElementById("selectLabel");
+
+let channels = [];
+let currentCard = null;
+let currentHls = null;
+let player = new shaka.Player(video);
+shaka.polyfill.installAll();
+
+const PROXIES = [
+  "https://api.allorigins.win/raw?url=",
+  "https://corsproxy.io/?",
+  "https://thingproxy.freeboard.io/fetch/"
+];
+
+function showToast(msg) {
+  const el = document.createElement("div");
+  el.className = "toast";
+  el.textContent = msg;
+  document.getElementById("toast-container").appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+function decodeBase64DRM(str) {
+  try { const decoded = atob(str); const [keyId, key] = decoded.split(":"); return { keyId, key }; }
+  catch { return null; }
+}
+
+async function playChannel(ch) {
+  try {
+    selectLabel.style.opacity = 0;
+    if (currentCard) currentCard.classList.remove("active");
+    const card = document.getElementById(ch.id);
+    if (card) { card.classList.add("active"); currentCard = card; card.scrollIntoView({behavior:'smooth', block:'center'}); }
+
+    loadingOverlay.style.opacity = 1;
+    loadingOverlay.textContent = "Loading " + ch.name + "...";
+
+    if (currentHls) { currentHls.destroy(); currentHls = null; }
+    await player.destroy();
+    player = new shaka.Player(video);
+    video.src = "";
+
+    let drmConfig = null;
+    if (ch.drm) drmConfig = typeof ch.drm==="string"?decodeBase64DRM(ch.drm):ch.drm;
+    if (drmConfig) player.configure({ drm: { clearKeys: { [drmConfig.keyId]: drmConfig.key } } });
+    else player.configure({ drm: { clearKeys: {} } });
+
+    async function tryLoad(urls) {
+      if (!urls.length) throw new Error("All proxies failed");
+      const url = urls[0];
+      return new Promise((resolve,reject)=>{
+        if(Hls.isSupported()){
+          currentHls = new Hls({ maxBufferLength:30, manifestLoadingRetryDelay:1000 });
+          currentHls.loadSource(url);
+          currentHls.attachMedia(video);
+          currentHls.on(Hls.Events.MANIFEST_PARSED,()=>video.play().then(resolve).catch(reject));
+          currentHls.on(Hls.Events.ERROR,(_,data)=>{currentHls.destroy(); tryLoad(urls.slice(1)).then(resolve).catch(reject);});
+        } else { video.src=url; video.play().then(resolve).catch(()=>{tryLoad(urls.slice(1)).then(resolve).catch(reject);}); }
+      });
+    }
+
+    if(ch.stream.endsWith(".m3u8")) { const allUrls=[ch.stream,...PROXIES.map(p=>p+encodeURIComponent(ch.stream))]; await tryLoad(allUrls); }
+    else { await player.load(ch.stream); await video.play(); }
+
+    setTimeout(()=>loadingOverlay.style.opacity=0,500);
+    showToast("Playing " + ch.name);
+  } catch(e) { console.error(e); loadingOverlay.style.opacity=0; showToast("Failed: " + ch.name); }
+}
+
+function renderChannels(list) {
+  channelContainer.innerHTML="";
+  list.forEach((ch,i)=>{
+    ch.id="ch"+i;
+    const div=document.createElement("div");
+    div.className="channel-card";
+    div.id=ch.id;
+    div.innerHTML=`<img class="channel-logo" src="${ch.logo}"><div class="channel-name">${ch.name}</div>`;
+    div.onclick=()=>playChannel(ch);
+    channelContainer.appendChild(div);
+  });
+}
+
+fetch("channels.json")
+  .then(r=>r.json())
+  .then(data=>{ channels=data; renderChannels(channels); })
+  .catch(()=>showToast("Failed to load channels"));
+
+searchInput.addEventListener("input",()=>{
+  const t=searchInput.value.toLowerCase();
+  renderChannels(channels.filter(ch=>ch.name.toLowerCase().includes(t)));
+});
+</script>
+</body>
+</html>

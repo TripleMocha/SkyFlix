@@ -1,12 +1,18 @@
 [
-   { "name": "KAPAMILYA CHANNEL", "genre": "General Entertainment", "logo": "../assets/img/channel logo/Kapamilya Channel Logo.png", "stream": "https://cdn-ue1-prod.tsv2.amagi.tv/linear/amg01006-abs-cbn-kapcha-dash-abscbnono/index.mpd", "drm": "YmQxN2FmYjVkYzk2NDhhMzliZTc5ZWUzNjM0ZGQ0Yjg6M2VjZjMwNWQ1NGE3NzI5Mjk5YjkzYTNkNjljMDJlYTU=" },
-  { "name": "GMA PINOY TV", "genre": "General Entertainment", "logo": "../assets/img/channel logo/GMA_Life_TV.png", "stream": "https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg01006-abs-cbn-abscbn-gma-x7-dash-abscbnono/7c693236-e0c1-40a3-8bd0-bb25e43f5bfc/index.mpd" },
-  { "name": "TV 5", "genre": "General Entertainment", 
-    "logo": "../assets/img/channel logo/TV5.png", 
+   { "name": "KAPAMILYA CHANNEL", "genre": "General Entertainment", "logo": "../assets/img/channel logo/Kapamilya Channel Logo.png",
     "stream": "https://cdn-ue1-prod.tsv2.amagi.tv/linear/amg01006-abs-cbn-kapcha-dash-abscbnono/ccd312c8-e528-40ec-902c-e4205750ed11/index.mpd",
     "drm": {
       "keyId": "bd17afb5dc9648a39be79ee3634dd4b8",
       "key": "b475084a1a58857e18480e30fbb0e544"
+    }
+  },
+   { "name": "GMA PINOY TV", "genre": "General Entertainment", "logo": "../assets/img/channel logo/GMA_Life_TV.png", "stream": "https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg01006-abs-cbn-abscbn-gma-x7-dash-abscbnono/7c693236-e0c1-40a3-8bd0-bb25e43f5bfc/index.mpd" },
+  { "name": "TV 5", "genre": "General Entertainment", 
+    "logo": "../assets/img/channel logo/TV5.png", 
+    "stream": "https://qp-pldt-live-bpk-02-prod.akamaized.net/bpk-tv/tv5_hd/default1/index.mpd",
+    "drm": {
+      "keyId": "2615129ef2c846a9bbd43a641c7303ef",
+      "key": "07c7f996b1734ea288641a68e1cfdc4d"
     }
   },
   { "name": "A2Z", "genre": "General Entertainment", 

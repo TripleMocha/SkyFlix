@@ -1,0 +1,291 @@
+https://cdn-ue1-prod.tsv2.amagi.tv/linear/amg01006-abs-cbn-teleradyo-dash-abscbnono/index.mpd
+https://cdn-ue1-prod.tsv2.amagi.tv/linear/amg01006-abs-cbn-tfcasia-dash-abscbnono/index.mpd
+https://cdn-ue1-prod.tsv2.amagi.tv/linear/amg01006-abs-cbn-myxnola-dash-abscbnono/index.mpd
+https://cdn-ue1-prod.tsv2.amagi.tv/linear/amg01006-abs-cbn-kapcha-dash-abscbnono/index.mpd
+https://abslive.akamaized.net/dash/live/2028025/mor/manifest.mpd
+
+
+https://live20.bozztv.com/giatv/giatv-ragemusictv/ragemusictv/playlist.m3u8
+ Rage Music TV
+
+https://live20.bozztv.com/giatv/giatv-ragetv/ragetv/playlist.m3u8
+ RageTV
+
+https://live20.bozztv.com/giatv/giatv-sinemanila/sinemanila/playlist.m3u8
+ SineManila
+
+https://live20.bozztv.com/giatv/giatv-bihmtv/bihmtv/playlist.m3u8
+ BIHM TV
+
+FHD
+
+https://a189aivottlinear-a.akamaihd.../v1/83b79c48a773487aa86a6128069bf7b9/cenc.mpd
+
+0c7c02d90c753e79eb9008db58d2a4e1:b32406ab8da7ed2e0b16336758f063a3
+                
+
+  { name: 'DISNEY XD', logo: "../assets/img/channel logo/disneyxd.png", genre: "Kids", stream: 'https://fl5.moveonjoy.com/DISNEY_XD/index.m3u8' },
+
+{
+   name: 'ANIMAX',
+    logo: '../assets/img/channel logo/animax.jpg',
+    genre: "Kids",
+    stream: 'https://qp-pldt-live-grp-07-prod.akamaized.net/out/u/cg_animax_sd_new.mpd',
+    drm: {
+      keyId: '92032b0e41a543fb9830751273b8debd',
+      key: '03f8b65e2af785b10d6634735dbe6c11'
+    }
+  },
+{
+   name: 'NICKELODEON',
+    logo: '../assets/img/channel logo/nickelodeon.jpg',
+    genre: "Kids",
+    stream: 'https://qp-pldt-live-grp-11-prod.akamaized.net/out/u/dr_nickelodeon.mpd',
+    drm: {
+      keyId: '9ce58f37576b416381b6514a809bfd8b',
+      key: 'f0fbb758cdeeaddfa3eae538856b4d72'
+    }
+  },
+
+{
+   name: 'NICK JR',
+    logo: '../assets/img/channel logo/nickjr.jpg',
+    genre: "Kids",
+    stream: 'https://qp-pldt-live-grp-12-prod.akamaized.net/out/u/dr_nickjr.mpd',
+    drm: {
+      keyId: 'bab5c11178b646749fbae87962bf5113',
+      key: '0ac679aad3b9d619ac39ad634ec76bc8'
+    }
+  },
+{
+   name: 'KIX',
+    logo: '../assets/img/channel logo/kix.png',
+    stream: 'https://qp-pldt-live-grp-06-prod.akamaized.net/out/u/kix_hd1.mpd',
+    drm: {
+      keyId: 'a8d5712967cd495ca80fdc425bc61d6b',
+      key: 'f248c29525ed4c40cc39baeee9634735'
+    }
+  },
+{
+   name: 'TAP ACTIONFLIX',
+    logo: '../assets/img/channel logo/Tap-Action-Flix.jpg',
+    stream: 'https://qp-pldt-live-grp-06-prod.akamaized.net/out/u/cg_tapactionflix_hd1.mpd',
+    drm: {
+      keyId: 'bee1066160c0424696d9bf99ca0645e3',
+      key: 'f5b72bf3b89b9848de5616f37de040b7'
+    }
+  },
+
+
+MPD URL: https://ottb.live.cf.ww.aiv-cdn.net.../v1/066dd9325648468c9ecdc8b272370931/cenc.mpd
+DRM KEYS: 84077d18bcf234a42de3745be106a87f:aee3069c062ec8ee6bfdd32985f287ef
+
+MPD URL: https://live-ds.video.9c9media.com/...64a441751741056621/f/tsndigi0701/manifest.mpd
+DRM KEYS: b32629202555405caaf2880c3bbb77dc:af8cdbfab978b35f920cecb1e53c7546
+
+Documentary+ Amazon​
+https://emt-fastly.live.pv-cdn.net/...1&amznDtid=AOAGZA014O5RE&encoding=segmentBase
+0db88b42a45592980e83611f44655c14:a584b73d741791c277c38f8d3f85e5a5
+
+HD:
+
+MTV
+ac11ba753fcabc56b965e1801ff8df19:64a7852cc7737515ac71c017f03fdd32
+https://live-atv-cdn.izzigo.tv/2/out/u/dash/MTVHD/default.mpd
+
+MTV Live
+acc4581a25ef0cd76f8fd7d826bb2d06:bc006e72e9aab57aca8ae75a83e8f20e
+https://live-atv-cdn.izzigo.tv/4/out/u/dash/MTVLIVEHD/default.mpd
+
+MTV 00s
+53a3776a034dbe5f483d0f3a46f5fddf:db9d0d03592fbe9f4429ef1a82eb47aa
+https://live-atv-cdn.izzigo.tv/3/out/u/dash/MTV00HD/default.mpd
+
+SD:
+
+MTV Hits
+0b5868bc161634a033a19a20f3f3595d:b336c8c6bb249b1a5f89dace8d9889e5
+https://live-atv-cdn.izzigo.tv/4/out/u/dash/MTVHITSSD/default.mpd
+
+Club MTV
+1da2977f5fed3acb602cc2c8b57c41c1:09aaed2aeee31130fa8f869faff25ee5
+https://live-atv-cdn.izzigo.tv/4/out/u/dash/CLUBMTVSD/default.mpd
+
+MTV 80s
+b515c27589fda8f9607e7949697de6b3:27d2061c0972931e18d43fbb3301c6f0
+https://live-atv-cdn.izzigo.tv/4/out/u/dash/MTV80SSD/default.mpd
+
+ {
+			name: 'Al Jazeera',
+			manifestUri: 'https://qp-pldt-live-grp-12-prod.akamaized.net/out/u/dr_aljazeera.mpd',
+			licensekey: '7f3d900a04d84492b31fe9f79ac614e3:d33ff14f50beac42969385583294b8f2',
+		},
+		moonbugkids: {
+			name: 'Moonbug Kids',
+			manifestUri: 'https://qp-pldt-live-grp-06-prod.akamaized.net/out/u/cg_moonbug_kids_sd.mpd',
+			licensekey: '0bf00921bec94a65a124fba1ef52b1cd:0f1488487cbe05e2badc3db53ae0f29f',
+		},
+
+
+
+
+
+
+ miramax: {
+        name: 'Miramax Movies',
+        type: 'hls',
+        manifestUri: 'https://raw.githubusercontent.com/mystery75/m3u8/main/MIRAMAX.m3u8',
+        logo: 'https://the-bithub.com/miramax'
+      },
+
+     ionplus: {
+        name: 'Ion Plus',
+        type: 'hls',
+        manifestUri: 'https://raw.githubusercontent.com/mystery75/m3u8/main/IONPLUS.m3u8',
+        logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/ION_Plus_logo.svg/1200px-ION_Plus_logo.svg.png'
+      },
+
+      ionmystery: {
+        name: 'Ion Mystery',
+        type: 'hls',
+        manifestUri: 'https://raw.githubusercontent.com/mystery75/m3u8/main/IONMYSTERY.m3u8',
+        logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/ION_Mystery_logo.svg/1200px-ION_Mystery_logo.svg.png'
+      },
+
+      dove: {
+        name: 'Dove Channel',
+        type: 'hls',
+        manifestUri: 'https://raw.githubusercontent.com/mystery75/m3u8/main/DOVE.m3u8',
+        logo: 'https://the-bithub.com/dove'
+      },
+
+
+
+
+nbcsprts: {
+        name: 'NBC Sports',
+        type: 'clearkey',
+        manifestUri: 'https://fsly.stream.peacocktv.com/Content/CMAF_CTR-4s/Live/channel(vc122ycnuy)/master.mpd',
+        keyId: '0020d88a6713159839743f655c5da7de',
+        key: 'ba9f34226301f69a4f0f13f65a1f92ec',
+        logo: 'https://i.ibb.co/PN0fjNF/90-removebg-preview.png'
+      },
+ amznmovie: {
+        name: 'Amazon Movies',
+        type: 'clearkey',
+        manifestUri: 'https://abbfefcaaaaaaaamd5xd44ij4vbyj.a17d0dfbc05b48999f461f3f6cff0eb6.emt.cf.ww.aiv-cdn.net/pdx-nitro/live/clients/dash/enc/oynu8tcxfa/out/v1/ab567b96658c4d84ae1fc6c67110987c/cenc.mpd',
+        keyId: '3e429eb91a1791d55df2a554dc58dda7',
+        key: '2f688f94ef580a61eada6932598137e4',
+        logo: 'https://the-bithub.com/amznmovies'
+      },
+ moviesnow: {
+        name: 'Movies Now',
+        type: 'clearkey',
+        manifestUri: 'https://times-ott-live.akamaized.net/moviesnow_wv_drm/index.mpd',
+        keyId: '40f019b86241d23ef075633fd7f1e927',
+        key: '058dec845bd340178a388edd104a015e',
+        logo: 'https://bestmediainfo.com/uploads/2017/08/MOVIES-NOW-LOGO_6.jpg'
+      },
+
+alja: {
+        name: 'Al jazeera',
+        type: 'clearkey',
+        manifestUri: 'https://linearjitp-playback.astro.com.my/dash-wv/linear/2110/default_ott.mpd',
+        keyId: 'b1fbd0874e7923f5b05929a042aa0610',
+        key: '6c3c498113abffdf454dc935319a794d',
+        logo: 'https://www.liblogo.com/img-logo/al1049a118-al-jazeera-logo-al-jazeera-to-deliver-bloomberg-news-content-for-expanded-global.png'
+      },
+
+
+ {name: "Rage Music TV",
+    stream: 'https://live20.bozztv.com/giatv/giatv-ragemusictv/ragemusictv/playlist.m3u8',
+  genre: "Music",
+     logo: '../assets/img/channel logo/',
+},
+   {name: "RageTV",
+    stream: 'https://live20.bozztv.com/giatv/giatv-ragetv/ragetv/playlist.m3u8',
+  genre: "Movies",
+     logo: '../assets/img/channel logo/',
+},
+  {name: "SineManila",
+    stream: 'https://live20.bozztv.com/giatv/giatv-sinemanila/sinemanila/playlist.m3u8',
+  genre: "Movies",
+     logo: '../assets/img/channel logo/',
+},
+   {name: "BIHM TV",
+    stream: 'https://live20.bozztv.com/giatv/giatv-bihmtv/bihmtv/playlist.m3u8',
+  genre: "Movies",
+     logo: '../assets/img/channel logo/',
+},
+
+
+ {
+    name: "MPTV",
+    genre: "News and Information",
+    logo: "https://raw.githubusercontent.com/Raulabdul666/Drmpicture/refs/heads/main/Picsart_24-10-17_11-07-29-403.jpg",
+    stream: "https://qp-pldt-live-grp-09-prod.akamaized.net/out/u/cg_mptv.mpd",
+    drm: {
+        keyId: "6aab8f40536f4ea98e7c97b8f3aa7d4e",
+        key: "139aa5a55ade471faaddacc4f4de8807"
+    },
+   {
+   name: 'Sportsnet Ontario (AMZN)',
+    genre: "Sports",   
+    ogo: '../assets/img/channel logo/.png',
+    stream: 'https://a129aivottlinear-a.akamaihd.../v1/51086e31852b4164a39b4318b4b3c7ed/cenc.mpd',
+    drm: {
+      keyId: '4ce74377a7ef424f2d02dad8183b705c',
+      key: 'ba9f34226301f69a4f0f13f65a1f92ec'
+    }
+  },
+   {
+   name: 'Champions League Goals (AMZN)',
+    genre: "Sports",   
+    ogo: '../assets/img/channel logo/.png',
+    stream: 'https://a166aivottlinear-a.akamaihd.../544d9dc64fff4def8672c7f25e342dd6/cenc-sd.mpd',
+    drm: {
+      keyId: 'b22284453c42c451bf2780193e064869',
+      key: 'fe1365dc80a324cf6e2ec5c137175b83'
+    }
+  },
+
+
+https://mecdn3.starz.com/assets/39737/20250329151813691/dezmund_edgeClassic_CTR.mpd
+Key- a489c9e7df5f4d9599b586e0ff7ef39c:deee93584438d88abf10ba7ef8f1ee68
+
+
+Sportsnet Ontario (AMZN)
+4ce74377a7ef424f2d02dad8183b705c:e43e2bcf8896788ec98c512d9261fc05
+
+https://a129aivottlinear-a.akamaihd.../v1/51086e31852b4164a39b4318b4b3c7ed/cenc.mpd
+
+
+
+Champions League Goals (AMZN)
+b22284453c42c451bf2780193e064869:fe1365dc80a324cf6e2ec5c137175b83
+
+https://a166aivottlinear-a.akamaihd.../544d9dc64fff4def8672c7f25e342dd6/cenc-sd.mpd
+
+
+Johnwick 2014 | VOD | MPD
+
+Johnwick (2014)
+Manifest: https://g003-vod-us-cmaf-prd-fy.cdn.peacocktv.com/pub/global/no3/faT/GMO_00000000232983_02_HDSDR/PCK_1741300376740_eea6_01/mpeg_cenc/master_cmaf.mpd
+Key: 0016d77627fc40a85fa17f11c31c07c4:d2b966471a73510be1a61be0d55bc929
+
+
+#EXTINF:-1 tvg-chno="1" "" tvg-id="" tvg-type="live" tvg-logo="https://picserve.netplus.ch/channels/rts1hd.png" group-title="Netplus",RTS 1 HD
+#KODIPROP:inputstreamaddon=inputstream.adaptive
+#KODIPROP:inputstream.adaptive.manifest_type=mpd
+https://viamotionhsi.netplus.ch/live/eds/rts1hd/browser-dash/rts1hd.mpd
+
+#EXTINF:-1 tvg-chno="2" "" tvg-id="" tvg-type="live" tvg-logo="https://picserve.netplus.ch/channels/rts2hd.png" group-title="Netplus",RTS 2 HD
+#KODIPROP:inputstreamaddon=inputstream.adaptive
+#KODIPROP:inputstream.adaptive.manifest_type=mpd
+https://viamotionhsi.netplus.ch/live/eds/rts2hd/browser-dash/rts2hd.mpd
+
+
+
+
+https://qp-pldt-live-grp-05-prod.akamaized.net/out/u/cg_ppv_main_hd.mpd
+549ab7cd35a64bb6bb479ecead04d69d:829799ed534d11fcadeb4b192467e050

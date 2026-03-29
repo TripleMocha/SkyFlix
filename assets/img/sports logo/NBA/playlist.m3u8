@@ -1,0 +1,19 @@
+#EXTM3U
+
+#EXTINF:-1 tvg-logo="https://raw.githubusercontent.com/erehhh123/iptv/refs/heads/main/2025_FIBA_Asia_Cup_logo.svg.png" group-title="Fiba Asia Cup 2025",Philippines vs Australia Stream 1
+#EXTVLCOPT:http-origin=https://embedsports.top
+#EXTVLCOPT:http-referrer=https://embedsports.top/
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36
+https://rr.strmd.top/secure/AEIMQUKlyF/alpha/stream/australia-vs-philippines/1/playlist.m3u8
+
+#EXTINF:-1 tvg-logo="https://raw.githubusercontent.com/erehhh123/iptv/refs/heads/main/2025_FIBA_Asia_Cup_logo.svg.png" group-title="Fiba Asia Cup 2025",Philippines vs Australia Stream 2
+#EXTVLCOPT:http-origin=https://embedsports.top
+#EXTVLCOPT:http-referrer=https://embedsports.top/
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36
+https://rr.strmd.top/secure/GjppbCVJPv/alpha/stream/australia-vs-philippines/2/playlist.m3u8
+
+#EXTINF:-1 tvg-logo="https://raw.githubusercontent.com/erehhh123/iptv/refs/heads/main/2025_FIBA_Asia_Cup_logo.svg.png" group-title="Fiba Asia Cup 2025",Philippines vs Australia Stream 3
+#EXTVLCOPT:http-origin=https://embedsports.top
+#EXTVLCOPT:http-referrer=https://embedsports.top/
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36
+https://rr.strmd.top/secure/ebmHpwltVr/alpha/stream/australia-vs-philippines/3/playlist.m3u8

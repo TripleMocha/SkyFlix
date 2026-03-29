@@ -27,8 +27,8 @@
     "logo": "../assets/img/channel logo/DZMM_TeleRadyo.png", 
     "stream": "https://cdn-ue1-prod.tsv2.amagi.tv/linear/amg01006-abs-cbn-teleradyo-dash-abscbnono/48fc2f9d-055e-4c0c-adab-a81b6956a20b/index.mpd",
     "drm": {
-      "keyId": "fba5a720b4a541b286552899ba86e38b",
-      "key": "f63fa50423148bfcbaa58c91dfcffd0e"
+      "keyId": "47c093e0c9fd4f80839a0337da3dd876",
+      "key": "603248b858276f533a13e17f2f48c711"
     }
   },
 

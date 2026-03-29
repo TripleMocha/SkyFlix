@@ -23,8 +23,16 @@
       "key": "c22f2162e176eee6273a5d0b68d19530"
     }
   },
-  { "name": "DZMM TELERADYO", "genre": "News and Information", "logo": "../assets/img/channel logo/DZMM_TeleRadyo.png", "stream": "https://cdn-ue1-prod.tsv2.amagi.tv/linear/amg01006-abs-cbn-teleradyo-dash-abscbnono/index.mpd", "drm": "NDdjMDkzZTBjOWZkNGY4MDgzOWEwMzM3ZGEzZGQ4NzY6NTA1NDczOTQwNDViM2QwNDdkYzdkOTJmNTdiNWZiMzM=" },
-  { "name": "TFC", "genre": "General Entertainment", "logo": "../assets/img/channel logo/tfc.png", "stream": "https://cdn-ue1-prod.tsv2.amagi.tv/linear/amg01006-abs-cbn-tfcasia-dash-abscbnono/index.mpd", "drm":"MzhlYWMzMDQ1MTdlYWI2ZmQ6ZjEyMTQyYWY4ZjM5YjNiYWI3OWQzNjc5ZDM2NjVlYmU=" }, 
+  { "name": "DZMM TELERADYO", "genre": "News and Information", 
+    "logo": "../assets/img/channel logo/DZMM_TeleRadyo.png", 
+    "stream": "https://cdn-ue1-prod.tsv2.amagi.tv/linear/amg01006-abs-cbn-teleradyo-dash-abscbnono/48fc2f9d-055e-4c0c-adab-a81b6956a20b/index.mpd",
+    "drm": {
+      "keyId": "fba5a720b4a541b286552899ba86e38b",
+      "key": "f63fa50423148bfcbaa58c91dfcffd0e"
+    }
+  },
+
+   { "name": "TFC", "genre": "General Entertainment", "logo": "../assets/img/channel logo/tfc.png", "stream": "https://cdn-ue1-prod.tsv2.amagi.tv/linear/amg01006-abs-cbn-tfcasia-dash-abscbnono/index.mpd", "drm":"MzhlYWMzMDQ1MTdlYWI2ZmQ6ZjEyMTQyYWY4ZjM5YjNiYWI3OWQzNjc5ZDM2NjVlYmU=" }, 
   { "name": "ANC HD", "genre": "News and Information", "logo": "../assets/img/channel logo/ANC_HD.png", "stream": "https://cdn-ue1-prod.tsv2.amagi.tv/linear/amg01006-abs-cbn-anc-global-dash-abscbnono/index.mpd", "drm": "NGJiZGM3ODAyNGE1NDY2Mjg1NGI0MTJkMDFmYWZhMTY6NjAzOWVjOWIyMTNhY2E5MTM4MjE2NzdhMjhiZDc4YWU=" },
    { "name": "MYX", "genre": "Music", "logo": "../assets/img/channel logo/Myx.png", "stream": "https://cdn-ue1-prod.tsv2.amagi.tv/linear/amg01006-abs-cbn-myxnola-dash-abscbnono/index.mpd", "drm": "ZjQwYTUyYTNhYzliNDcwMmJkZDViNzM1ZDkxMGZkMmY6NWNlMWJjN2YwNmI0OTRjMjc2MjUyYjRkMTNjOTBlNTE=" },
   { "name": "CINEMO", "genre": "Movies", "logo": "../assets/img/channel logo/CINEMO.png", "stream": "https://cdn-ue1-prod.tsv2.amagi.tv/linear/amg01006-abs-cbn-cinemo-dash-abscbnono/index.mpd", "drm": "YWE4YWViZTM1Y2NjNDU0MWI3Y2U2MjkyZWZjYjFiZmI6YWFiMWRmMTA5ZDIyZmM1ZDdlM2VjMTIxZGRmMjRlNWY=" },

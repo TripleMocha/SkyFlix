@@ -64,13 +64,20 @@ body{background:var(--bg-deep);color:var(--text-primary);font-family:var(--font-
 /* ══ TRAILER MODAL ══ */
 .trailer-modal-backdrop{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,0.93);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.8rem;opacity:0;pointer-events:none;transition:opacity 0.3s ease;padding:1.5rem;}
 .trailer-modal-backdrop.open{opacity:1;pointer-events:all;}
-.trailer-title-bar{width:100%;max-width:min(95vw,calc(90vh * 16 / 9));display:flex;justify-content:space-between;align-items:center;}
+.trailer-title-bar{width:min(95vw, calc(90vh * 16 / 9));display:flex;justify-content:space-between;align-items:center;}
 .trailer-show-label{font-family:var(--font-display);font-size:0.82rem;color:var(--text-secondary);}
 .trailer-close-btn{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(255,255,255,0.1);border:1px solid var(--border-mid);color:var(--text-primary);border-radius:var(--radius-xl);padding:6px 16px;font-family:var(--font-display);font-size:0.82rem;cursor:pointer;transition:all var(--transition);}
 .trailer-close-btn:hover{background:rgba(255,255,255,0.2);}
-.trailer-modal{width:100%;max-width:min(95vw,calc(90vh * 16 / 9));aspect-ratio:16/9;background:#000;border-radius:var(--radius-md);overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.9);flex-shrink:0;}
-.trailer-modal iframe{width:100%;height:100%;border:none;display:block;}
-.trailer-no-video{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:0.8rem;color:var(--text-muted);}
+.trailer-modal{
+  width:min(95vw, calc(90vh * 16 / 9));
+  height:min(90vh, calc(95vw * 9 / 16));
+  background:#000;border-radius:var(--radius-md);
+  overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.9);
+  flex-shrink:0;position:relative;
+}
+#trailer-content{position:absolute;inset:0;width:100%;height:100%;}
+.trailer-modal iframe{position:absolute;inset:0;width:100%;height:100%;border:none;display:block;}
+.trailer-no-video{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;gap:0.8rem;color:var(--text-muted);}
 .trailer-no-video i{font-size:3.5rem;}
 .trailer-no-video p{font-family:var(--font-display);font-size:0.95rem;}
 
@@ -116,7 +123,11 @@ body{background:var(--bg-deep);color:var(--text-primary);font-family:var(--font-
 .notif-header h3{font-family:var(--font-display);font-size:0.88rem;font-weight:700;color:var(--text-primary);}
 .notif-mark-read{font-size:0.72rem;color:var(--text-muted);cursor:pointer;transition:color var(--transition);background:none;border:none;}
 .notif-mark-read:hover{color:var(--text-primary);}
-.notif-list{max-height:360px;overflow-y:auto;scrollbar-width:thin;}
+.notif-list{max-height:360px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.1) transparent;}
+.notif-list::-webkit-scrollbar{width:3px;}
+.notif-list::-webkit-scrollbar-track{background:transparent;}
+.notif-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.12);border-radius:10px;}
+.notif-list::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.22);}
 .notif-item{display:flex;gap:0.75rem;padding:0.75rem 1rem;border-bottom:1px solid var(--border-subtle);transition:background var(--transition);position:relative;}
 .notif-item.clickable{cursor:pointer;}
 .notif-item.clickable:hover{background:var(--bg-card-hover);}
@@ -160,7 +171,15 @@ body{background:var(--bg-deep);color:var(--text-primary);font-family:var(--font-
 .mobile-topbar.scrolled{background:rgba(5,8,15,0.9);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid var(--border-subtle);}
 .mob-brand img{height:24px;}
 .mob-actions{display:flex;align-items:center;gap:4px;}
-.mobile-topbar .notif-dropdown{width:calc(100vw - 32px);max-width:360px;right:0;left:auto;}
+.mobile-topbar .notif-dropdown{
+  /* Align to right edge of screen with a small gap each side */
+  position:fixed;
+  top:var(--mob-top);
+  right:12px;
+  left:12px;
+  width:auto;
+  max-width:100%;
+}
 .mob-search-overlay{display:none;position:fixed;inset:0;z-index:1100;background:rgba(5,8,15,0.97);padding:1rem var(--page-margin);flex-direction:column;gap:1rem;}
 .mob-search-overlay.open{display:flex;}
 .mob-search-top{display:flex;gap:0.6rem;align-items:center;}
@@ -584,7 +603,7 @@ body{background:var(--bg-deep);color:var(--text-primary);font-family:var(--font-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, query, where, getDocs, getDoc, setDoc, addDoc, deleteDoc, doc, runTransaction, onSnapshot }
+import { getFirestore, collection, query, where, getDocs, getDoc, setDoc, addDoc, deleteDoc, doc, onSnapshot }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
@@ -700,6 +719,7 @@ function buildAuthHTML(user,color,initial,displayName){
 }
 
 /* ══ AUTH STATE ══ */
+let authResolved=false;
 onAuthStateChanged(auth, async (user)=>{
   currentUser=user;
   let color="#E50914",initial="?",displayName="User";
@@ -725,11 +745,23 @@ onAuthStateChanged(auth, async (user)=>{
     });
   },150);
 
-  /* NOW set up all auth-dependent UI after user state is known */
   setupPlayButton();
   setupLikeButton(user);
   setupMyListButtonState(user);
   loadNotifications(user);
+
+  // First load: show sign-in prompt if not logged in
+  if(!authResolved){
+    authResolved=true;
+    if(!user){
+      setTimeout(()=>{
+        showLoginPrompt(
+          "Sign in to VNCEFLIX",
+          "Sign in to watch shows, like titles, save to your list, and get personalized recommendations."
+        );
+      },1800);
+    }
+  }
 });
 
 /* ══ PLAY BUTTON ══ */
@@ -778,48 +810,45 @@ async function setupLikeButton(user){
   const countEl=document.getElementById("like-count-display");
   const likeDocRef=doc(db,"tvLikes",String(tvId));
 
-  // Live count via onSnapshot
+  // Live count listener - always active
   if(tvLikesUnsub)tvLikesUnsub();
   tvLikesUnsub=onSnapshot(likeDocRef,(snap)=>{
     const count=snap.exists()?(snap.data().count||0):0;
     countEl.textContent=count>999?`${(count/1000).toFixed(1)}k`:String(count);
-  });
+  },(err)=>console.warn("likes snapshot:",err));
 
   if(!user){
-    btn.onclick=()=>showLoginPrompt("Sign in to like","Sign in to like this show.");
+    btn.onclick=()=>showLoginPrompt("Sign in to like","Sign in to like this show and keep track of your favorites.");
     return;
   }
 
-  const userLikeRef=doc(db,"tvLikes",String(tvId),"likedBy",user.uid);
+  const userLikeRef=doc(db,"tvLikes",String(tvId),"likedBy",String(user.uid));
+
   let isLiked=false;
-  try{const s=await getDoc(userLikeRef);isLiked=s.exists();}catch(e){}
+  try{const s=await getDoc(userLikeRef);isLiked=s.exists();}
+  catch(e){console.warn("liked check:",e);}
   updateLikeUI(btn,isLiked);
 
   btn.onclick=async()=>{
     const prevLiked=isLiked;
     isLiked=!isLiked;
-    updateLikeUI(btn,isLiked); // optimistic update
+    updateLikeUI(btn,isLiked);
     try{
-      await runTransaction(db,async(tx)=>{
-        const uSnap=await tx.get(userLikeRef);
-        const lSnap=await tx.get(likeDocRef);
-        const cur=lSnap.exists()?(lSnap.data().count||0):0;
-        if(uSnap.exists()){
-          // Unlike
-          tx.delete(userLikeRef);
-          tx.set(likeDocRef,{count:Math.max(0,cur-1)},{merge:true});
-        } else {
-          // Like
-          tx.set(userLikeRef,{uid:user.uid,likedAt:Date.now()});
-          tx.set(likeDocRef,{count:cur+1},{merge:true});
-        }
-      });
+      const lSnap=await getDoc(likeDocRef);
+      const cur=lSnap.exists()?(lSnap.data().count||0):0;
+      if(prevLiked){
+        await deleteDoc(userLikeRef);
+        await setDoc(likeDocRef,{count:Math.max(0,cur-1),tvId:String(tvId)},{merge:true});
+      } else {
+        await setDoc(userLikeRef,{uid:String(user.uid),tvId:String(tvId),likedAt:Date.now()});
+        await setDoc(likeDocRef,{count:cur+1,tvId:String(tvId)},{merge:true});
+      }
       showToast(isLiked?"Added to liked shows ❤️":"Removed from liked shows");
     }catch(e){
-      // Revert on error
+      console.error("like error:",e);
       isLiked=prevLiked;
       updateLikeUI(btn,isLiked);
-      showToast("Something went wrong. Try again.");
+      showToast("Could not update. Check your connection.");
     }
   };
 }

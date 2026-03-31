@@ -2,220 +2,600 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>VNCEFLIX - Player</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>VNCEFLIX Player</title>
 <link rel="icon" href="img/logo.png" type="image/png">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
   height: 100%;
-  background: #000;
-  color: #fff;
-  font-family: Arial, sans-serif;
+  height: -webkit-fill-available;
+}
+body {
+  width: 100%; height: 100%;
+  min-height: -webkit-fill-available;
+  background: #000; color: #fff;
+  font-family: 'Outfit', sans-serif;
   overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
-/* Header Bar */
-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 10;
-  padding: 4px 12px;
-  background: #0A1120;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  height: 50px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+/* ══ APP SHELL ══ */
+#app-shell {
+  display: flex; flex-direction: column;
+  width: 100%; height: 100%;
+  height: -webkit-fill-available;
+  position: relative; background: #000;
 }
 
-#closeBtn {
-  background: #1b2436;
-  border: none;
-  color: #fff;
-  font-weight: bold;
-  font-size: 0.9rem;
-  padding: 5px 16px;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: 0.2s;
+/* ══ TOP BAR ══ */
+#topbar {
+  position: relative; z-index: 20;
+  height: 48px; min-height: 48px;
+  background: rgba(5,8,15,0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 12px; flex-shrink: 0;
 }
-#closeBtn:hover { background: #e50914; }
-
-/* Player Wrapper */
-.player-wrapper {
-  position: fixed;
-  top: 50px;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: #000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+@media screen and (max-height: 500px) {
+  #topbar { height: 40px; min-height: 40px; padding: 0 10px; }
 }
 
-#loading {
-  position: absolute;
-  color: #fff;
-  font-size: 1.2rem;
-  text-align: center;
-  z-index: 5;
+/* Back button */
+#back-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #fff; cursor: pointer; border-radius: 999px;
+  padding: 5px 12px 5px 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.76rem; font-weight: 500;
+  transition: all 0.2s ease; white-space: nowrap; flex-shrink: 0;
 }
-#errorMsg {
-  position: absolute;
-  color: #ff4b4b;
-  font-size: 1rem;
-  text-align: center;
-  padding: 20px;
-  background: rgba(0,0,0,0.8);
-  border-radius: 8px;
+#back-btn i { font-size: 0.95rem; }
+#back-btn:hover { background: rgba(229,9,20,0.25); border-color: rgba(229,9,20,0.5); color: #ff6b6b; }
+
+/* Center info */
+#show-info {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-width: 0; overflow: hidden;
+}
+#show-title {
+  font-size: 0.8rem; font-weight: 700; color: #f0f2f5;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 100%; line-height: 1.1;
+}
+#movie-meta {
+  font-size: 0.65rem; font-weight: 500;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.1; margin-top: 1px;
+}
+
+/* Server selector */
+#server-wrap { position: relative; flex-shrink: 0; }
+#server-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #fff; cursor: pointer; border-radius: 999px;
+  padding: 5px 10px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.73rem; font-weight: 600;
+  transition: all 0.2s ease; white-space: nowrap;
+}
+#server-btn i.bx-server { font-size: 0.85rem; }
+#server-btn i.bx-chevron-down { font-size: 0.8rem; transition: transform 0.2s ease; }
+#server-btn.open i.bx-chevron-down { transform: rotate(180deg); }
+#server-btn:hover { background: rgba(229,9,20,0.2); border-color: rgba(229,9,20,0.4); }
+
+#server-dropdown {
   display: none;
-  z-index: 5;
+  position: absolute; top: calc(100% + 6px); right: 0;
+  background: #0d1626;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px; overflow: hidden;
+  min-width: 175px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.9);
+  z-index: 200;
+}
+#server-dropdown.open { display: block; }
+.server-option {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 14px;
+  font-size: 0.78rem; font-weight: 500;
+  color: #8896aa; cursor: pointer;
+  transition: all 0.15s ease;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.server-option:last-child { border-bottom: none; }
+.server-option:hover { background: rgba(255,255,255,0.06); color: #f0f2f5; }
+.server-option.active { color: #fff; background: rgba(229,9,20,0.1); }
+.server-dot {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+  background: rgba(255,255,255,0.15);
+}
+.server-option.active .server-dot { background: #E50914; }
+.server-quality-badge {
+  margin-left: auto; font-size: 0.6rem; font-weight: 700;
+  background: rgba(255,255,255,0.07); border-radius: 4px;
+  padding: 1px 5px; color: rgba(255,255,255,0.45);
+}
+.server-option.active .server-quality-badge { background: rgba(229,9,20,0.2); color: #ff8f8f; }
+
+/* ══ PLAYER AREA ══ */
+#player-area {
+  position: relative; flex: 1;
+  min-height: 0; background: #000; overflow: hidden;
 }
 
-/* Video Frame */
-#playerFrame {
-  width: 100%;
-  height: 100%;
-  border: 0;
+/* Backdrop */
+#backdrop-bg {
+  position: absolute; inset: 0; z-index: 1;
+  background-size: cover; background-position: center;
+  transition: opacity 0.7s ease; opacity: 1;
+}
+#backdrop-bg::after {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(0,0,0,0.6);
+}
+
+/* Loading overlay */
+#loading-overlay {
+  position: absolute; inset: 0; z-index: 5;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 14px; pointer-events: none;
+  transition: opacity 0.45s ease; opacity: 1;
+}
+#loading-overlay.hidden { opacity: 0; pointer-events: none; }
+
+.loader-spinner { display: flex; flex-wrap: wrap; gap: 5px; width: 44px; height: 44px; }
+.loader-spinner div {
+  width: 18px; height: 18px; background: #E50914;
+  border-radius: 3px; animation: boxFade 1.2s infinite ease-in-out;
+}
+.loader-spinner div:nth-child(2){ animation-delay:.2s; }
+.loader-spinner div:nth-child(3){ animation-delay:.4s; }
+.loader-spinner div:nth-child(4){ animation-delay:.6s; }
+@keyframes boxFade{ 0%,100%{ opacity:1; transform:scale(1); } 50%{ opacity:0.2; transform:scale(0.6); } }
+
+#loading-text {
+  font-size: 0.8rem; font-weight: 600;
+  color: rgba(255,255,255,0.7); letter-spacing: 0.05em;
+}
+#loading-sub { font-size: 0.68rem; color: rgba(255,255,255,0.3); margin-top: -8px; }
+
+/* Error overlay */
+#error-overlay {
+  position: absolute; inset: 0; z-index: 6;
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px; background: rgba(0,0,0,0.75);
+  text-align: center; padding: 2rem;
+}
+#error-overlay.show { display: flex; }
+#error-overlay i { font-size: 2.8rem; color: #E50914; }
+#error-overlay h3 { font-size: 0.95rem; font-weight: 700; color: #f0f2f5; }
+#error-overlay p { font-size: 0.77rem; color: #8896aa; max-width: 280px; line-height: 1.55; }
+.error-retry-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #E50914; color: #fff; border: none;
+  padding: 7px 18px; border-radius: 999px;
+  font-family: 'Outfit', sans-serif; font-size: 0.8rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s; margin-top: 4px;
+}
+.error-retry-btn:hover { background: #ff1a25; }
+
+/* ══ IFRAME ══ */
+#player-frame {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: none; background: #000;
+  opacity: 0; transition: opacity 0.5s ease;
+  display: block;
+}
+#player-frame.visible { opacity: 1; }
+
+/* Fade backdrop + spinner when playing */
+#player-area.playing #backdrop-bg    { opacity: 0; pointer-events: none; }
+#player-area.playing #loading-overlay { opacity: 0; pointer-events: none; }
+
+/* ══ PORTRAIT TOAST — dismissable, sits above content ══ */
+#portrait-toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(16px);
+  z-index: 9000;
+  background: rgba(13,22,38,0.97);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 14px;
+  padding: 11px 14px 11px 12px;
+  display: flex; align-items: center; gap: 10px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.8);
+  max-width: calc(100vw - 32px);
+  width: max-content;
   opacity: 0;
-  transition: opacity 0.3s ease-in;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+#portrait-toast.show {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateX(-50%) translateY(0);
+}
+.toast-icon {
+  font-size: 1.35rem; color: #E50914; flex-shrink: 0;
+  animation: rotIcon 2.2s ease-in-out infinite;
+}
+@keyframes rotIcon {
+  0%,100% { transform: rotate(0deg); }
+  35%     { transform: rotate(-90deg); }
+  65%     { transform: rotate(-90deg); }
+}
+.toast-text {
+  display: flex; flex-direction: column; gap: 1px;
+}
+.toast-text strong {
+  font-size: 0.77rem; font-weight: 700; color: #f0f2f5; white-space: nowrap;
+}
+.toast-text span {
+  font-size: 0.67rem; color: rgba(255,255,255,0.4); white-space: nowrap;
+}
+#toast-dismiss {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 50%; color: rgba(255,255,255,0.55);
+  cursor: pointer; flex-shrink: 0; font-size: 0.9rem;
+  transition: all 0.2s; margin-left: 4px;
+}
+#toast-dismiss:hover {
+  background: rgba(229,9,20,0.2);
+  border-color: rgba(229,9,20,0.4);
+  color: #fff;
 }
 </style>
 </head>
-
 <body>
 
-<header>
-  <button id="closeBtn">Return to Site</button>
-</header>
+<div id="app-shell">
 
-<div class="player-wrapper">
-  <div id="loading">🎬 Loading Movie...</div>
-  <div id="errorMsg">❌ Movie not available. Please try another.</div>
-  <iframe
-    id="playerFrame"
-    allowfullscreen
-    allow="autoplay; fullscreen"
-    loading="lazy"
-    referrerpolicy="no-referrer">
-  </iframe>
+  <!-- TOP BAR -->
+  <header id="topbar">
+    <button id="back-btn"><i class='bx bx-arrow-back'></i> Back</button>
+    <div id="show-info">
+      <div id="show-title">Loading…</div>
+      <div id="movie-meta"></div>
+    </div>
+    <div id="server-wrap">
+      <button id="server-btn">
+        <i class='bx bx-server'></i>
+        <span id="server-btn-label">Server 1</span>
+        <i class='bx bx-chevron-down'></i>
+      </button>
+      <div id="server-dropdown"></div>
+    </div>
+  </header>
+
+  <!-- PLAYER AREA -->
+  <div id="player-area">
+    <div id="backdrop-bg"></div>
+
+    <div id="loading-overlay">
+      <div class="loader-spinner"><div></div><div></div><div></div><div></div></div>
+      <div id="loading-text">Loading Movie…</div>
+      <div id="loading-sub">Connecting to server</div>
+    </div>
+
+    <div id="error-overlay">
+      <i class='bx bx-error-circle'></i>
+      <h3>Movie Unavailable</h3>
+      <p>Could not load from this server. Try switching to another.</p>
+      <button class="error-retry-btn" id="retry-btn">
+        <i class='bx bx-refresh'></i> Try Another Server
+      </button>
+    </div>
+
+    <iframe
+      id="player-frame"
+      allowfullscreen
+      allow="autoplay; fullscreen; picture-in-picture"
+      referrerpolicy="no-referrer">
+    </iframe>
+  </div>
+
+</div>
+
+<!-- PORTRAIT TOAST — dismissable landscape suggestion -->
+<div id="portrait-toast">
+  <i class='bx bx-rotate-right toast-icon'></i>
+  <div class="toast-text">
+    <strong>Rotate for best experience</strong>
+    <span>Landscape mode recommended</span>
+  </div>
+  <button id="toast-dismiss"><i class='bx bx-x'></i></button>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, query, where, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, collection, addDoc, getDocs, query, where, updateDoc }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// --- Firebase Config ---
-const firebaseConfig = {
-  apiKey: "AIzaSyBeCgogR5-ZgaU9eD_XwzH_L5LkT0TOcPc",
-  authDomain: "vnce-7b54c.firebaseapp.com",
-  projectId: "vnce-7b54c",
-  storageBucket: "vnce-7b54c.appspot.com",
-  messagingSenderId: "137661927526",
-  appId: "1:137661927526:web:e649aceeb57126a2945da7"
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+const firebaseConfig={apiKey:"AIzaSyBeCgogR5-ZgaU9eD_XwzH_L5LkT0TOcPc",authDomain:"vnce-7b54c.firebaseapp.com",projectId:"vnce-7b54c",storageBucket:"vnce-7b54c.appspot.com",messagingSenderId:"137661927526",appId:"1:137661927526:web:e649aceeb57126a2945da7"};
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+const auth=getAuth(app);
 
-// --- Get URL params ---
-const qs = new URLSearchParams(location.search);
-const movieId = qs.get("id");
-const movieTitle = qs.get("title") ? decodeURIComponent(qs.get("title")) : "Movie Title";
-const moviePoster = qs.get("poster") ? decodeURIComponent(qs.get("poster")) : "";
+const TMDB_KEY="9389ba9923daf721d382d253701c7ca7";
+const TMDB="https://api.themoviedb.org/3";
+const ORIG="https://image.tmdb.org/t/p/original";
 
-// --- DOM Elements ---
-const frame = document.getElementById("playerFrame");
-const closeBtn = document.getElementById("closeBtn");
-const loading = document.getElementById("loading");
-const errorMsg = document.getElementById("errorMsg");
+/* ── URL params ── */
+const qs=new URLSearchParams(location.search);
+const movieId=qs.get("id");
+const hintTitle=qs.get("title")?decodeURIComponent(qs.get("title")):"";
+const hintPoster=qs.get("poster")?decodeURIComponent(qs.get("poster")):"";
 
-// --- Return to View Genres page ---
-closeBtn.onclick = () => {
-  if (movieId) {
-    window.location.href = `view_genres.html?id=${movieId}`;
-  } else {
-    window.location.href = "view_genres.html";
-  }
-};
+/* ── State ── */
+let currentUser=null;
+let currentServerIdx=0;
+let revealTimer=null;
+let errorTimer=null;
+let isRevealed=false;
+let movieTitle=hintTitle||"Movie";
 
-// --- VidFast URL ---
-function getVidfastURL(id) {
-  return `https://vidfast.pro/movie/${id}?autoPlay=true`;
-}
+/* ══ SERVERS (movie URLs) ══ */
+const SERVERS=[
+  { name:"Vidfast",    quality:"HD",  url:(id)=>`https://vidfast.pro/movie/${id}?autoPlay=true&theme=E50914` },
+  { name:"VidSrc",     quality:"HD",  url:(id)=>`https://vidsrc.to/embed/movie/${id}` },
+  { name:"VidSrc Pro", quality:"HD",  url:(id)=>`https://vidsrc.pro/embed/movie/${id}` },
+  { name:"EmbedSu",    quality:"FHD", url:(id)=>`https://embed.su/embed/movie/${id}` },
+  { name:"SuperEmbed", quality:"4K",  url:(id)=>`https://multiembed.mov/directstream.php?video_id=${id}&tmdb=1` }
+];
 
-// --- Save to localStorage for Continue Watching ---
-function saveToLocalContinueWatching(id, title, poster, type="movie") {
-  let list = JSON.parse(localStorage.getItem("continueWatching")) || [];
-  list = list.filter(item => item.id !== id); // remove duplicate
-  list.unshift({ id, title, poster_path: poster, type, progress: 0 });
-  if(list.length > 20) list = list.slice(0,20);
-  localStorage.setItem("continueWatching", JSON.stringify(list));
-}
+/* ── DOM ── */
+const frame          = document.getElementById("player-frame");
+const backdrop       = document.getElementById("backdrop-bg");
+const loadingOvl     = document.getElementById("loading-overlay");
+const loadingTxt     = document.getElementById("loading-text");
+const loadingSub     = document.getElementById("loading-sub");
+const errorOvl       = document.getElementById("error-overlay");
+const playerArea     = document.getElementById("player-area");
+const showTitleEl    = document.getElementById("show-title");
+const movieMetaEl    = document.getElementById("movie-meta");
+const srvBtn         = document.getElementById("server-btn");
+const srvBtnLabel    = document.getElementById("server-btn-label");
+const srvDropdown    = document.getElementById("server-dropdown");
+const backBtn        = document.getElementById("back-btn");
+const retryBtn       = document.getElementById("retry-btn");
+const portraitToast  = document.getElementById("portrait-toast");
+const toastDismiss   = document.getElementById("toast-dismiss");
 
-// --- Log to Firebase ---
-async function logContinueWatching(id, title, poster) {
-  const user = auth.currentUser;
-  if (!user) return;
-  const ref = collection(db, "users", user.uid, "continueWatching");
-  const q = query(ref, where("id", "==", id));
-  const snap = await getDocs(q);
-
-  if (snap.empty) {
-    await addDoc(ref, { id, title, poster_path: poster, progress: 0, lastWatched: Date.now() });
-  } else {
-    const docId = snap.docs[0].id;
-    await updateDoc(doc(db, "users", user.uid, "continueWatching", docId), { lastWatched: Date.now() });
-  }
-}
-
-// --- Load Movie ---
-function loadMovie(id) {
-  loading.style.display = "block";
-  errorMsg.style.display = "none";
-  frame.style.opacity = 0;
-
-  frame.src = getVidfastURL(id);
-
-  const failTimeout = setTimeout(() => {
-    loading.style.display = "none";
-    errorMsg.style.display = "block";
-  }, 8000);
-
-  frame.onload = () => {
-    clearTimeout(failTimeout);
-    loading.style.display = "none";
-    frame.style.opacity = 1;
-
-    // ✅ Save to localStorage for Continue Watching carousel
-    saveToLocalContinueWatching(movieId, movieTitle, moviePoster, "movie");
-  };
-}
-
-// --- Initialize ---
-if (movieId) {
-  loadMovie(movieId);
+/* ══ KICKSTART — set iframe src immediately ══ */
+if(!movieId){
+  loadingOvl.classList.add("hidden");
+  errorOvl.querySelector("h3").textContent="Invalid Movie ID";
+  errorOvl.classList.add("show");
 } else {
-  errorMsg.textContent = "❌ Invalid movie ID.";
-  errorMsg.style.display = "block";
+  /* Show hint title immediately so topbar isn't blank */
+  if(hintTitle) showTitleEl.textContent=hintTitle;
+  /* Start loading the video right away */
+  frame.src=SERVERS[currentServerIdx].url(movieId);
+  scheduleReveal(2500);
 }
 
-// --- Log Continue Watching in Firebase after auth ---
-onAuthStateChanged(auth, (user) => {
-  if (user && movieId) {
-    logContinueWatching(movieId, movieTitle, moviePoster);
+/* ══ PORTRAIT TOAST — shows only on mobile + portrait, dismissable ══ */
+(function initToast(){
+  const isMobile=/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+  if(!isMobile) return;
+
+  /* Try to lock landscape + fullscreen first */
+  (async()=>{
+    try{
+      const el=document.documentElement;
+      if(el.requestFullscreen) await el.requestFullscreen();
+      else if(el.webkitRequestFullscreen) await el.webkitRequestFullscreen();
+      if(screen.orientation&&screen.orientation.lock){
+        await screen.orientation.lock("landscape");
+        return; /* Success — no toast needed */
+      }
+    }catch(e){ /* Auto lock not supported */ }
+
+    /* Auto lock failed — use dismissable toast as fallback */
+    function syncToast(){
+      if(sessionStorage.getItem("rotateDismissed")) {
+        portraitToast.classList.remove("show");
+        return;
+      }
+      const isPortrait=window.innerHeight>window.innerWidth;
+      if(isPortrait){
+        portraitToast.classList.add("show");
+      } else {
+        portraitToast.classList.remove("show");
+        /* Attempt fullscreen when user rotates to landscape manually */
+        if(document.fullscreenEnabled&&!document.fullscreenElement){
+          document.documentElement.requestFullscreen().catch(()=>{});
+        }
+      }
+    }
+    syncToast();
+    window.addEventListener("resize", syncToast);
+    window.addEventListener("orientationchange",()=>setTimeout(syncToast,200));
+  })();
+})();
+
+toastDismiss.onclick=()=>{
+  sessionStorage.setItem("rotateDismissed","1");
+  portraitToast.classList.remove("show");
+};
+
+/* ══ REVEAL PLAYER ══ */
+function scheduleReveal(ms){
+  clearTimeout(revealTimer);
+  clearTimeout(errorTimer);
+  isRevealed=false;
+  revealTimer=setTimeout(revealPlayer, ms);
+  errorTimer=setTimeout(()=>{
+    if(!isRevealed){
+      loadingOvl.classList.add("hidden");
+      errorOvl.classList.add("show");
+    }
+  }, 13000);
+}
+
+function revealPlayer(){
+  if(isRevealed)return;
+  isRevealed=true;
+  clearTimeout(revealTimer);
+  clearTimeout(errorTimer);
+  loadingOvl.classList.add("hidden");
+  errorOvl.classList.remove("show");
+  frame.style.opacity="1";
+  frame.classList.add("visible");
+  playerArea.classList.add("playing");
+}
+
+/* postMessage from embed players — reveal early if signal received */
+window.addEventListener("message",(e)=>{
+  if(isRevealed) return;
+  const d=e.data;
+  if(d==="ready"||d==="playing"||d==="loaded"||
+    (typeof d==="object"&&(d.event==="ready"||d.event==="play"||d.status==="ready"))){
+    clearTimeout(revealTimer);
+    setTimeout(revealPlayer,300);
   }
 });
-</script>
 
+/* iframe load event — fires when CORS allows or same-origin */
+frame.addEventListener("load",()=>{
+  if(!frame.src||frame.src==="about:blank") return;
+  clearTimeout(revealTimer);
+  setTimeout(revealPlayer,300);
+});
+
+/* ══ LOAD MOVIE — called on server switch ══ */
+function loadMovie(){
+  if(!movieId) return;
+  isRevealed=false;
+  playerArea.classList.remove("playing");
+  frame.classList.remove("visible");
+  frame.style.opacity="0";
+  loadingOvl.classList.remove("hidden");
+  errorOvl.classList.remove("show");
+  loadingTxt.textContent="Loading Movie…";
+  loadingSub.textContent=`Server: ${SERVERS[currentServerIdx].name}`;
+  buildServerMenu();
+  frame.src=SERVERS[currentServerIdx].url(movieId);
+  scheduleReveal(2500);
+}
+
+/* ══ TMDB META — non-blocking background fetch ══ */
+async function fetchMovieMeta(){
+  if(!movieId) return;
+  try{
+    const res=await fetch(`${TMDB}/movie/${movieId}?api_key=${TMDB_KEY}&language=en-US`);
+    const data=await res.json();
+
+    movieTitle=data.title||hintTitle||"Movie";
+    showTitleEl.textContent=movieTitle;
+    document.title=`${movieTitle} · VNCEFLIX`;
+
+    /* Subtitle: year + runtime */
+    const year=data.release_date?data.release_date.split("-")[0]:"";
+    const rt=data.runtime?`${Math.floor(data.runtime/60)}h ${data.runtime%60}m`:"";
+    movieMetaEl.textContent=[year,rt].filter(Boolean).join(" · ");
+
+    /* Backdrop behind spinner */
+    if(data.backdrop_path){
+      backdrop.style.backgroundImage=`url(${ORIG}${data.backdrop_path})`;
+    }
+  }catch(e){
+    showTitleEl.textContent=hintTitle||"Movie";
+  }
+}
+
+/* ══ SERVER MENU ══ */
+function buildServerMenu(){
+  srvDropdown.innerHTML="";
+  SERVERS.forEach((srv,i)=>{
+    const div=document.createElement("div");
+    div.className="server-option"+(i===currentServerIdx?" active":"");
+    div.innerHTML=`<span class="server-dot"></span><span>${srv.name}</span><span class="server-quality-badge">${srv.quality}</span>`;
+    div.onclick=()=>{
+      if(i===currentServerIdx){closeSrvMenu();return;}
+      currentServerIdx=i; closeSrvMenu(); loadMovie();
+    };
+    srvDropdown.appendChild(div);
+  });
+  srvBtnLabel.textContent=SERVERS[currentServerIdx].name;
+}
+function toggleSrvMenu(){
+  const open=srvDropdown.classList.toggle("open");
+  srvBtn.classList.toggle("open",open);
+}
+function closeSrvMenu(){
+  srvDropdown.classList.remove("open");
+  srvBtn.classList.remove("open");
+  buildServerMenu();
+}
+srvBtn.onclick=(e)=>{e.stopPropagation();toggleSrvMenu();};
+document.addEventListener("click",(e)=>{
+  if(!document.getElementById("server-wrap").contains(e.target)) closeSrvMenu();
+});
+
+/* ══ BACK ══ */
+backBtn.onclick=()=>{
+  window.location.href=movieId?`view_genres.html?id=${movieId}`:"all_movies.html";
+};
+
+/* ══ RETRY — cycle to next server ══ */
+retryBtn.onclick=()=>{
+  currentServerIdx=(currentServerIdx+1)%SERVERS.length;
+  buildServerMenu(); loadMovie();
+};
+
+/* ══ FIREBASE — log Continue Watching ══ */
+async function logContinueWatching(uid){
+  if(!movieId) return;
+  try{
+    const ref=collection(db,"users",uid,"continueWatching");
+    const q=query(ref,where("id","==",parseInt(movieId)));
+    const snap=await getDocs(q);
+    if(snap.empty){
+      await addDoc(ref,{
+        id:parseInt(movieId),
+        title:movieTitle,
+        poster_path:hintPoster||"",
+        type:"movie",
+        progress:0,
+        lastWatched:Date.now()
+      });
+    } else {
+      const docRef=doc(db,"users",uid,"continueWatching",snap.docs[0].id);
+      await updateDoc(docRef,{lastWatched:Date.now(),title:movieTitle});
+    }
+  }catch(e){console.warn("logContinueWatching:",e);}
+}
+
+/* ══ INIT — everything runs in parallel, player already started ══ */
+buildServerMenu();
+fetchMovieMeta();     /* updates title, backdrop, meta in background */
+
+onAuthStateChanged(auth,(user)=>{
+  currentUser=user;
+  if(user) logContinueWatching(user.uid);
+});
+</script>
 </body>
 </html>

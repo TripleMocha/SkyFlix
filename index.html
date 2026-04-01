@@ -342,18 +342,7 @@ body{background:var(--bg-deep);color:var(--text-primary);font-family:var(--font-
 .section-title{position:relative;padding-left:12px;}
 .section-title::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:70%;background:var(--accent);border-radius:2px;}
 
-/* Genre tag chips on cards */
-.card-genre-tags{
-  position:absolute;bottom:7px;left:7px;right:7px;
-  display:flex;gap:4px;flex-wrap:nowrap;overflow:hidden;
-  z-index:4;
-}
-.card-genre-tag{
-  font-family:var(--font-display);font-size:0.58rem;font-weight:700;
-  background:rgba(5,8,15,0.82);border:1px solid rgba(255,255,255,0.1);
-  color:var(--text-secondary);border-radius:4px;padding:1px 5px;
-  white-space:nowrap;flex-shrink:0;
-}
+/* genre chips removed */
 
 /* Hover shimmer on card poster */
 .movie-card .poster-wrap::after{
@@ -367,53 +356,82 @@ body{background:var(--bg-deep);color:var(--text-primary);font-family:var(--font-
 /* CW card — remove label */
 /* .cw-card-label removed below */
 
-/* ══ TOP-10 CARD ══ */
-/* The track needs overflow:visible so the number overhang isn't clipped */
+/* ══ TOP-10 CARD ══
+   Layout exactly like the screenshot:
+   Number is large on the LEFT, poster overlaps it on the right.
+   Card = flex row [number | poster]
+   Track must have overflow:visible so numbers don't get clipped.
+   ════════════════════════════════════ */
+
+/* The track: give left padding so the first number has room */
 .top10-wrap{
-  padding-left:56px !important; /* room for the number that hangs left */
   overflow:visible !important;
+  padding-left:52px !important; /* room for the number of card #1 */
 }
+
+/* Each card: flex row, number left + poster right */
 .top10-card{
-  flex:0 0 130px;
-  height:195px;
+  flex:0 0 auto;          /* size determined by content */
+  width:160px;            /* poster width — number hangs outside left edge */
+  display:flex;
+  flex-direction:row;
+  align-items:flex-end;   /* align bottom of number with bottom of poster */
   position:relative;
   cursor:pointer;
-  overflow:visible; /* number must show outside card bounds */
+  overflow:visible;       /* number must not be clipped */
   flex-shrink:0;
+  margin-left:-14px;      /* cards slightly overlap so numbers feel tighter */
 }
-.top10-poster-img{
-  position:absolute;top:0;left:0;
-  width:100%;height:100%;
-  object-fit:cover;border-radius:var(--radius-md);
-  display:block;
-  box-shadow:0 6px 20px rgba(0,0,0,0.7);
-  transition:transform 0.3s ease;
-  z-index:2;
-}
-.top10-card:hover .top10-poster-img{transform:scale(1.06);}
-/* Number sits below-left of the poster, partially behind it */
+.top10-card:first-child{ margin-left:0; }
+
+/* The big number — lives to the LEFT of the poster */
 .top10-number{
-  position:absolute;
-  bottom:-8px;
-  left:-46px;
-  font-size:100px;
-  font-weight:900;
-  line-height:1;
-  color:var(--bg-deep);
-  -webkit-text-stroke:3px var(--accent);
+  /* Positioned naturally in the flow, left of poster */
   font-family:'Outfit',sans-serif;
-  z-index:1;
-  pointer-events:none;
+  font-size:110px;
+  font-weight:900;
+  line-height:0.85;          /* tight — aligns bottom with poster bottom */
+  letter-spacing:-6px;
+  /* Hollow outline style: transparent fill, dark stroke */
+  color:transparent;
+  -webkit-text-stroke:3px rgba(255,255,255,0.18);
+  text-stroke:3px rgba(255,255,255,0.18);
   user-select:none;
-  white-space:nowrap;
+  pointer-events:none;
+  flex-shrink:0;
+  width:70px;               /* fixed width so poster aligns predictably */
+  text-align:right;
+  padding-right:4px;
+  z-index:1;
 }
-/* New badge on top10 */
+
+/* The poster — overlaps the right portion of the number */
+.top10-poster-img{
+  width:115px;
+  aspect-ratio:2/3;
+  object-fit:cover;
+  border-radius:var(--radius-md);
+  display:block;
+  box-shadow:0 6px 24px rgba(0,0,0,0.8);
+  transition:transform 0.28s ease, box-shadow 0.28s ease;
+  flex-shrink:0;
+  position:relative;
+  z-index:2;               /* poster on top of number */
+}
+.top10-card:hover .top10-poster-img{
+  transform:scale(1.05) translateY(-3px);
+  box-shadow:0 10px 32px rgba(0,0,0,0.9),0 0 0 2px rgba(229,9,20,0.45);
+}
+
+/* New badge — top right of poster */
 .top10-new-badge{
-  position:absolute;top:7px;right:7px;
+  position:absolute;
+  top:7px;right:7px;
   background:var(--accent);color:#fff;
   font-family:var(--font-display);font-size:0.6rem;font-weight:800;
   padding:2px 7px;border-radius:4px;
-  text-transform:uppercase;letter-spacing:0.04em;z-index:5;
+  text-transform:uppercase;letter-spacing:0.04em;
+  z-index:5;
 }
 
 /* ══ CONTINUE WATCHING CARD ══ */
@@ -553,14 +571,10 @@ body{background:var(--bg-deep);color:var(--text-primary);font-family:var(--font-
   margin-bottom:1rem;
 }
 
-/* Top10 card — full-overlay poster hover effect */
-.top10-card::after{
-  content:'';position:absolute;inset:0;
-  border-radius:var(--radius-md);
-  background:linear-gradient(to top,rgba(229,9,20,0.18) 0%,transparent 60%);
-  opacity:0;transition:opacity 0.3s ease;z-index:3;pointer-events:none;
+/* Top10 card — red glow on hover via poster pseudo */
+.top10-card:hover .top10-poster-img{
+  box-shadow:0 0 0 2px rgba(229,9,20,0.5),0 8px 28px rgba(0,0,0,0.8);
 }
-.top10-card:hover::after{opacity:1;}
 
 /* Continue watching section title decoration */
 #cw-section .section-title::before{background:linear-gradient(to bottom,#E50914,#ff6b35);}
@@ -572,11 +586,18 @@ body{background:var(--bg-deep);color:var(--text-primary);font-family:var(--font-
   background:var(--bg-card);
 }
 
-/* Responsive top10 card sizes */
+/* Responsive top10 */
+@media(max-width:768px){
+  .top10-wrap{padding-left:36px !important;}
+  .top10-card{width:120px;}
+  .top10-poster-img{width:84px;}
+  .top10-number{font-size:76px;width:50px;letter-spacing:-4px;}
+}
 @media(max-width:480px){
-  .top10-card{flex:0 0 105px;height:158px;}
-  .top10-number{font-size:72px;bottom:-6px;left:-34px;}
-  .top10-wrap{padding-left:42px !important;}
+  .top10-wrap{padding-left:28px !important;}
+  .top10-card{width:100px;margin-left:-10px;}
+  .top10-poster-img{width:70px;}
+  .top10-number{font-size:60px;width:40px;letter-spacing:-3px;}
 }
 </style>
 </head>
@@ -616,7 +637,7 @@ body{background:var(--bg-deep);color:var(--text-primary);font-family:var(--font-
             <div class="notif-list" id="notif-list-desktop"><div class="notif-empty">Loading…</div></div>
           </div>
         </div>
-        <div id="auth-area-desktop"></div>
+        <div id="auth-area-desktop" style="margin-left:6px;"></div>
       </div>
     </div>
   </div>
@@ -997,12 +1018,17 @@ async function loadHero(){
     fetch(`${TMDB}/movie/now_playing?api_key=${TMDB_KEY}`).then(r=>r.json()).catch(()=>({results:[]}))
   ]);
 
-  /* Combine, deduplicate, filter junk genres */
+  /* Combine, deduplicate, filter junk genres + unpopular content */
   const bannedGenres=[10767,10766,10763];
+  const MIN_POPULARITY=80;   /* only well-known titles in hero */
+  const MIN_VOTES=200;       /* must have enough audience votes */
   const map=new Map();
   [...(mRes.results||[]),...(tvRes.results||[]),...(npRes.results||[])].forEach(it=>{
     if(it.genre_ids&&it.genre_ids.some(g=>bannedGenres.includes(g)))return;
     if(!it.backdrop_path)return;
+    if((it.popularity||0)<MIN_POPULARITY)return;    /* skip low-popularity */
+    if((it.vote_count||0)<MIN_VOTES)return;         /* skip barely-rated */
+    if(!it.overview)return;                          /* must have synopsis */
     if(!map.has(it.id))map.set(it.id,it);
   });
   const items=Array.from(map.values()).sort((a,b)=>(b.popularity||0)-(a.popularity||0)).slice(0,6);
@@ -1096,24 +1122,32 @@ async function loadHero(){
    CONTINUE WATCHING
    ══════════════════════════════════ */
 function renderContinueWatching(){
+  /* Always re-read from localStorage so we get the latest state */
   const raw=JSON.parse(localStorage.getItem("continueWatching")||"[]");
-  if(!raw.length)return;
 
-  /* Deduplicate by id */
+  /* Deduplicate by id and filter items with a valid poster */
   const seen=new Set();
-  const items=raw.filter(i=>{if(seen.has(i.id))return false;seen.add(i.id);return true;});
+  const items=raw.filter(i=>{
+    if(!i.poster_path)return false;       /* must have poster */
+    if(seen.has(i.id))return false;       /* no duplicates */
+    seen.add(i.id);
+    return true;
+  });
+
+  /* Don't render anything if there are no valid items */
+  if(!items.length)return;
 
   const wrap=buildSection("Continue Watching","",false,true);
+  wrap.id="cw-section";
   const track=wrap.querySelector(".carousel-track");
 
   items.forEach(item=>{
-    if(!item.poster_path)return;
     const url=item.type==="movie"?`view_genres.html?id=${item.id}`:`view_tvseries.html?id=${item.id}`;
     const card=document.createElement("div");
     card.className="cw-card";
     card.innerHTML=`
       <div class="poster-wrap">
-        <img src="${item.poster_path}" alt="${item.title||""}" loading="lazy">
+        <img src="${item.poster_path}" alt="${item.title||""}" loading="lazy" onerror="this.style.display='none'">
         <div class="cw-play-overlay"><div class="cw-play-circle"><i class='bx bx-play'></i></div></div>
         ${item.progress?`<div class="cw-progress-bar-wrap"><div class="cw-progress-bar" style="width:${item.progress}%"></div></div>`:""}
       </div>
@@ -1121,20 +1155,20 @@ function renderContinueWatching(){
     card.onclick=()=>navigateTo(url);
     card.querySelector(".cw-remove-btn").onclick=(e)=>{
       e.stopPropagation();
-      const filtered=raw.filter(i=>i.id!==item.id);
-      localStorage.setItem("continueWatching",JSON.stringify(filtered));
+      /* Update localStorage removing this item */
+      const updated=JSON.parse(localStorage.getItem("continueWatching")||"[]").filter(i=>String(i.id)!==String(item.id));
+      localStorage.setItem("continueWatching",JSON.stringify(updated));
       card.remove();
-      /* Hide the whole section immediately if no cards left */
+      /* Hide and remove the whole section when the last card is gone */
       if(track.children.length===0){
         wrap.style.transition="opacity 0.3s ease";
         wrap.style.opacity="0";
-        setTimeout(()=>wrap.remove(),320);
+        setTimeout(()=>{if(wrap.parentNode)wrap.remove();},320);
       }
     };
     track.appendChild(card);
   });
 
-  wrap.id="cw-section";
   document.getElementById("content-area").prepend(wrap);
   wireArrows(wrap);
 }
@@ -1171,9 +1205,6 @@ function wireArrows(sec){
   sec.querySelector(".sec-next").onclick=()=>track.scrollBy({left:scrollAmt,behavior:"smooth"});
 }
 
-/* ══ GENRE ID → NAME MAP (subset) ══ */
-const GENRE_MAP={28:"Action",12:"Adventure",16:"Animation",35:"Comedy",80:"Crime",99:"Documentary",18:"Drama",10751:"Family",14:"Fantasy",36:"History",27:"Horror",10402:"Music",9648:"Mystery",10749:"Romance",878:"Sci-Fi",10770:"TV Movie",53:"Thriller",10752:"War",37:"Western",10759:"Action & Adventure",10762:"Kids",10763:"News",10764:"Reality",10765:"Sci-Fi & Fantasy",10766:"Soap",10767:"Talk",10768:"War & Politics",10769:"Western"};
-
 /* ══ STANDARD CARD ══ */
 function makeCard(item,numbered=false,num=0){
   const isMovie=!!item.title;
@@ -1183,12 +1214,10 @@ function makeCard(item,numbered=false,num=0){
   const rating=item.vote_average?`★ ${item.vote_average.toFixed(1)}`:"";
   const showNew=isNew(item.release_date||item.first_air_date);
 
-  /* Genre tags (up to 2) */
-  const genreTags=(item.genre_ids||[]).slice(0,2).map(id=>GENRE_MAP[id]).filter(Boolean);
-
   if(numbered){
     const card=document.createElement("div");
     card.className="top10-card";
+    /* Number on the LEFT (z-index:1), poster on the RIGHT overlapping it (z-index:2) */
     card.innerHTML=`
       <div class="top10-number">${num}</div>
       <img class="top10-poster-img" src="${poster}" alt="${title}" loading="lazy">
@@ -1199,14 +1228,12 @@ function makeCard(item,numbered=false,num=0){
 
   const card=document.createElement("div");
   card.className="movie-card";
-  /* No title label below poster */
   card.innerHTML=`
     <div class="poster-wrap">
       <img src="${poster}" alt="${title}" loading="lazy">
       <div class="poster-fade"></div>
       ${rating?`<div class="card-rating">${rating}</div>`:""}
       ${showNew?`<div class="card-new-badge">New</div>`:""}
-      ${genreTags.length?`<div class="card-genre-tags">${genreTags.map(g=>`<span class="card-genre-tag">${g}</span>`).join("")}</div>`:""}
     </div>`;
   card.onclick=()=>navigateTo(url);
   return card;

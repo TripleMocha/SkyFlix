@@ -332,35 +332,88 @@ body{background:var(--bg-deep);color:var(--text-primary);font-family:var(--font-
 .movie-card:hover .poster-wrap img{transform:scale(1.06);}
 .poster-fade{position:absolute;bottom:0;left:0;right:0;height:55%;background:linear-gradient(to top,rgba(5,8,15,0.95) 0%,transparent 100%);pointer-events:none;}
 .card-rating{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);background:rgba(229,9,20,0.16);border:1px solid rgba(229,9,20,0.4);border-radius:20px;padding:2px 8px;font-family:var(--font-display);font-size:0.66rem;font-weight:700;color:#ff7b7b;white-space:nowrap;}
-.card-label{padding:7px 9px 9px;font-family:var(--font-display);font-size:0.72rem;font-weight:600;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* card-label removed — no title shown below poster */
 /* NEW badge */
 .card-new-badge{position:absolute;top:7px;left:7px;background:var(--accent);color:#fff;font-family:var(--font-display);font-size:0.6rem;font-weight:800;padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:0.04em;z-index:5;}
 
+/* ══ MODERN ADDITIONS ══ */
+/* Section divider line accent */
+.section-wrap{padding:1.8rem var(--page-margin) 0.8rem;position:relative;}
+.section-title{position:relative;padding-left:12px;}
+.section-title::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:70%;background:var(--accent);border-radius:2px;}
+
+/* Genre tag chips on cards */
+.card-genre-tags{
+  position:absolute;bottom:7px;left:7px;right:7px;
+  display:flex;gap:4px;flex-wrap:nowrap;overflow:hidden;
+  z-index:4;
+}
+.card-genre-tag{
+  font-family:var(--font-display);font-size:0.58rem;font-weight:700;
+  background:rgba(5,8,15,0.82);border:1px solid rgba(255,255,255,0.1);
+  color:var(--text-secondary);border-radius:4px;padding:1px 5px;
+  white-space:nowrap;flex-shrink:0;
+}
+
+/* Hover shimmer on card poster */
+.movie-card .poster-wrap::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 0%,rgba(255,255,255,0.04) 50%,transparent 100%);
+  opacity:0;transition:opacity 0.3s ease;
+  pointer-events:none;z-index:3;
+}
+.movie-card:hover .poster-wrap::after{opacity:1;}
+
+/* CW card — remove label */
+/* .cw-card-label removed below */
+
 /* ══ TOP-10 CARD ══ */
-.top10-wrap{padding-left:44px;} /* extra left space for number */
+/* The track needs overflow:visible so the number overhang isn't clipped */
+.top10-wrap{
+  padding-left:56px !important; /* room for the number that hangs left */
+  overflow:visible !important;
+}
 .top10-card{
-  flex:0 0 120px;height:190px;
-  position:relative;cursor:pointer;
-  margin-left:8px;/* gap includes number overhang */
+  flex:0 0 130px;
+  height:195px;
+  position:relative;
+  cursor:pointer;
+  overflow:visible; /* number must show outside card bounds */
+  flex-shrink:0;
 }
 .top10-poster-img{
-  position:relative;z-index:2;
+  position:absolute;top:0;left:0;
   width:100%;height:100%;
   object-fit:cover;border-radius:var(--radius-md);
   display:block;
-  box-shadow:0 4px 14px rgba(0,0,0,0.6);
+  box-shadow:0 6px 20px rgba(0,0,0,0.7);
   transition:transform 0.3s ease;
+  z-index:2;
 }
 .top10-card:hover .top10-poster-img{transform:scale(1.06);}
+/* Number sits below-left of the poster, partially behind it */
 .top10-number{
-  position:absolute;bottom:-2px;left:-38px;
-  font-size:90px;font-weight:900;
+  position:absolute;
+  bottom:-8px;
+  left:-46px;
+  font-size:100px;
+  font-weight:900;
+  line-height:1;
   color:var(--bg-deep);
-  -webkit-text-stroke:2.5px var(--accent);
-  z-index:1;line-height:1;
+  -webkit-text-stroke:3px var(--accent);
   font-family:'Outfit',sans-serif;
+  z-index:1;
   pointer-events:none;
   user-select:none;
+  white-space:nowrap;
+}
+/* New badge on top10 */
+.top10-new-badge{
+  position:absolute;top:7px;right:7px;
+  background:var(--accent);color:#fff;
+  font-family:var(--font-display);font-size:0.6rem;font-weight:800;
+  padding:2px 7px;border-radius:4px;
+  text-transform:uppercase;letter-spacing:0.04em;z-index:5;
 }
 
 /* ══ CONTINUE WATCHING CARD ══ */
@@ -409,7 +462,7 @@ body{background:var(--bg-deep);color:var(--text-primary);font-family:var(--font-
 }
 .cw-card:hover .cw-remove-btn{opacity:1;transform:scale(1);}
 .cw-remove-btn:hover{background:rgba(229,9,20,0.7);color:#fff;border-color:transparent;}
-.cw-card-label{padding:7px 9px 9px;font-family:var(--font-display);font-size:0.72rem;font-weight:600;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* cw-card-label: title hidden, poster only */
 
 /* ══ FOOTER ══ */
 .site-footer{background:var(--bg-base);border-top:1px solid var(--border-subtle);padding:2.5rem var(--page-margin) 1.8rem;margin-top:2rem;}
@@ -476,6 +529,54 @@ body{background:var(--bg-deep);color:var(--text-primary);font-family:var(--font-
   :root{--page-margin:6%;}
   .movie-card{flex:0 0 155px;}
   .hero-title-text{font-size:3rem;}
+}
+
+/* ══ MODERN DESIGN ADDITIONS ══ */
+
+/* Subtle section separator */
+.section-wrap+.section-wrap{border-top:1px solid var(--border-subtle);}
+
+/* Category label pills in section head */
+.section-type-pill{
+  font-family:var(--font-display);font-size:0.62rem;font-weight:700;
+  padding:2px 8px;border-radius:20px;letter-spacing:0.05em;
+  text-transform:uppercase;
+}
+.section-type-pill.movies{background:rgba(229,9,20,0.12);color:#ff7b7b;border:1px solid rgba(229,9,20,0.25);}
+.section-type-pill.tv{background:rgba(56,180,220,0.1);color:#7bcff7;border:1px solid rgba(56,180,220,0.22);}
+.section-type-pill.mixed{background:rgba(155,93,229,0.12);color:#c4a0f5;border:1px solid rgba(155,93,229,0.25);}
+
+/* Glow accent under section title bar */
+.section-head{
+  padding-bottom:0.7rem;
+  border-bottom:1px solid var(--border-subtle);
+  margin-bottom:1rem;
+}
+
+/* Top10 card — full-overlay poster hover effect */
+.top10-card::after{
+  content:'';position:absolute;inset:0;
+  border-radius:var(--radius-md);
+  background:linear-gradient(to top,rgba(229,9,20,0.18) 0%,transparent 60%);
+  opacity:0;transition:opacity 0.3s ease;z-index:3;pointer-events:none;
+}
+.top10-card:hover::after{opacity:1;}
+
+/* Continue watching section title decoration */
+#cw-section .section-title::before{background:linear-gradient(to bottom,#E50914,#ff6b35);}
+
+/* Card image placeholder shimmer */
+.movie-card .poster-wrap img,
+.cw-card .poster-wrap img,
+.top10-poster-img{
+  background:var(--bg-card);
+}
+
+/* Responsive top10 card sizes */
+@media(max-width:480px){
+  .top10-card{flex:0 0 105px;height:158px;}
+  .top10-number{font-size:72px;bottom:-6px;left:-34px;}
+  .top10-wrap{padding-left:42px !important;}
 }
 </style>
 </head>
@@ -737,42 +838,119 @@ async function loadNotifications(user){
     setNotifBadge(0);return;
   }
   try{
-    const [mr,tr]=await Promise.all([
-      fetch(`${TMDB}/movie/now_playing?api_key=${TMDB_KEY}&language=en-US&page=1`),
-      fetch(`${TMDB}/tv/on_the_air?api_key=${TMDB_KEY}&language=en-US&page=1`)
+    /* Fetch 4 sources in parallel:
+       1. Now playing movies  (new theatrical releases)
+       2. Upcoming movies     (coming soon)
+       3. TV airing today     (episodes airing right now)
+       4. TV on the air       (currently airing series with new episodes) */
+    const [mr,mu,ta,tr]=await Promise.all([
+      fetch(`${TMDB}/movie/now_playing?api_key=${TMDB_KEY}&language=en-US&page=1`).then(r=>r.json()).catch(()=>({results:[]})),
+      fetch(`${TMDB}/movie/upcoming?api_key=${TMDB_KEY}&language=en-US&page=1`).then(r=>r.json()).catch(()=>({results:[]})),
+      fetch(`${TMDB}/tv/airing_today?api_key=${TMDB_KEY}&language=en-US&page=1`).then(r=>r.json()).catch(()=>({results:[]})),
+      fetch(`${TMDB}/tv/on_the_air?api_key=${TMDB_KEY}&language=en-US&page=1`).then(r=>r.json()).catch(()=>({results:[]}))
     ]);
-    const md=await mr.json();const td=await tr.json();
-    const items=[
-      ...(md.results||[]).slice(0,6).map(m=>({id:`movie_${m.id}`,type:"movie",title:m.title,poster:m.poster_path,date:m.release_date||"",url:`view_genres.html?id=${m.id}`,available:!!(m.poster_path&&m.overview),ts:m.release_date?new Date(m.release_date).getTime():Date.now()})),
-      ...(td.results||[]).slice(0,6).map(t=>({id:`tv_${t.id}`,type:"tv",title:t.name,poster:t.poster_path,date:t.first_air_date||"",url:`view_tvseries.html?id=${t.id}`,available:!!(t.poster_path&&t.overview),ts:t.first_air_date?new Date(t.first_air_date).getTime():Date.now()}))
-    ].sort((a,b)=>b.ts-a.ts);
+
+    /* Helper to get the best timestamp for a TMDB result */
+    function getTs(item,dateField){
+      const d=item[dateField];
+      return d?new Date(d).getTime():0;
+    }
+
+    const seen=new Set();
+    const rawItems=[
+      /* New in theaters — label: "Now in theaters" */
+      ...(mr.results||[]).map(m=>({
+        id:`movie_${m.id}`,type:"movie",
+        title:m.title,poster:m.poster_path,
+        date:m.release_date||"",
+        label:"Now in theaters",
+        url:`view_genres.html?id=${m.id}`,
+        available:!!(m.poster_path&&m.overview),
+        ts:getTs(m,"release_date")
+      })),
+      /* Upcoming movies */
+      ...(mu.results||[]).map(m=>({
+        id:`upcoming_${m.id}`,type:"movie",
+        title:m.title,poster:m.poster_path,
+        date:m.release_date||"",
+        label:"Coming soon",
+        url:`view_genres.html?id=${m.id}`,
+        available:!!(m.poster_path&&m.overview),
+        ts:getTs(m,"release_date")
+      })),
+      /* TV airing today — new episodes */
+      ...(ta.results||[]).map(t=>({
+        id:`tvtoday_${t.id}`,type:"tv",
+        title:t.name,poster:t.poster_path,
+        date:t.first_air_date||"",
+        label:"New episode today",
+        url:`view_tvseries.html?id=${t.id}`,
+        available:!!(t.poster_path&&t.overview),
+        ts:Date.now() /* airing today = highest recency */
+      })),
+      /* TV on the air — recently updated series */
+      ...(tr.results||[]).map(t=>({
+        id:`tv_${t.id}`,type:"tv",
+        title:t.name,poster:t.poster_path,
+        date:t.first_air_date||"",
+        label:"New episodes airing",
+        url:`view_tvseries.html?id=${t.id}`,
+        available:!!(t.poster_path&&t.overview),
+        ts:getTs(t,"first_air_date")
+      }))
+    ];
+
+    /* Deduplicate (prefer tv_today over tv_), then sort latest first */
+    const items=[];
+    rawItems.forEach(it=>{
+      const baseId=it.id.replace(/^upcoming_/,"movie_").replace(/^tvtoday_/,"tv_");
+      if(seen.has(baseId))return;
+      seen.add(baseId);
+      seen.add(it.id);
+      items.push(it);
+    });
+    items.sort((a,b)=>b.ts-a.ts);
+    const finalItems=items.slice(0,20); /* cap at 20 */
+
     const readRef=doc(db,"users",user.uid,"notifications","readState");
     const readSnap=await getDoc(readRef);
     const readIds=readSnap.exists()?(readSnap.data().readIds||[]):[];
-    setNotifBadge(items.filter(i=>!readIds.includes(i.id)).length);
+    setNotifBadge(finalItems.filter(i=>!readIds.includes(i.id)).length);
+
     listIds.forEach(listId=>{
       const listEl=document.getElementById(listId);if(!listEl)return;
-      if(!items.length){listEl.innerHTML=`<div class="notif-empty">No new releases today.</div>`;return;}
+      if(!finalItems.length){listEl.innerHTML=`<div class="notif-empty">No new releases right now.</div>`;return;}
       listEl.innerHTML="";
-      items.forEach(item=>{
+      finalItems.forEach(item=>{
         const isUnread=!readIds.includes(item.id);
+        const dateStr=item.date?new Date(item.date).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"}):"Recently";
         const div=document.createElement("div");
         div.className="notif-item"+(isUnread?" unread":"")+(item.available?" clickable":" not-available");
-        div.innerHTML=`<img src="${item.poster?IMG+item.poster:FB}" alt="${item.title}" loading="lazy"><div class="notif-item-info"><div class="notif-item-header"><div class="notif-item-title">${item.title}</div><span class="notif-type-badge ${item.type}">${item.type==="movie"?"Movie":"TV Series"}</span></div><div class="notif-item-sub">New release · ${item.date?new Date(item.date).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"}):"Recently"}</div>${!item.available?`<div class="notif-unavail-tag">Info not yet available</div>`:""}</div>`;
+        div.innerHTML=`<img src="${item.poster?IMG+item.poster:FB}" alt="${item.title}" loading="lazy" onerror="this.src='${FB}'">`+
+          `<div class="notif-item-info">`+
+          `<div class="notif-item-header"><div class="notif-item-title">${item.title}</div>`+
+          `<span class="notif-type-badge ${item.type}">${item.type==="movie"?"Movie":"TV"}</span></div>`+
+          `<div class="notif-item-sub">${item.label} · ${dateStr}</div>`+
+          `${!item.available?`<div class="notif-unavail-tag">Details not yet available</div>`:""}`+
+          `</div>`;
         if(item.available)div.onclick=()=>navigateTo(item.url);
         listEl.appendChild(div);
       });
     });
+
     ["notif-mark-desktop","notif-mark-mobile"].forEach(id=>{
       const btn=document.getElementById(id);if(!btn)return;
       btn.onclick=async()=>{
-        const allIds=items.map(i=>i.id);
+        const allIds=finalItems.map(i=>i.id);
         await setDoc(readRef,{readIds:allIds,updatedAt:Date.now()},{merge:true});
         setNotifBadge(0);
         document.querySelectorAll(".notif-item.unread").forEach(el=>el.classList.remove("unread"));
       };
     });
-  }catch(e){listIds.forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=`<div class="notif-empty">Failed to load.</div>`;});}
+  }catch(e){
+    console.error("loadNotifications:",e);
+    listIds.forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=`<div class="notif-empty">Failed to load notifications.</div>`;});
+  }
 }
 
 /* ══ SEARCH ══ */
@@ -792,7 +970,7 @@ async function doSearch(q,resultsEl){
       const url=isTV?`view_tvseries.html?id=${r.id}`:`view_genres.html?id=${r.id}`;
       const rating=r.vote_average?`★ ${r.vote_average.toFixed(1)}`:"";
       const div=document.createElement("div");div.className="search-result-item";
-      div.innerHTML=`<img src="${r.poster_path?IMG+r.poster_path:FB}" alt="${title}" loading="lazy"><div class="search-result-info"><div class="sr-title">${title}</div><div class="sr-meta">${year}${rating?" · "+rating:""}</div></div><span class="sr-type-badge ${r.media_type}">${isTV?"TV":"Movie"}</span>`;
+      div.innerHTML=`<img src="${r.poster_path?IMG+r.poster_path:FB}" alt="${title}" loading="lazy" onerror="this.src='${FB}'"><div style="flex:1;min-width:0;"><div class="sr-title">${title}</div><div class="sr-meta">${year}${rating?" · "+rating:""}</div></div><span class="sr-type-badge ${r.media_type}">${isTV?"TV":"Movie"}</span>`;
       div.onclick=()=>navigateTo(url);resultsEl.appendChild(div);
     });
   }catch(e){resultsEl.innerHTML=`<div class="search-empty">Search failed.</div>`;}
@@ -939,7 +1117,6 @@ function renderContinueWatching(){
         <div class="cw-play-overlay"><div class="cw-play-circle"><i class='bx bx-play'></i></div></div>
         ${item.progress?`<div class="cw-progress-bar-wrap"><div class="cw-progress-bar" style="width:${item.progress}%"></div></div>`:""}
       </div>
-      <div class="cw-card-label">${item.title||""}</div>
       <button class="cw-remove-btn" title="Remove"><i class='bx bx-x'></i></button>`;
     card.onclick=()=>navigateTo(url);
     card.querySelector(".cw-remove-btn").onclick=(e)=>{
@@ -947,11 +1124,17 @@ function renderContinueWatching(){
       const filtered=raw.filter(i=>i.id!==item.id);
       localStorage.setItem("continueWatching",JSON.stringify(filtered));
       card.remove();
-      if(!track.children.length)wrap.remove();
+      /* Hide the whole section immediately if no cards left */
+      if(track.children.length===0){
+        wrap.style.transition="opacity 0.3s ease";
+        wrap.style.opacity="0";
+        setTimeout(()=>wrap.remove(),320);
+      }
     };
     track.appendChild(card);
   });
 
+  wrap.id="cw-section";
   document.getElementById("content-area").prepend(wrap);
   wireArrows(wrap);
 }
@@ -959,12 +1142,16 @@ function renderContinueWatching(){
 /* ══════════════════════════════════
    CAROUSEL BUILDER
    ══════════════════════════════════ */
-function buildSection(title,seeAllUrl="",numbered=false,isCW=false){
+function buildSection(title,seeAllUrl="",numbered=false,isCW=false,typeHint=""){
+  const typeTag=typeHint?`<span class="section-type-pill ${typeHint}">${typeHint==='movies'?'Movies':typeHint==='tv'?'TV Shows':'Mixed'}</span>`:"";
   const sec=document.createElement("div");
   sec.className="section-wrap";
   sec.innerHTML=`
     <div class="section-head">
-      <span class="section-title">${title}</span>
+      <div style="display:flex;align-items:center;gap:0.6rem;">
+        <span class="section-title">${title}</span>
+        ${typeTag}
+      </div>
       <div style="display:flex;align-items:center;gap:0.75rem;">
         ${seeAllUrl?`<a class="section-see-all" href="${seeAllUrl}">See all <i class='bx bx-chevron-right'></i></a>`:""}
         <div class="section-arrows">
@@ -984,6 +1171,9 @@ function wireArrows(sec){
   sec.querySelector(".sec-next").onclick=()=>track.scrollBy({left:scrollAmt,behavior:"smooth"});
 }
 
+/* ══ GENRE ID → NAME MAP (subset) ══ */
+const GENRE_MAP={28:"Action",12:"Adventure",16:"Animation",35:"Comedy",80:"Crime",99:"Documentary",18:"Drama",10751:"Family",14:"Fantasy",36:"History",27:"Horror",10402:"Music",9648:"Mystery",10749:"Romance",878:"Sci-Fi",10770:"TV Movie",53:"Thriller",10752:"War",37:"Western",10759:"Action & Adventure",10762:"Kids",10763:"News",10764:"Reality",10765:"Sci-Fi & Fantasy",10766:"Soap",10767:"Talk",10768:"War & Politics",10769:"Western"};
+
 /* ══ STANDARD CARD ══ */
 function makeCard(item,numbered=false,num=0){
   const isMovie=!!item.title;
@@ -993,38 +1183,44 @@ function makeCard(item,numbered=false,num=0){
   const rating=item.vote_average?`★ ${item.vote_average.toFixed(1)}`:"";
   const showNew=isNew(item.release_date||item.first_air_date);
 
+  /* Genre tags (up to 2) */
+  const genreTags=(item.genre_ids||[]).slice(0,2).map(id=>GENRE_MAP[id]).filter(Boolean);
+
   if(numbered){
     const card=document.createElement("div");
     card.className="top10-card";
     card.innerHTML=`
       <div class="top10-number">${num}</div>
-      <img class="top10-poster-img" src="${poster}" alt="${title}" loading="lazy">`;
+      <img class="top10-poster-img" src="${poster}" alt="${title}" loading="lazy">
+      ${showNew?`<div class="top10-new-badge">New</div>`:""}`;
     card.onclick=()=>navigateTo(url);
     return card;
   }
 
   const card=document.createElement("div");
   card.className="movie-card";
+  /* No title label below poster */
   card.innerHTML=`
     <div class="poster-wrap">
       <img src="${poster}" alt="${title}" loading="lazy">
       <div class="poster-fade"></div>
       ${rating?`<div class="card-rating">${rating}</div>`:""}
       ${showNew?`<div class="card-new-badge">New</div>`:""}
-    </div>
-    <div class="card-label">${title}</div>`;
+      ${genreTags.length?`<div class="card-genre-tags">${genreTags.map(g=>`<span class="card-genre-tag">${g}</span>`).join("")}</div>`:""}
+    </div>`;
   card.onclick=()=>navigateTo(url);
   return card;
 }
 
 /* ══ RENDER CAROUSEL ══ */
-function renderSection(title,items,opts={}){
+function renderSection(title,items,opts={}){ /* opts: numbered, seeAll, target, type */
   if(!items||!items.length)return;
   const numbered=!!opts.numbered;
   const seeAll=opts.seeAll||"";
   const target=opts.target||"content-area";
 
-  const sec=buildSection(title,seeAll,numbered);
+  const typeHint=opts.type||"";
+  const sec=buildSection(title,seeAll,numbered,false,typeHint);
   const track=sec.querySelector(".carousel-track");
 
   const deduped=[];const seen=new Set();
@@ -1045,24 +1241,24 @@ async function loadCarousels(){
   const P=8; /* Netflix provider */
 
   const endpoints=[
-    {title:"Trending Now",           movie:`${TMDB}/trending/movie/week?api_key=${TMDB_KEY}`,             tv:`${TMDB}/trending/tv/week?api_key=${TMDB_KEY}`,             seeAll:""},
-    {title:"Top 10 Movies Today",    movie:`${TMDB}/trending/movie/day?api_key=${TMDB_KEY}`,              numbered:true},
-    {title:"Top 10 TV Shows Today",  tv:`${TMDB}/trending/tv/day?api_key=${TMDB_KEY}`,                   numbered:true},
-    {title:"Now In Theaters",        movie:`${TMDB}/movie/now_playing?api_key=${TMDB_KEY}`,              seeAll:"all_movies.html"},
-    {title:"Popular Movies",         movie:`${TMDB}/movie/popular?api_key=${TMDB_KEY}`,                  seeAll:"all_movies.html"},
-    {title:"Popular TV Shows",       tv:`${TMDB}/tv/popular?api_key=${TMDB_KEY}`,                        seeAll:"all_tvseries.html"},
-    {title:"Top Rated Movies",       movie:`${TMDB}/movie/top_rated?api_key=${TMDB_KEY}`,                seeAll:"all_movies.html"},
-    {title:"Top Rated TV Shows",     tv:`${TMDB}/tv/top_rated?api_key=${TMDB_KEY}`,                      seeAll:"all_tvseries.html"},
-    {title:"Top Netflix Today",      movie:`${TMDB}/discover/movie?with_watch_providers=${P}&watch_region=PH&sort_by=popularity.desc&api_key=${TMDB_KEY}`, tv:`${TMDB}/discover/tv?with_watch_providers=${P}&watch_region=PH&sort_by=popularity.desc&api_key=${TMDB_KEY}`},
-    {title:"Action & Adventure",     movie:`${TMDB}/discover/movie?with_genres=28,12&sort_by=popularity.desc&api_key=${TMDB_KEY}`},
-    {title:"Comedy Movies",          movie:`${TMDB}/discover/movie?with_genres=35&sort_by=popularity.desc&api_key=${TMDB_KEY}`},
-    {title:"Horror Movies",          movie:`${TMDB}/discover/movie?with_genres=27&sort_by=popularity.desc&api_key=${TMDB_KEY}`},
-    {title:"Drama Movies",           movie:`${TMDB}/discover/movie?with_genres=18&sort_by=popularity.desc&api_key=${TMDB_KEY}`},
-    {title:"Crime TV Shows",         tv:`${TMDB}/discover/tv?with_genres=80&sort_by=popularity.desc&api_key=${TMDB_KEY}`},
-    {title:"Comedy TV Shows",        tv:`${TMDB}/discover/tv?with_genres=35&sort_by=popularity.desc&api_key=${TMDB_KEY}`},
-    {title:"Drama TV Shows",         tv:`${TMDB}/discover/tv?with_genres=18&sort_by=popularity.desc&api_key=${TMDB_KEY}`},
-    {title:"Sci-Fi & Fantasy",       tv:`${TMDB}/discover/tv?with_genres=10765&sort_by=popularity.desc&api_key=${TMDB_KEY}`},
-    {title:"Top Anime",              movie:`${TMDB}/discover/movie?with_genres=16&with_original_language=ja&sort_by=popularity.desc&api_key=${TMDB_KEY}`, tv:`${TMDB}/discover/tv?with_genres=16&with_original_language=ja&sort_by=popularity.desc&api_key=${TMDB_KEY}`},
+    {title:"Trending Now",           movie:`${TMDB}/trending/movie/week?api_key=${TMDB_KEY}`,             tv:`${TMDB}/trending/tv/week?api_key=${TMDB_KEY}`,             seeAll:"",      type:"mixed"},
+    {title:"Top 10 Movies Today",    movie:`${TMDB}/trending/movie/day?api_key=${TMDB_KEY}`,              numbered:true, type:"movies"},
+    {title:"Top 10 TV Shows Today",  tv:`${TMDB}/trending/tv/day?api_key=${TMDB_KEY}`,                   numbered:true, type:"tv"},
+    {title:"Now In Theaters",        movie:`${TMDB}/movie/now_playing?api_key=${TMDB_KEY}`,              seeAll:"all_movies.html", type:"movies"},
+    {title:"Popular Movies",         movie:`${TMDB}/movie/popular?api_key=${TMDB_KEY}`,                  seeAll:"all_movies.html", type:"movies"},
+    {title:"Popular TV Shows",       tv:`${TMDB}/tv/popular?api_key=${TMDB_KEY}`,                        seeAll:"all_tvseries.html", type:"tv"},
+    {title:"Top Rated Movies",       movie:`${TMDB}/movie/top_rated?api_key=${TMDB_KEY}`,                seeAll:"all_movies.html", type:"movies"},
+    {title:"Top Rated TV Shows",     tv:`${TMDB}/tv/top_rated?api_key=${TMDB_KEY}`,                      seeAll:"all_tvseries.html", type:"tv"},
+    {title:"Top Netflix Today",      movie:`${TMDB}/discover/movie?with_watch_providers=${P}&watch_region=PH&sort_by=popularity.desc&api_key=${TMDB_KEY}`, tv:`${TMDB}/discover/tv?with_watch_providers=${P}&watch_region=PH&sort_by=popularity.desc&api_key=${TMDB_KEY}`, type:"mixed"},
+    {title:"Action & Adventure",     movie:`${TMDB}/discover/movie?with_genres=28,12&sort_by=popularity.desc&api_key=${TMDB_KEY}`, type:"movies"},
+    {title:"Comedy Movies",          movie:`${TMDB}/discover/movie?with_genres=35&sort_by=popularity.desc&api_key=${TMDB_KEY}`, type:"movies"},
+    {title:"Horror Movies",          movie:`${TMDB}/discover/movie?with_genres=27&sort_by=popularity.desc&api_key=${TMDB_KEY}`, type:"movies"},
+    {title:"Drama Movies",           movie:`${TMDB}/discover/movie?with_genres=18&sort_by=popularity.desc&api_key=${TMDB_KEY}`, type:"movies"},
+    {title:"Crime TV Shows",         tv:`${TMDB}/discover/tv?with_genres=80&sort_by=popularity.desc&api_key=${TMDB_KEY}`, type:"tv"},
+    {title:"Comedy TV Shows",        tv:`${TMDB}/discover/tv?with_genres=35&sort_by=popularity.desc&api_key=${TMDB_KEY}`, type:"tv"},
+    {title:"Drama TV Shows",         tv:`${TMDB}/discover/tv?with_genres=18&sort_by=popularity.desc&api_key=${TMDB_KEY}`, type:"tv"},
+    {title:"Sci-Fi & Fantasy",       tv:`${TMDB}/discover/tv?with_genres=10765&sort_by=popularity.desc&api_key=${TMDB_KEY}`, type:"tv"},
+    {title:"Top Anime",              movie:`${TMDB}/discover/movie?with_genres=16&with_original_language=ja&sort_by=popularity.desc&api_key=${TMDB_KEY}`, tv:`${TMDB}/discover/tv?with_genres=16&with_original_language=ja&sort_by=popularity.desc&api_key=${TMDB_KEY}`, type:"mixed"},
   ];
 
   /* Fetch all in parallel for speed */
@@ -1078,7 +1274,7 @@ async function loadCarousels(){
     const combined=[...(mData.results||[]),...(tData.results||[])];
     if(!combined.length)return;
     const items=ep.numbered?combined:shuffle(combined);
-    renderSection(ep.title,items,{numbered:!!ep.numbered,seeAll:ep.seeAll||""});
+    renderSection(ep.title,items,{numbered:!!ep.numbered,seeAll:ep.seeAll||"",type:ep.type||""});
   });
 }
 

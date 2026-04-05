@@ -3,289 +3,799 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>VNCEFLIX - VIVAMAX</title>
-<meta name="description" content="VNCEFLIX — Stream Vivamax content">
-<link rel="icon" type="image/png" href="img/logo.png">
-
-<!-- Bootstrap & Boxicons -->
+<title>VNCEFLIX — Vivamax</title>
+<meta name="description" content="Stream Vivamax movies and TV series on VNCEFLIX.">
+<link rel="icon" href="img/logo.png" type="image/png">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 
 <style>
-body { background-color:#0A1120; color:#fff; margin:0; padding-bottom:70px; }
-#preloader-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.9); display:flex; justify-content:center; align-items:center; z-index:9999; }
-.four-box-spinner { display:flex; flex-wrap:wrap; gap:5px; width:50px; height:50px; }
-.four-box-spinner div { width:20px; height:20px; background:red; animation:boxFade 1.2s infinite ease-in-out; }
-.four-box-spinner div:nth-child(2) { animation-delay:0.2s; }
-.four-box-spinner div:nth-child(3) { animation-delay:0.4s; }
-.four-box-spinner div:nth-child(4) { animation-delay:0.6s; }
-@keyframes boxFade {0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.3;transform:scale(0.7);}}
-
-/* NAVBAR */
-.navbar { transition: all .3s ease; background-color:transparent; box-shadow:none; }
-.navbar.scrolled { background-color:#0A1120; box-shadow:0 3px 10px rgba(0,0,0,0.5); }
-.navbar .nav-link { color:#fff!important; font-weight:500; transition: all .3s; }
-.navbar .nav-link.active { font-weight:700; }
-.navbar .container-fluid { padding:0 60px; }
-@media(max-width:768px){ .navbar .container-fluid{padding:0 15px;} }
-
-/* Bottom nav */
-.bottom-nav{display:none;}
-@media(max-width:768px){
-  .bottom-nav{display:flex; justify-content:space-around; align-items:center; position:fixed; bottom:0; left:0; right:0; background:#0A1120; padding:.5rem 0; border-top:1px solid #222; z-index:999;}
+/* ══ TOKENS ══ */
+:root{
+  --page-margin:5%;--accent:#E50914;--bg-deep:#05080f;--bg-base:#080d18;
+  --bg-card:#0d1626;--bg-card-hover:#111e33;
+  --border-subtle:rgba(255,255,255,0.06);--border-mid:rgba(255,255,255,0.12);
+  --text-primary:#f0f2f5;--text-secondary:#8896aa;--text-muted:#3d5068;
+  --font-display:'Outfit',sans-serif;--font-body:'DM Sans',sans-serif;
+  --radius-sm:6px;--radius-md:10px;--radius-lg:14px;--radius-xl:20px;
+  --nav-height:64px;--mob-top:56px;--mob-bottom:62px;--transition:0.22s ease;
+  /* Vivamax brand accent */
+  --viva:#ff1744;--viva-dark:#b71c1c;
 }
-.bottom-nav a{color:#fff; font-size:.85rem; text-decoration:none; text-align:center; flex:1; transition:transform .2s,color .2s;}
-.bottom-nav a:hover{color:#E50914; transform:scale(1.1);}
-.bottom-nav i{display:block; font-size:1.4rem; margin-bottom:2px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{overflow-x:hidden;}
+body{background:var(--bg-deep);color:var(--text-primary);font-family:var(--font-body);-webkit-font-smoothing:antialiased;}
 
-/* HERO CAROUSEL */
-.hero-section{position:relative; width:100%; height:90vh; overflow:hidden;}
-.hero-slide{position:absolute; top:0; left:0; width:100%; height:100%; background-size:cover; background-position:center; opacity:0; transition:opacity 1s ease; display:flex; align-items:flex-end;}
-.hero-slide.active{opacity:1; z-index:2;}
-.hero-overlay{position:relative; bottom:5%; left:5%; max-width:600px; z-index:3;}
-.hero-overlay h1{font-size:3rem; font-weight:800; text-shadow:2px 2px 4px rgba(0,0,0,0.8);}
-.hero-overlay p{margin:1rem 0; font-size:1rem; color:#ddd; max-height:150px; overflow:hidden;}
-.hero-buttons button{margin-right:10px; padding:.6rem 1.4rem; border:none; border-radius:4px; font-weight:600;}
-.hero-buttons .btn-play{background:#fff; color:#000;}
-.hero-buttons .btn-info{background:rgba(109,109,110,0.7); color:#fff;}
-.hero-fade{position:absolute; bottom:0; left:0; right:0; height:25vh; background:linear-gradient(to top,#0A1120 0%,rgba(10,17,32,0) 100%);}
+/* ══ PRELOADER ══ */
+#preloader-overlay{position:fixed;inset:0;background:rgba(5,8,15,0.97);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:9999;gap:1.2rem;}
+.four-box-spinner{display:flex;flex-wrap:wrap;gap:5px;width:50px;height:50px;}
+.four-box-spinner div{width:20px;height:20px;background:var(--accent);border-radius:3px;animation:boxFade 1.2s infinite ease-in-out;}
+.four-box-spinner div:nth-child(2){animation-delay:0.2s;}
+.four-box-spinner div:nth-child(3){animation-delay:0.4s;}
+.four-box-spinner div:nth-child(4){animation-delay:0.6s;}
+@keyframes boxFade{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.25;transform:scale(0.65);}}
+.preloader-text{font-family:var(--font-display);font-size:0.78rem;color:var(--text-muted);letter-spacing:0.1em;}
 
-/* CAROUSEL STYLES */
-.carousel-section{padding:1rem 5%;}
-.carousel-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;}
-.carousel-container{display:flex; overflow-x:auto; overflow-y:hidden; gap:1rem; scroll-behavior:smooth; white-space:nowrap;}
-.carousel-container::-webkit-scrollbar{display:none;}
-.movie-card{flex:0 0 auto; width:160px; border-radius:8px; overflow:hidden; background:#111; cursor:pointer; transition:transform .3s;}
-.movie-card img{width:100%; display:block;}
-.movie-card:hover{transform:scale(1.05);}
-.number-badge{position:absolute; top:10px; left:10px; font-size:1.2rem; font-weight:700; color:#E50914; text-shadow:1px 1px 2px #000;}
-.arrow-btn{background:rgba(0,0,0,0.5); border:none; color:#fff; font-size:1.5rem; padding:.5rem .8rem; border-radius:50%; cursor:pointer;}
-.arrow-btn:hover{background:rgba(0,0,0,0.8);}
+/* ══ NAVBAR ══ */
+.navbar{background:transparent;transition:background 0.4s ease,backdrop-filter 0.4s ease;z-index:1050;padding:0;}
+.navbar.scrolled{background:rgba(5,8,15,0.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid var(--border-subtle);}
+.navbar .container-fluid{padding:0 var(--page-margin);height:var(--nav-height);}
+.navbar-brand img{height:28px;}
+.navbar .nav-link{color:rgba(240,242,245,0.88)!important;font-family:var(--font-display);font-size:0.84rem;font-weight:500;letter-spacing:0.01em;padding:0.3rem 0.8rem!important;border-radius:var(--radius-sm);transition:all var(--transition);position:relative;}
+.navbar .nav-link:hover{color:#fff!important;background:rgba(255,255,255,0.08);}
+.navbar .nav-link.active{color:#fff!important;font-weight:700;}
+.navbar .nav-link.active::after{content:'';position:absolute;bottom:-2px;left:0.8rem;right:0.8rem;height:2px;background:var(--accent);border-radius:2px;}
+.nav-icon-btn{background:none;border:none;color:rgba(240,242,245,0.8);font-size:1.2rem;cursor:pointer;padding:0.4rem;transition:color var(--transition);display:flex;align-items:center;border-radius:var(--radius-sm);}
+.nav-icon-btn:hover{color:#fff;background:rgba(255,255,255,0.08);}
 
-/* Featured Carousel for TBONX + CINEPOP */
-.featured-card{flex:0 0 auto; width:250px; border-radius:10px; overflow:hidden; background:#111; cursor:pointer; transition:transform .3s;}
-.featured-card img{width:100%; display:block;}
-.featured-card:hover{transform:scale(1.05);}
+/* Search */
+.search-wrap{position:relative;display:flex;align-items:center;}
+.search-input-box{display:flex;align-items:center;background:rgba(255,255,255,0.07);border:1px solid var(--border-mid);border-radius:var(--radius-xl);padding:0 0.75rem;transition:all var(--transition);width:200px;}
+.search-input-box:focus-within{background:rgba(255,255,255,0.11);border-color:rgba(255,255,255,0.25);width:260px;}
+.search-input-box i{font-size:1rem;color:var(--text-muted);flex-shrink:0;}
+.search-input-box input{background:none;border:none;outline:none;color:var(--text-primary);font-family:var(--font-body);font-size:0.82rem;padding:0.45rem 0.5rem;width:100%;}
+.search-input-box input::placeholder{color:var(--text-muted);}
+.search-results{position:absolute;top:calc(100% + 8px);left:0;background:var(--bg-card);border:1px solid var(--border-mid);border-radius:var(--radius-md);overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,0.7);max-height:380px;overflow-y:auto;display:none;z-index:2000;min-width:320px;}
+.search-results.open{display:block;}
+.search-result-item{display:flex;align-items:center;gap:0.75rem;padding:0.6rem 0.9rem;cursor:pointer;transition:background var(--transition);border-bottom:1px solid var(--border-subtle);}
+.search-result-item:last-child{border-bottom:none;}
+.search-result-item:hover{background:var(--bg-card-hover);}
+.search-result-item img{width:36px;height:54px;object-fit:cover;border-radius:4px;flex-shrink:0;}
+.sr-title{font-family:var(--font-display);font-size:0.82rem;font-weight:600;color:var(--text-primary);}
+.sr-meta{font-size:0.72rem;color:var(--text-muted);margin-top:1px;}
+.search-empty,.search-loading{padding:1.2rem;text-align:center;font-size:0.82rem;color:var(--text-muted);}
 
-/* GRID for all Vivamax content */
-.vivamax-grid { display:grid; gap:1rem; padding:1rem 5%; margin-top:1rem; }
-@media (min-width:1200px) { .vivamax-grid { grid-template-columns: repeat(8,1fr); } }
-@media (min-width:1400px) { .vivamax-grid { grid-template-columns: repeat(9,1fr); } }
-.vivamax-card { border-radius:8px; overflow:hidden; background:#111; cursor:pointer; transition:transform .3s; }
-.vivamax-card img { width:100%; display:block; }
-.vivamax-card:hover { transform:scale(1.05); }
+/* Notifications */
+.notif-wrap{position:relative;}
+.notif-count-badge{position:absolute;top:-2px;right:-4px;min-width:18px;height:18px;background:var(--accent);border:2px solid var(--bg-deep);border-radius:20px;font-family:var(--font-display);font-size:0.65rem;font-weight:800;color:#fff;display:none;align-items:center;justify-content:center;padding:0 4px;line-height:1;pointer-events:none;}
+.notif-count-badge.visible{display:flex;}
+.notif-dropdown{position:absolute;top:calc(100% + 10px);right:-8px;width:360px;background:var(--bg-card);border:1px solid var(--border-mid);border-radius:var(--radius-lg);box-shadow:0 20px 60px rgba(0,0,0,0.8);display:none;z-index:2000;overflow:hidden;}
+.notif-dropdown.open{display:block;}
+.notif-header{display:flex;justify-content:space-between;align-items:center;padding:0.9rem 1rem 0.7rem;border-bottom:1px solid var(--border-subtle);}
+.notif-header h3{font-family:var(--font-display);font-size:0.88rem;font-weight:700;color:var(--text-primary);}
+.notif-mark-read{font-size:0.72rem;color:var(--text-muted);cursor:pointer;background:none;border:none;transition:color var(--transition);}
+.notif-mark-read:hover{color:var(--text-primary);}
+.notif-list{max-height:360px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.1) transparent;}
+.notif-list::-webkit-scrollbar{width:3px;}
+.notif-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.12);border-radius:10px;}
+.notif-item{display:flex;gap:0.75rem;padding:0.75rem 1rem;border-bottom:1px solid var(--border-subtle);transition:background var(--transition);position:relative;}
+.notif-item.clickable{cursor:pointer;}
+.notif-item.clickable:hover{background:var(--bg-card-hover);}
+.notif-item.unread{background:rgba(229,9,20,0.04);}
+.notif-item.unread::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);}
+.notif-item img{width:40px;height:58px;object-fit:cover;border-radius:5px;flex-shrink:0;}
+.notif-item-info{flex:1;min-width:0;}
+.notif-item-title{font-family:var(--font-display);font-size:0.8rem;font-weight:600;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.notif-item-sub{font-size:0.71rem;color:var(--text-muted);line-height:1.4;margin-top:2px;}
+.notif-empty{padding:2rem 1rem;text-align:center;font-size:0.82rem;color:var(--text-muted);}
+.notif-login-prompt{padding:1.4rem 1rem;text-align:center;}
+.notif-login-prompt p{font-size:0.8rem;color:var(--text-muted);margin-bottom:0.6rem;}
+.notif-login-prompt a{font-size:0.8rem;color:var(--accent);text-decoration:none;}
 
-/* Filter buttons */
-.filter-section{display:flex; justify-content:space-between; align-items:center; padding:0 5%; margin-top:2rem;}
-.filter-buttons button{margin-left:0.5rem; padding:.3rem .8rem; background:#222; color:#fff; border:none; border-radius:4px; cursor:pointer; transition:all .2s;}
-.filter-buttons button.active, .filter-buttons button:hover{background:#E50914;}
+/* Profile */
+.profile-group{display:inline-flex;align-items:center;gap:4px;cursor:pointer;user-select:none;}
+.profile-initial-box{min-width:34px;height:34px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:0.95rem;font-weight:800;color:#fff;text-transform:uppercase;transition:filter var(--transition);}
+.profile-group:hover .profile-initial-box{filter:brightness(1.15);}
+.profile-chevron-icon{color:rgba(255,255,255,0.75);font-size:1.1rem;display:flex;align-items:center;transition:transform 0.25s ease,color var(--transition);}
+.profile-group.open .profile-chevron-icon{transform:rotate(180deg);}
+.sign-in-btn{display:inline-flex;align-items:center;gap:0.4rem;padding:6px 16px;border-radius:var(--radius-xl);background:var(--accent);color:#fff;border:none;font-family:var(--font-display);font-size:0.8rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all var(--transition);}
+.sign-in-btn:hover{background:#ff1a25;color:#fff;}
+.profile-dropdown .dropdown-menu{background:#0d1626;border:1px solid var(--border-subtle);border-radius:var(--radius-md);box-shadow:0 16px 48px rgba(0,0,0,0.7);padding:0.4rem;min-width:210px;}
+.profile-dropdown .dropdown-item{color:var(--text-secondary);font-family:var(--font-body);font-size:0.83rem;border-radius:var(--radius-sm);padding:0.5rem 0.8rem;transition:all var(--transition);display:flex;align-items:center;gap:0.5rem;}
+.profile-dropdown .dropdown-item:hover{background:var(--border-subtle);color:var(--text-primary);}
+.profile-dropdown .dropdown-item i{font-size:1rem;width:18px;flex-shrink:0;}
+.dropdown-divider{border-color:var(--border-subtle);margin:0.3rem 0;}
+.profile-info-item{padding:0.7rem 0.8rem 0.6rem;border-bottom:1px solid var(--border-subtle);margin-bottom:0.3rem;}
+.pi-name{font-family:var(--font-display);font-size:0.85rem;font-weight:600;color:var(--text-primary);}
+.pi-email{font-size:0.72rem;color:var(--text-muted);margin-top:1px;}
 
-.load-more-btn{display:block; margin:1rem auto; padding:.5rem 1rem; background:#222; color:#fff; border:none; border-radius:4px; cursor:pointer;}
-.load-more-btn:hover{background:#E50914;}
+/* ══ MOBILE TOP BAR ══ */
+.mobile-topbar{display:none;position:fixed;top:0;left:0;right:0;z-index:1050;height:var(--mob-top);background:transparent;transition:background 0.4s ease,backdrop-filter 0.4s ease;align-items:center;justify-content:space-between;padding:0 var(--page-margin);}
+.mobile-topbar.scrolled{background:rgba(5,8,15,0.9);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid var(--border-subtle);}
+.mob-brand img{height:24px;}
+.mob-actions{display:flex;align-items:center;gap:4px;}
+.mobile-topbar .notif-dropdown{position:fixed;top:var(--mob-top);right:12px;left:12px;width:auto;max-width:100%;}
+.mob-search-overlay{display:none;position:fixed;inset:0;z-index:1100;background:rgba(5,8,15,0.97);padding:1rem var(--page-margin);flex-direction:column;gap:1rem;}
+.mob-search-overlay.open{display:flex;}
+.mob-search-top{display:flex;gap:0.6rem;align-items:center;}
+.mob-search-box{flex:1;display:flex;align-items:center;gap:0.5rem;background:rgba(255,255,255,0.08);border:1px solid var(--border-mid);border-radius:var(--radius-xl);padding:0.5rem 1rem;}
+.mob-search-box input{background:none;border:none;outline:none;color:var(--text-primary);font-family:var(--font-body);font-size:0.9rem;width:100%;}
+.mob-search-box input::placeholder{color:var(--text-muted);}
+.mob-search-box i{color:var(--text-muted);font-size:1.1rem;flex-shrink:0;}
+.mob-cancel-btn{background:none;border:none;color:var(--text-secondary);font-family:var(--font-display);font-size:0.85rem;cursor:pointer;white-space:nowrap;}
+.mob-search-results{flex:1;overflow-y:auto;}
+
+/* ══ BOTTOM NAV ══ */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:1050;height:var(--mob-bottom);background:rgba(5,8,15,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border-subtle);align-items:stretch;}
+.bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;text-decoration:none;padding:8px 4px;transition:all var(--transition);color:var(--text-muted);background:none;border:none;}
+.bottom-nav-item.active i{color:var(--accent);}
+.bottom-nav-item.active span{color:var(--text-secondary);}
+.bottom-nav-item i{font-size:1.3rem;line-height:1;}
+.bottom-nav-item span{font-family:var(--font-display);font-size:0.58rem;font-weight:600;letter-spacing:0.02em;color:var(--text-muted);}
+.more-drawer-overlay{display:none;position:fixed;inset:0;z-index:1048;background:rgba(0,0,0,0.55);}
+.more-drawer-overlay.open{display:block;}
+.more-drawer{display:none;position:fixed;bottom:var(--mob-bottom);left:0;right:0;background:rgba(8,13,24,0.98);backdrop-filter:blur(20px);border-top:1px solid var(--border-subtle);z-index:1049;padding:1rem var(--page-margin) 1.2rem;}
+.more-drawer.open{display:block;}
+.more-drawer-title{font-family:var(--font-display);font-size:0.7rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.8rem;}
+.more-drawer-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0.6rem;}
+.more-drawer-item{display:flex;flex-direction:column;align-items:center;gap:5px;padding:0.75rem 0.5rem;border-radius:var(--radius-md);background:rgba(255,255,255,0.04);border:1px solid var(--border-subtle);cursor:pointer;text-decoration:none;color:var(--text-secondary);transition:all var(--transition);}
+.more-drawer-item:hover{background:rgba(255,255,255,0.08);color:var(--text-primary);}
+.more-drawer-item i{font-size:1.3rem;color:var(--accent);}
+.more-drawer-item span{font-family:var(--font-display);font-size:0.68rem;font-weight:600;text-align:center;}
+
+/* ══ HERO ══ */
+.hero-section{position:relative;width:100%;height:92vh;min-height:560px;overflow:hidden;background:var(--bg-deep);}
+.hero-slide{position:absolute;inset:0;background-size:cover;background-position:center top;background-repeat:no-repeat;opacity:0;transition:opacity 1s ease;z-index:1;}
+.hero-slide.active{opacity:1;z-index:2;}
+.hero-slide::before{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(5,8,15,0.08) 0%,rgba(5,8,15,0) 20%,rgba(5,8,15,0) 40%,rgba(5,8,15,0.6) 65%,rgba(5,8,15,0.97) 88%,var(--bg-deep) 100%);z-index:3;}
+.hero-slide::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 0% 50%,rgba(5,8,15,0.5) 0%,transparent 55%);z-index:3;}
+.hero-content{position:absolute;bottom:3.5rem;left:var(--page-margin);z-index:10;max-width:580px;}
+.hero-logo-img{max-height:75px;max-width:320px;width:auto;margin-bottom:0.9rem;filter:drop-shadow(0 4px 20px rgba(0,0,0,0.9));display:block;}
+.hero-title-text{font-family:var(--font-display);font-size:2.6rem;font-weight:800;line-height:1.1;letter-spacing:-0.02em;text-shadow:0 4px 20px rgba(0,0,0,0.8);margin-bottom:0.8rem;}
+.hero-meta{display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.8rem;}
+.hero-meta-pill{font-family:var(--font-display);font-size:0.73rem;font-weight:600;color:var(--text-secondary);background:rgba(255,255,255,0.07);border:1px solid var(--border-subtle);border-radius:20px;padding:2px 10px;white-space:nowrap;}
+/* Vivamax branded pill */
+.hero-viva-badge{background:rgba(255,23,68,0.18);border-color:rgba(255,23,68,0.4);color:#ff6b8a;font-family:var(--font-display);font-size:0.73rem;font-weight:700;border-radius:20px;padding:2px 10px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;}
+.hero-rating{color:#fbbf24;font-size:0.73rem;font-weight:700;}
+.hero-synopsis{font-size:0.88rem;color:var(--text-secondary);line-height:1.65;max-width:480px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:1.2rem;}
+.hero-btns{display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;}
+.hero-btn-play{display:inline-flex;align-items:center;gap:0.5rem;background:#fff;color:#000;border:none;padding:0 1.6rem;height:46px;border-radius:var(--radius-xl);font-family:var(--font-display);font-size:0.9rem;font-weight:700;cursor:pointer;transition:all var(--transition);}
+.hero-btn-play:hover{background:#e8e8e8;transform:scale(1.03);}
+.hero-btn-play i{font-size:1.3rem;}
+.hero-btn-info{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(255,255,255,0.12);color:#fff;border:1px solid rgba(255,255,255,0.2);padding:0 1.3rem;height:46px;border-radius:var(--radius-xl);font-family:var(--font-display);font-size:0.88rem;font-weight:600;cursor:pointer;transition:all var(--transition);backdrop-filter:blur(4px);}
+.hero-btn-info:hover{background:rgba(255,255,255,0.2);}
+.hero-btn-info i{font-size:1.1rem;}
+.hero-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:15;background:rgba(5,8,15,0.5);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.4rem;transition:all var(--transition);opacity:0;backdrop-filter:blur(4px);}
+.hero-arrow:hover{background:rgba(5,8,15,0.8);color:#fff;border-color:rgba(255,255,255,0.3);}
+.hero-section:hover .hero-arrow{opacity:1;}
+#hero-prev{left:1.5rem;}
+#hero-next{right:1.5rem;}
+.hero-dots{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:15;}
+.hero-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.3);cursor:pointer;transition:all var(--transition);}
+.hero-dot.active{background:#fff;width:20px;border-radius:3px;}
+
+/* ══ VIVAMAX BRAND BANNER ══ */
+.viva-brand-banner{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.5rem var(--page-margin);
+  background:linear-gradient(135deg,rgba(255,23,68,0.08) 0%,rgba(183,28,28,0.04) 100%);
+  border-top:1px solid rgba(255,23,68,0.15);
+  border-bottom:1px solid rgba(255,23,68,0.1);
+  flex-wrap:wrap;gap:1rem;
+}
+.viva-brand-title{font-family:var(--font-display);font-size:1.1rem;font-weight:800;color:#fff;display:flex;align-items:center;gap:0.5rem;}
+.viva-brand-title span{color:var(--viva);}
+.viva-brand-sub{font-size:0.8rem;color:var(--text-muted);margin-top:3px;}
+.viva-stats{display:flex;gap:1.5rem;flex-wrap:wrap;}
+.viva-stat{display:flex;flex-direction:column;align-items:center;}
+.viva-stat-num{font-family:var(--font-display);font-size:1.2rem;font-weight:800;color:var(--viva);}
+.viva-stat-label{font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:1px;}
+
+/* ══ SECTION / CAROUSEL ══ */
+.section-wrap{padding:1.8rem var(--page-margin) 0.8rem;position:relative;overflow:visible;}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:0.7rem;border-bottom:1px solid var(--border-subtle);}
+.section-left{display:flex;align-items:center;gap:0.6rem;}
+.section-title{font-family:var(--font-display);font-size:1.05rem;font-weight:700;color:var(--text-primary);letter-spacing:-0.01em;position:relative;padding-left:12px;}
+.section-title::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:70%;background:var(--viva);border-radius:2px;}
+.section-viva-pill{font-family:var(--font-display);font-size:0.6rem;font-weight:800;padding:2px 8px;border-radius:20px;background:rgba(255,23,68,0.15);color:#ff6b8a;border:1px solid rgba(255,23,68,0.3);text-transform:uppercase;letter-spacing:0.05em;}
+.section-arrows{display:flex;gap:0.35rem;}
+.sec-arrow{width:30px;height:30px;border-radius:50%;border:1px solid var(--border-mid);background:rgba(255,255,255,0.05);color:var(--text-secondary);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.95rem;transition:all var(--transition);}
+.sec-arrow:hover{background:rgba(255,255,255,0.12);color:var(--text-primary);}
+
+.carousel-track{display:flex;gap:0.6rem;overflow-x:auto;overflow-y:visible;scrollbar-width:none;-ms-overflow-style:none;padding-bottom:0.4rem;scroll-behavior:smooth;}
+.carousel-track::-webkit-scrollbar{display:none;}
+
+/* ══ STANDARD CARD ══ */
+.movie-card{flex:0 0 140px;border-radius:var(--radius-md);overflow:hidden;background:var(--bg-card);cursor:pointer;position:relative;transition:transform var(--transition),box-shadow var(--transition);border:1px solid var(--border-subtle);}
+.movie-card:hover{transform:scale(1.05) translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,0.65);z-index:2;}
+.movie-card .poster-wrap{position:relative;width:100%;aspect-ratio:2/3;overflow:hidden;}
+.movie-card .poster-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.35s ease;}
+.movie-card:hover .poster-wrap img{transform:scale(1.06);}
+.poster-fade{position:absolute;bottom:0;left:0;right:0;height:55%;background:linear-gradient(to top,rgba(5,8,15,0.95) 0%,transparent 100%);pointer-events:none;}
+.card-rating{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);background:rgba(229,9,20,0.16);border:1px solid rgba(229,9,20,0.4);border-radius:20px;padding:2px 8px;font-family:var(--font-display);font-size:0.66rem;font-weight:700;color:#ff7b7b;white-space:nowrap;}
+.card-new-badge{position:absolute;top:7px;left:7px;background:var(--accent);color:#fff;font-family:var(--font-display);font-size:0.6rem;font-weight:800;padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:0.04em;z-index:5;}
+.card-soon-badge{position:absolute;top:7px;left:7px;background:rgba(241,196,15,0.9);color:#000;font-family:var(--font-display);font-size:0.6rem;font-weight:800;padding:2px 7px;border-radius:4px;text-transform:uppercase;z-index:5;}
+/* Vivamax-specific: TV badge */
+.card-tv-badge{position:absolute;top:7px;right:7px;background:rgba(56,180,220,0.85);color:#fff;font-family:var(--font-display);font-size:0.58rem;font-weight:800;padding:2px 6px;border-radius:4px;text-transform:uppercase;z-index:5;}
+.movie-card .poster-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 0%,rgba(255,255,255,0.04) 50%,transparent 100%);opacity:0;transition:opacity 0.3s ease;pointer-events:none;z-index:3;}
+.movie-card:hover .poster-wrap::after{opacity:1;}
+
+/* ══ TOP-10 CARD ══ */
+.top10-wrap{overflow:visible !important;padding-left:80px !important;}
+.top10-card{flex:0 0 130px;width:130px;height:195px;position:relative;cursor:pointer;overflow:visible;flex-shrink:0;}
+.top10-number{position:absolute;top:0;left:-70px;font-family:'Outfit',sans-serif;font-size:160px;font-weight:900;line-height:1;letter-spacing:-8px;color:var(--bg-deep);-webkit-text-stroke:4px rgba(180,180,180,0.35);user-select:none;pointer-events:none;z-index:1;white-space:nowrap;}
+.top10-poster-img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);display:block;box-shadow:0 6px 24px rgba(0,0,0,0.8);transition:transform 0.28s ease,box-shadow 0.28s ease;z-index:2;}
+.top10-card:hover .top10-poster-img{transform:scale(1.05) translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,0.9),0 0 0 2px rgba(255,23,68,0.5);}
+.top10-new-badge{position:absolute;top:7px;right:7px;background:var(--accent);color:#fff;font-family:var(--font-display);font-size:0.6rem;font-weight:800;padding:2px 7px;border-radius:4px;text-transform:uppercase;z-index:5;}
+
+/* ══ ALL CONTENT GRID ══ */
+.content-section{padding:1.8rem var(--page-margin);}
+.content-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;padding-bottom:0.7rem;border-bottom:1px solid var(--border-subtle);flex-wrap:wrap;gap:0.6rem;}
+.content-title{font-family:var(--font-display);font-size:1.1rem;font-weight:700;color:var(--text-primary);padding-left:12px;position:relative;}
+.content-title::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:70%;background:var(--viva);border-radius:2px;}
+/* Filter toggle */
+.filter-toggle{display:flex;align-items:center;background:rgba(255,255,255,0.05);border:1px solid var(--border-subtle);border-radius:var(--radius-xl);padding:3px;gap:2px;}
+.filter-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 16px;border-radius:var(--radius-xl);font-family:var(--font-display);font-size:0.8rem;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--text-muted);transition:all var(--transition);white-space:nowrap;}
+.filter-btn.active{background:var(--viva);color:#fff;box-shadow:0 4px 16px rgba(255,23,68,0.35);}
+.filter-btn:not(.active):hover{background:rgba(255,255,255,0.08);color:var(--text-secondary);}
+/* Content grid */
+.content-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.85rem;}
+/* Skeleton */
+.skeleton-card{border-radius:var(--radius-md);background:var(--bg-card);border:1px solid var(--border-subtle);overflow:hidden;animation:skPulse 1.5s ease-in-out infinite;}
+.skeleton-poster{width:100%;aspect-ratio:2/3;background:rgba(255,255,255,0.05);}
+@keyframes skPulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
+/* Load more */
+.load-more-btn{display:block;margin:1.5rem auto;padding:0.65rem 2rem;background:rgba(255,255,255,0.06);color:var(--text-secondary);border:1px solid var(--border-mid);border-radius:var(--radius-xl);font-family:var(--font-display);font-size:0.82rem;font-weight:600;cursor:pointer;transition:all var(--transition);}
+.load-more-btn:hover{background:var(--viva);color:#fff;border-color:transparent;}
+.load-more-btn:disabled{opacity:0.4;cursor:default;}
+
+/* ══ FOOTER ══ */
+.site-footer{background:var(--bg-base);border-top:1px solid var(--border-subtle);padding:2.5rem var(--page-margin) 1.8rem;margin-top:2rem;}
+.footer-top{display:flex;justify-content:space-between;align-items:flex-start;gap:2rem;padding-bottom:2rem;border-bottom:1px solid var(--border-subtle);flex-wrap:wrap;}
+.footer-brand img{height:26px;width:auto;}
+.footer-tagline{font-size:0.78rem;color:var(--text-muted);margin-top:0.4rem;}
+.footer-nav{display:flex;gap:3rem;flex-wrap:wrap;}
+.footer-nav-group{display:flex;flex-direction:column;gap:0.45rem;}
+.footer-nav-group h5{font-family:var(--font-display);font-size:0.68rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin:0 0 0.4rem;}
+.footer-nav-group a{font-size:0.8rem;color:var(--text-muted);text-decoration:none;transition:color var(--transition);}
+.footer-nav-group a:hover{color:var(--text-secondary);}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:1.2rem;flex-wrap:wrap;gap:0.8rem;}
+.footer-disclaimer{font-size:0.72rem;color:var(--text-muted);line-height:1.6;max-width:580px;opacity:0.6;}
+.footer-copy{font-size:0.72rem;color:var(--text-muted);opacity:0.5;}
+
+/* Scroll to top */
+#scroll-top-btn{position:fixed;bottom:80px;right:1.5rem;z-index:900;width:40px;height:40px;border-radius:50%;background:rgba(13,22,38,0.9);border:1px solid var(--border-mid);color:var(--text-secondary);cursor:pointer;display:none;align-items:center;justify-content:center;font-size:1.1rem;transition:all var(--transition);backdrop-filter:blur(8px);}
+#scroll-top-btn:hover{background:var(--viva);color:#fff;border-color:transparent;}
+#scroll-top-btn.show{display:flex;}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:1024px){
+  :root{--page-margin:4%;}
+  .navbar{display:none!important;}
+  .mobile-topbar{display:flex;}
+  .bottom-nav{display:flex;}
+  body{padding-bottom:var(--mob-bottom);}
+  .hero-section{height:auto;min-height:460px;padding-top:calc(var(--mob-top) + 1rem);}
+  .hero-content{bottom:2.5rem;}
+  .hero-title-text{font-size:2rem;}
+}
+@media(max-width:768px){
+  .hero-section{min-height:400px;}
+  .hero-content{bottom:2rem;max-width:90%;}
+  .hero-title-text{font-size:1.7rem;}
+  .hero-synopsis{-webkit-line-clamp:2;font-size:0.83rem;}
+  .hero-btn-info{display:none;}
+  .hero-arrow{display:none;}
+  .movie-card{flex:0 0 116px;}
+  .top10-wrap{padding-left:56px !important;}
+  .top10-card{flex:0 0 100px;width:100px;height:150px;}
+  .top10-number{font-size:115px;left:-52px;letter-spacing:-5px;-webkit-text-stroke:3px rgba(180,180,180,0.3);}
+  .content-grid{grid-template-columns:repeat(3,1fr);}
+  .footer-top{flex-direction:column;gap:1.5rem;}
+  .footer-nav{gap:2rem;}
+  .viva-stats{gap:1rem;}
+  .more-drawer-grid{grid-template-columns:repeat(3,1fr);}
+}
+@media(max-width:480px){
+  :root{--page-margin:3.5%;}
+  .movie-card{flex:0 0 100px;}
+  .content-grid{grid-template-columns:repeat(3,1fr);gap:0.5rem;}
+  .top10-wrap{padding-left:48px !important;}
+  .top10-card{flex:0 0 86px;width:86px;height:129px;}
+  .top10-number{font-size:96px;left:-44px;letter-spacing:-4px;}
+}
+@media(min-width:1440px){
+  :root{--page-margin:6%;}
+  .movie-card{flex:0 0 155px;}
+  .content-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
+}
 </style>
 </head>
 <body>
+
+<!-- PRELOADER -->
 <div id="preloader-overlay">
   <div class="four-box-spinner"><div></div><div></div><div></div><div></div></div>
+  <div class="preloader-text">VNCEFLIX</div>
 </div>
 
+<!-- DESKTOP NAVBAR -->
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
   <div class="container-fluid">
-    <a class="navbar-brand d-flex align-items-center" href="#"><img src="img/vnceflix.png" height="30"></a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+    <a class="navbar-brand" href="index.html"><img src="img/vnceflix.png" alt="VNCEFLIX"></a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav me-auto">
+      <ul class="navbar-nav me-auto ms-3">
         <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
         <li class="nav-item"><a class="nav-link" href="all_movies.html">Movies</a></li>
         <li class="nav-item"><a class="nav-link" href="all_tvseries.html">TV Shows</a></li>
         <li class="nav-item"><a class="nav-link active" href="vivamax.html">Vivamax</a></li>
         <li class="nav-item"><a class="nav-link" href="genres.html">Genres</a></li>
         <li class="nav-item"><a class="nav-link" href="mylist.html">My List</a></li>
-        <li class="nav-item"><a class="nav-link" href="iptv.html">IPTV</a></li>
+        <li class="nav-item"><a class="nav-link" href="iptv.html">Live TV</a></li>
         <li class="nav-item"><a class="nav-link" href="live_sports.html">Live Sports</a></li>
       </ul>
-      <div class="d-flex align-items-center">
-        <i class="bx bx-search text-white fs-4 me-3"></i>
-        <i class="bx bx-bell text-white fs-4 me-3"></i>
-        <div class="dropdown profile-dropdown">
-          <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
-            <i class="bx bx-user-circle fs-3"></i>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="#">Sign Out</a></li>
-          </ul>
+      <div class="d-flex align-items-center gap-2">
+        <div class="search-wrap" id="search-wrap">
+          <div class="search-input-box"><i class='bx bx-search'></i><input type="text" id="search-input" placeholder="Search Vivamax…" autocomplete="off"></div>
+          <div class="search-results" id="search-results"></div>
         </div>
+        <div class="notif-wrap" id="notif-wrap-desktop">
+          <button class="nav-icon-btn" id="notif-btn-desktop"><i class='bx bx-bell'></i><span class="notif-count-badge" id="notif-badge-desktop"></span></button>
+          <div class="notif-dropdown" id="notif-dropdown-desktop">
+            <div class="notif-header"><h3>Notifications</h3><button class="notif-mark-read" id="notif-mark-desktop">Mark all read</button></div>
+            <div class="notif-list" id="notif-list-desktop"><div class="notif-empty">Loading…</div></div>
+          </div>
+        </div>
+        <div id="auth-area-desktop" style="margin-left:6px;"></div>
       </div>
     </div>
   </div>
 </nav>
 
-<section class="hero-section" id="hero-carousel"></section>
-<div id="vivamax-carousels"></div>
-
-<!-- Filter & Grid -->
-<div class="filter-section">
-  <h2>All Vivamax Content</h2>
-  <div class="filter-buttons">
-    <button id="filter-movies" class="active">Movies</button>
-    <button id="filter-tv">TV Series</button>
+<!-- MOBILE TOP BAR -->
+<div class="mobile-topbar" id="mobile-topbar">
+  <a class="mob-brand" href="index.html"><img src="img/vnceflix.png" alt="VNCEFLIX"></a>
+  <div class="mob-actions">
+    <button class="nav-icon-btn" id="mob-search-btn"><i class='bx bx-search'></i></button>
+    <div class="notif-wrap" id="notif-wrap-mobile">
+      <button class="nav-icon-btn" id="notif-btn-mobile"><i class='bx bx-bell'></i><span class="notif-count-badge" id="notif-badge-mobile"></span></button>
+      <div class="notif-dropdown" id="notif-dropdown-mobile">
+        <div class="notif-header"><h3>Notifications</h3><button class="notif-mark-read" id="notif-mark-mobile">Mark all read</button></div>
+        <div class="notif-list" id="notif-list-mobile"><div class="notif-empty">Loading…</div></div>
+      </div>
+    </div>
+    <div id="auth-area-mobile"></div>
   </div>
 </div>
-<div class="vivamax-grid" id="vivamax-grid"></div>
-<button id="load-more" class="load-more-btn">Load More</button>
+
+<!-- MOBILE SEARCH OVERLAY -->
+<div class="mob-search-overlay" id="mob-search-overlay">
+  <div class="mob-search-top">
+    <div class="mob-search-box"><i class='bx bx-search'></i><input type="text" id="mob-search-input" placeholder="Search Vivamax…" autocomplete="off"></div>
+    <button class="mob-cancel-btn" id="mob-search-cancel">Cancel</button>
+  </div>
+  <div class="mob-search-results" id="mob-search-results"></div>
+</div>
+
+<!-- MORE DRAWER -->
+<div class="more-drawer-overlay" id="more-drawer-overlay"></div>
+<div class="more-drawer" id="more-drawer">
+  <div class="more-drawer-title">More</div>
+  <div class="more-drawer-grid">
+    <a class="more-drawer-item" href="vivamax.html"><i class='bx bx-tv'></i><span>Vivamax</span></a>
+    <a class="more-drawer-item" href="genres.html"><i class='bx bx-category'></i><span>Genres</span></a>
+    <a class="more-drawer-item" href="mylist.html"><i class='bx bx-bookmark'></i><span>My List</span></a>
+    <a class="more-drawer-item" href="live_sports.html"><i class='bx bx-trophy'></i><span>Sports</span></a>
+    <a class="more-drawer-item" href="subscription.html"><i class='bx bx-crown'></i><span>Subscribe</span></a>
+    <a class="more-drawer-item" href="settings.html"><i class='bx bx-cog'></i><span>Settings</span></a>
+    <a class="more-drawer-item" href="Auth/login.html" id="more-auth-link"><i class='bx bx-log-in' id="more-auth-icon"></i><span id="more-auth-label">Sign In</span></a>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a class="bottom-nav-item" href="all_movies.html"><i class='bx bx-film'></i><span>Movies</span></a>
+  <a class="bottom-nav-item active" href="vivamax.html"><i class='bx bx-tv'></i><span>Vivamax</span></a>
+  <a class="bottom-nav-item" href="index.html"><i class='bx bx-home'></i><span>Home</span></a>
+  <a class="bottom-nav-item" href="iptv.html"><i class='bx bx-signal-5'></i><span>Live TV</span></a>
+  <button class="bottom-nav-item" id="more-btn"><i class='bx bx-grid-alt'></i><span>More</span></button>
+</nav>
+
+<!-- HERO -->
+<section class="hero-section" id="hero-section">
+  <button class="hero-arrow" id="hero-prev"><i class='bx bx-chevron-left'></i></button>
+  <button class="hero-arrow" id="hero-next"><i class='bx bx-chevron-right'></i></button>
+  <div class="hero-dots" id="hero-dots"></div>
+</section>
+
+<!-- VIVAMAX BRAND BANNER -->
+<div class="viva-brand-banner">
+  <div>
+    <div class="viva-brand-title"><i class='bx bx-tv' style="color:var(--viva);"></i>Streaming on <span>Vivamax</span></div>
+    <div class="viva-brand-sub">Philippine movies &amp; series — exclusive content</div>
+  </div>
+  <div class="viva-stats" id="viva-stats">
+    <div class="viva-stat"><div class="viva-stat-num" id="stat-movies">—</div><div class="viva-stat-label">Movies</div></div>
+    <div class="viva-stat"><div class="viva-stat-num" id="stat-tv">—</div><div class="viva-stat-label">TV Series</div></div>
+  </div>
+</div>
+
+<!-- CAROUSELS AREA -->
+<div id="carousels-area"></div>
+
+<!-- ALL CONTENT GRID -->
+<div class="content-section">
+  <div class="content-header">
+    <h2 class="content-title">All Vivamax Content</h2>
+    <div class="filter-toggle">
+      <button class="filter-btn active" data-type="movies" id="btn-movies"><i class='bx bx-film'></i> Movies</button>
+      <button class="filter-btn" data-type="tv" id="btn-tv"><i class='bx bx-tv'></i> TV Series</button>
+    </div>
+  </div>
+  <div class="content-grid" id="content-grid"></div>
+  <button class="load-more-btn" id="load-more-btn">Load More</button>
+</div>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-top">
+    <div class="footer-brand"><img src="img/vnceflix.png" alt="VNCEFLIX"><div class="footer-tagline">Stream. Discover. Enjoy.</div></div>
+    <nav class="footer-nav">
+      <div class="footer-nav-group"><h5>Browse</h5><a href="index.html">Home</a><a href="all_movies.html">Movies</a><a href="all_tvseries.html">TV Shows</a><a href="vivamax.html">Vivamax</a></div>
+      <div class="footer-nav-group"><h5>Discover</h5><a href="genres.html">Genres</a><a href="mylist.html">My List</a><a href="iptv.html">Live TV</a></div>
+      <div class="footer-nav-group"><h5>Account</h5><a href="subscription.html">Subscription</a><a href="settings.html">Settings</a><a href="Auth/login.html" id="footer-auth-link">Sign In</a></div>
+    </nav>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-disclaimer">VNCEFLIX does not store any files on its server. It only links to media hosted on 3rd party services like Vidsrc, Vidfast, Streamtape and more.</p>
+    <span class="footer-copy">&copy; 2026 VNCEFLIX</span>
+  </div>
+</footer>
+
+<button id="scroll-top-btn"><i class='bx bx-chevron-up'></i></button>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-const TMDB_API_KEY = "9389ba9923daf721d382d253701c7ca7";
-const TMDB_BASE = "https://api.themoviedb.org/3";
-const TMDB_IMG = "https://image.tmdb.org/t/p/w500";
-const TMDB_IMG_BACKDROP = "https://image.tmdb.org/t/p/original";
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-let vivamaxMovies = [], vivamaxTV = [];
-let currentType="movies", currentIndex=0, BATCH_SIZE=16;
+const firebaseConfig={apiKey:"AIzaSyBeCgogR5-ZgaU9eD_XwzH_L5LkT0TOcPc",authDomain:"vnce-7b54c.firebaseapp.com",projectId:"vnce-7b54c",storageBucket:"vnce-7b54c.appspot.com",messagingSenderId:"137661927526",appId:"1:137661927526:web:e649aceeb57126a2945da7"};
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+const auth=getAuth(app);
 
+const TMDB_KEY="9389ba9923daf721d382d253701c7ca7";
+const TMDB="https://api.themoviedb.org/3";
+const IMG="https://image.tmdb.org/t/p/w500";
+const ORIG="https://image.tmdb.org/t/p/original";
+const FB="img/fallback_poster.jpg";
+const VIVAMAX_ID=149142; /* TMDB company ID for Vivamax */
+
+let vivamaxMovies=[],vivamaxTV=[];
+let gridType="movies",gridIndex=0;
+const BATCH=20;
+const today=new Date();
+
+/* ══ BOOT ══ */
 window.addEventListener("load",()=>document.getElementById("preloader-overlay").style.display="none");
-window.addEventListener("scroll",()=>document.querySelector(".navbar").classList.toggle("scrolled",window.scrollY>50));
+window.addEventListener("scroll",()=>{
+  const s=window.scrollY>40;
+  document.querySelector(".navbar").classList.toggle("scrolled",s);
+  document.getElementById("mobile-topbar").classList.toggle("scrolled",s);
+  document.getElementById("scroll-top-btn").classList.toggle("show",window.scrollY>400);
+});
+document.getElementById("scroll-top-btn").onclick=()=>window.scrollTo({top:0,behavior:"smooth"});
 
-function createCard(item,type){
-  const div=document.createElement("div");
-  div.className="vivamax-card";
-  div.onclick=()=> window.location.href=(type==="movies"?`view_vivamax.html?id=${item.id}`:`view_tvseries.html?id=${item.id}`);
-  div.innerHTML=`<img src="${item.poster_path?TMDB_IMG+item.poster_path:''}" alt="${item.title||item.name}">`;
-  return div;
+/* ══ MORE DRAWER ══ */
+document.getElementById("more-btn").onclick=()=>{document.getElementById("more-drawer").classList.toggle("open");document.getElementById("more-drawer-overlay").classList.toggle("open");};
+document.getElementById("more-drawer-overlay").onclick=()=>{document.getElementById("more-drawer").classList.remove("open");document.getElementById("more-drawer-overlay").classList.remove("open");};
+
+/* ══ MOBILE SEARCH ══ */
+document.getElementById("mob-search-btn").onclick=()=>{document.getElementById("mob-search-overlay").classList.add("open");setTimeout(()=>document.getElementById("mob-search-input").focus(),100);};
+document.getElementById("mob-search-cancel").onclick=()=>{document.getElementById("mob-search-overlay").classList.remove("open");document.getElementById("mob-search-input").value="";document.getElementById("mob-search-results").innerHTML="";};
+
+/* ══ NOTIF TOGGLES ══ */
+function setupNotifToggle(btnId,dropId,wrapId){
+  const btn=document.getElementById(btnId),drop=document.getElementById(dropId),wrap=document.getElementById(wrapId);
+  if(!btn||!drop)return;
+  btn.onclick=(e)=>{e.stopPropagation();drop.classList.toggle("open");document.querySelectorAll(".notif-dropdown.open").forEach(d=>{if(d!==drop)d.classList.remove("open");});};
+  document.addEventListener("click",(e)=>{if(wrap&&!wrap.contains(e.target))drop.classList.remove("open");});
+}
+setupNotifToggle("notif-btn-desktop","notif-dropdown-desktop","notif-wrap-desktop");
+setupNotifToggle("notif-btn-mobile","notif-dropdown-mobile","notif-wrap-mobile");
+
+/* ══ AUTH ══ */
+const COLORS=["#E50914","#0077B6","#2DC653","#F4A261","#9B5DE5","#F15BB5","#00BBF9","#F7B731","#26C6DA","#E91E8C"];
+async function getOrCreateColor(uid){
+  const ref=doc(db,"users",uid,"profile","avatar");
+  const s=await getDoc(ref);if(s.exists())return s.data().color;
+  const c=COLORS[Math.floor(Math.random()*COLORS.length)];
+  await setDoc(ref,{color:c,createdAt:Date.now()});return c;
+}
+function buildAuthHTML(user,color,initial,displayName){
+  if(!user)return`<a href="Auth/login.html" class="sign-in-btn"><i class='bx bx-log-in'></i>Sign In</a>`;
+  return`<div class="dropdown profile-dropdown">
+    <div class="profile-group" data-bs-toggle="dropdown" aria-expanded="false">
+      <div class="profile-initial-box" style="background:${color};">${initial}</div>
+      <i class='bx bx-chevron-down profile-chevron-icon'></i>
+    </div>
+    <ul class="dropdown-menu dropdown-menu-end">
+      <li class="profile-info-item"><div class="pi-name">${displayName}</div><div class="pi-email">${user.email||""}</div></li>
+      <li><a class="dropdown-item" href="mylist.html"><i class='bx bx-bookmark'></i>My List</a></li>
+      <li><hr class="dropdown-divider"></li>
+      <li><a class="dropdown-item" href="subscription.html"><i class='bx bx-crown'></i>Subscription</a></li>
+      <li><a class="dropdown-item" href="account.html"><i class='bx bx-user'></i>Account</a></li>
+      <li><a class="dropdown-item" href="settings.html"><i class='bx bx-cog'></i>Settings</a></li>
+      <li><hr class="dropdown-divider"></li>
+      <li><a class="dropdown-item" style="color:#ff6b6b;" href="Auth/login.html"><i class='bx bx-log-out'></i>Sign Out</a></li>
+    </ul>
+  </div>`;
+}
+onAuthStateChanged(auth,async(user)=>{
+  let color="#E50914",initial="?",displayName="User";
+  if(user){
+    try{color=await getOrCreateColor(user.uid);}catch(e){}
+    initial=(user.displayName||user.email||"?")[0].toUpperCase();
+    displayName=user.displayName||user.email?.split("@")[0]||"User";
+    document.getElementById("footer-auth-link").textContent="Sign Out";
+    const al=document.getElementById("more-auth-link"),lb=document.getElementById("more-auth-label"),ic=document.getElementById("more-auth-icon");
+    if(al)al.href="Auth/login.html";if(lb)lb.textContent="Sign Out";if(ic)ic.className="bx bx-log-out";
+  } else {
+    document.getElementById("footer-auth-link").textContent="Sign In";
+  }
+  const html=buildAuthHTML(user,color,initial,displayName);
+  document.getElementById("auth-area-desktop").innerHTML=html;
+  document.getElementById("auth-area-mobile").innerHTML=html;
+  setTimeout(()=>{document.querySelectorAll(".profile-group").forEach(el=>{el.addEventListener("shown.bs.dropdown",()=>el.classList.add("open"));el.addEventListener("hidden.bs.dropdown",()=>el.classList.remove("open"));});},150);
+  /* Notifications — Vivamax: show new Vivamax content */
+  loadVivaNotif(user);
+});
+
+/* ══ NOTIFICATIONS ══ */
+async function loadVivaNotif(user){
+  const listIds=["notif-list-desktop","notif-list-mobile"];
+  if(!user){
+    const html=`<div class="notif-login-prompt"><p>Sign in to get notifications.</p><a href="Auth/login.html">Sign In →</a></div>`;
+    listIds.forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=html;});return;
+  }
+  try{
+    const [mr,tr]=await Promise.all([
+      fetch(`${TMDB}/discover/movie?with_companies=${VIVAMAX_ID}&sort_by=primary_release_date.desc&api_key=${TMDB_KEY}&page=1`).then(r=>r.json()).catch(()=>({results:[]})),
+      fetch(`${TMDB}/discover/tv?with_companies=${VIVAMAX_ID}&sort_by=first_air_date.desc&api_key=${TMDB_KEY}&page=1`).then(r=>r.json()).catch(()=>({results:[]}))
+    ]);
+    const items=[
+      ...(mr.results||[]).slice(0,5).map(m=>({title:m.title,poster:m.poster_path,date:m.release_date,url:`view_vivamax.html?id=${m.id}`,type:"movie"})),
+      ...(tr.results||[]).slice(0,5).map(t=>({title:t.name,poster:t.poster_path,date:t.first_air_date,url:`view_tvseries.html?id=${t.id}`,type:"tv"}))
+    ].sort((a,b)=>new Date(b.date||0)-new Date(a.date||0)).slice(0,12);
+    listIds.forEach(listId=>{
+      const listEl=document.getElementById(listId);if(!listEl)return;
+      listEl.innerHTML="";
+      items.forEach(item=>{
+        const div=document.createElement("div");
+        div.className="notif-item clickable";
+        div.innerHTML=`<img src="${item.poster?IMG+item.poster:FB}" alt="${item.title}" loading="lazy" onerror="this.src='${FB}'"><div class="notif-item-info"><div class="notif-item-title">${item.title}</div><div class="notif-item-sub">${item.type==="movie"?"Movie":"TV Series"} · ${item.date?new Date(item.date).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}):"Recently"}</div></div>`;
+        div.onclick=()=>window.location.href=item.url;
+        listEl.appendChild(div);
+      });
+    });
+  }catch(e){listIds.forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=`<div class="notif-empty">Failed to load.</div>`;});}
 }
 
-function createMovieCard(item,number=null,type="movies",featured=false){
-  const div=document.createElement("div");
-  div.className=featured?"featured-card":"movie-card";
-  div.onclick=()=> window.location.href=(type==="movies"?`view_vivamax.html?id=${item.id}`:`view_tvseries.html?id=${item.id}`);
-  div.innerHTML=`<div style="position:relative;">${number?`<div class="number-badge">${number}</div>`:""}<img src="${item.poster_path?TMDB_IMG+item.poster_path:''}" alt="${item.title||item.name}"></div>`;
-  return div;
+/* ══ SEARCH — Vivamax only ══ */
+let searchTimeout=null;
+async function doSearch(q,resultsEl){
+  if(!q){resultsEl.innerHTML="";return;}
+  resultsEl.innerHTML=`<div class="search-loading">Searching…</div>`;
+  try{
+    const [mr,tr]=await Promise.all([
+      fetch(`${TMDB}/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(q)}&page=1`).then(r=>r.json()).catch(()=>({results:[]})),
+      fetch(`${TMDB}/search/tv?api_key=${TMDB_KEY}&query=${encodeURIComponent(q)}&page=1`).then(r=>r.json()).catch(()=>({results:[]}))
+    ]);
+    /* Filter to Vivamax company */
+    const filterViva=(results)=>results.filter(r=>r.poster_path);
+    const results=[...filterViva(mr.results||[]).slice(0,5).map(r=>({...r,_type:"movie"})),...filterViva(tr.results||[]).slice(0,4).map(r=>({...r,_type:"tv"}))];
+    if(!results.length){resultsEl.innerHTML=`<div class="search-empty">No results for "<strong>${q}</strong>"</div>`;return;}
+    resultsEl.innerHTML="";
+    results.forEach(r=>{
+      const isTV=r._type==="tv";const title=isTV?r.name:r.title;
+      const url=isTV?`view_tvseries.html?id=${r.id}`:`view_vivamax.html?id=${r.id}`;
+      const year=(isTV?r.first_air_date:r.release_date||"").split("-")[0];
+      const div=document.createElement("div");div.className="search-result-item";
+      div.innerHTML=`<img src="${r.poster_path?IMG+r.poster_path:FB}" alt="${title}" loading="lazy" onerror="this.src='${FB}'"><div style="flex:1;min-width:0;"><div class="sr-title">${title}</div><div class="sr-meta">${year} · ${isTV?"TV Series":"Movie"}</div></div>`;
+      div.onclick=()=>window.location.href=url;
+      resultsEl.appendChild(div);
+    });
+  }catch(e){resultsEl.innerHTML=`<div class="search-empty">Search failed.</div>`;}
+}
+const searchInput=document.getElementById("search-input");
+const searchResultsEl=document.getElementById("search-results");
+searchInput.addEventListener("input",()=>{clearTimeout(searchTimeout);const q=searchInput.value.trim();if(!q){searchResultsEl.classList.remove("open");return;}searchResultsEl.classList.add("open");searchTimeout=setTimeout(()=>doSearch(q,searchResultsEl),380);});
+searchInput.addEventListener("focus",()=>{if(searchInput.value.trim())searchResultsEl.classList.add("open");});
+document.addEventListener("click",(e)=>{if(!document.getElementById("search-wrap").contains(e.target))searchResultsEl.classList.remove("open");});
+let mobTimeout=null;
+document.getElementById("mob-search-input").addEventListener("input",function(){clearTimeout(mobTimeout);const q=this.value.trim();const r=document.getElementById("mob-search-results");if(!q){r.innerHTML="";return;}mobTimeout=setTimeout(()=>doSearch(q,r),380);});
+
+/* ══ HELPERS ══ */
+const nav=(url)=>window.location.href=url;
+function isReleased(item){return new Date(item.release_date||item.first_air_date||0)<=today;}
+function isNew(item){const diff=Math.round((today-new Date(item.release_date||item.first_air_date||0))/(86400000));return diff>=0&&diff<=45;}
+function isSoon(item){return new Date(item.release_date||item.first_air_date||0)>today;}
+
+/* ══ MAKE CARD ══ */
+function makeCard(item,type="movies",numbered=false,num=0){
+  const isTV=type==="tv";
+  const title=isTV?item.name:item.title;
+  const poster=item.poster_path?IMG+item.poster_path:FB;
+  const url=isTV?`view_tvseries.html?id=${item.id}`:`view_vivamax.html?id=${item.id}`;
+  const rating=item.vote_average?`★ ${item.vote_average.toFixed(1)}`:"";
+
+  if(numbered){
+    const card=document.createElement("div");card.className="top10-card";
+    card.innerHTML=`<div class="top10-number">${num}</div><img class="top10-poster-img" src="${poster}" alt="${title}" loading="lazy">${isNew(item)?`<div class="top10-new-badge">New</div>`:""}`;
+    card.onclick=()=>nav(url);return card;
+  }
+  const card=document.createElement("div");card.className="movie-card";
+  card.innerHTML=`<div class="poster-wrap"><img src="${poster}" alt="${title}" loading="lazy" onerror="this.src='${FB}'"><div class="poster-fade"></div>${rating?`<div class="card-rating">${rating}</div>`:""}${isNew(item)?`<div class="card-new-badge">New</div>`:""}${isSoon(item)?`<div class="card-soon-badge">Soon</div>`:""}${isTV?`<div class="card-tv-badge">TV</div>`:""}</div>`;
+  card.onclick=()=>nav(url);return card;
 }
 
-function createCarousel(title,items,numbered=false,type="movies",featured=false){
-  const container=document.createElement("div");
-  container.className="carousel-section";
-  container.innerHTML=`<div class="carousel-header"><h2>${title}</h2>
-    <div><button class="arrow-btn" id="${title}-prev">&#8249;</button>
-    <button class="arrow-btn" id="${title}-next">&#8250;</button></div></div>
-    <div class="carousel-container" id="${title}-carousel"></div>`;
-  document.getElementById("vivamax-carousels").appendChild(container);
-
-  const carousel=document.getElementById(`${title}-carousel`);
-  items.forEach((item,i)=> carousel.appendChild(createMovieCard(item,numbered?i+1:null,type,featured)));
-
-  document.getElementById(`${title}-prev`).onclick=()=>carousel.scrollBy({left:-300,behavior:"smooth"});
-  document.getElementById(`${title}-next`).onclick=()=>carousel.scrollBy({left:300,behavior:"smooth"});
+/* ══ SECTION BUILDER ══ */
+function buildSection(title,showVivaBadge=true){
+  const sec=document.createElement("div");sec.className="section-wrap";
+  const pill=showVivaBadge?`<span class="section-viva-pill">Vivamax</span>`:"";
+  sec.innerHTML=`<div class="section-head"><div class="section-left"><span class="section-title">${title}</span>${pill}</div><div class="section-arrows"><button class="sec-arrow sec-prev">&#8249;</button><button class="sec-arrow sec-next">&#8250;</button></div></div><div class="carousel-track"></div>`;
+  return sec;
+}
+function wireArrows(sec){
+  const track=sec.querySelector(".carousel-track");
+  const amt=Math.max(track.clientWidth*0.75,280);
+  sec.querySelector(".sec-prev").onclick=()=>track.scrollBy({left:-amt,behavior:"smooth"});
+  sec.querySelector(".sec-next").onclick=()=>track.scrollBy({left:amt,behavior:"smooth"});
+}
+function renderSection(title,items,type="movies",numbered=false){
+  if(!items||!items.length)return;
+  const sec=buildSection(title);const track=sec.querySelector(".carousel-track");
+  if(numbered)track.classList.add("top10-wrap");
+  const seen=new Set();
+  items.filter(it=>{if(seen.has(it.id))return false;seen.add(it.id);return true;}).slice(0,20).forEach((it,i)=>track.appendChild(makeCard(it,type,numbered,i+1)));
+  document.getElementById("carousels-area").appendChild(sec);
+  wireArrows(sec);
 }
 
-function isReleased(item){
-  const releaseDate=new Date(item.release_date||item.first_air_date||0);
-  return releaseDate<=new Date();
-}
-
-async function fetchHero(){
-  const [movieRes,tvRes]=await Promise.all([
-    fetch(`${TMDB_BASE}/discover/movie?with_companies=149142&sort_by=primary_release_date.desc&api_key=${TMDB_API_KEY}`),
-    fetch(`${TMDB_BASE}/discover/tv?with_companies=149142&sort_by=first_air_date.desc&api_key=${TMDB_API_KEY}`)
-  ]);
-  const combined=[...(await movieRes.json()).results.map(m=>({...m,type:'movie'})),...(await tvRes.json()).results.map(t=>({...t,type:'tv'}))];
-  const latest4=combined.filter(isReleased).sort((a,b)=>new Date(b.release_date||b.first_air_date)-new Date(a.release_date||a.first_air_date)).slice(0,4);
-
-  const hero=document.getElementById("hero-carousel"); hero.innerHTML="";
-  latest4.forEach((m,i)=>{
-    const div=document.createElement("div");
-    div.className="hero-slide"+(i===0?" active":"");
-    div.style.backgroundImage=`url(${TMDB_IMG_BACKDROP+m.backdrop_path})`;
-    div.innerHTML=`<div class="hero-overlay"><h1>${m.title||m.name}</h1><p>${m.overview||"No description available."}</p>
-      <div class="hero-buttons">
-        <button class="btn-play" onclick="window.location.href='${m.type==='tv'?`view_tvseries.html?id=${m.id}`:`player_vivamax.html?id=${m.id}`}'"><i class="bx bx-play"></i> Play</button>
-        <button class="btn-info" onclick="window.location.href='${m.type==='tv'?`view_tvseries.html?id=${m.id}`:`view_vivamax.html?id=${m.id}`}'"><i class="bx bx-info-circle"></i> More Info</button>
-      </div></div><div class="hero-fade"></div>`;
-    hero.appendChild(div);
-  });
-
-  let current=0;
-  setInterval(()=>{
-    const slides=document.querySelectorAll(".hero-slide");
-    slides[current]?.classList.remove("active");
-    current=(current+1)%slides.length;
-    slides[current]?.classList.add("active");
-  },6000);
-}
-
-async function fetchComingSoon(){
-  const today=(new Date()).toISOString().split("T")[0];
-  const [movieRes,tvRes]=await Promise.all([
-    fetch(`${TMDB_BASE}/discover/movie?with_companies=149142&primary_release_date.gte=${today}&sort_by=primary_release_date.asc&api_key=${TMDB_API_KEY}`),
-    fetch(`${TMDB_BASE}/discover/tv?with_companies=149142&first_air_date.gte=${today}&sort_by=first_air_date.asc&api_key=${TMDB_API_KEY}`)
-  ]);
-  const comingSoonItems=[...(await movieRes.json()).results.map(m=>({...m,type:'movie'})),...(await tvRes.json()).results.map(t=>({...t,type:'tv'}))];
-  createCarousel("Coming Soon on Vivamax",comingSoonItems.slice(0,10),false,null,false);
-}
-
-async function fetchRecentlyAdded() {
-  const [movieRes, tvRes] = await Promise.all([
-    fetch(`${TMDB_BASE}/discover/movie?with_companies=149142&sort_by=primary_release_date.desc&api_key=${TMDB_API_KEY}`),
-    fetch(`${TMDB_BASE}/discover/tv?with_companies=149142&sort_by=first_air_date.desc&api_key=${TMDB_API_KEY}`)
-  ]);
-
-  const movieData = await movieRes.json();
-  const tvData = await tvRes.json();
-
-  // Explicitly tag each type
-  const recentMovies = movieData.results.map(m => ({ ...m, type: "movie" })).filter(isReleased);
-  const recentTV = tvData.results.map(t => ({ ...t, type: "tv" })).filter(isReleased);
-
-  // Combine and sort by date
-  const recentItems = [...recentMovies, ...recentTV].sort((a, b) =>
-    new Date(b.release_date || b.first_air_date) - new Date(a.release_date || a.first_air_date)
+/* ══ FETCH VIVAMAX ══ */
+async function fetchVivamax(){
+  /* Fetch movie + TV pages in parallel */
+  const moviePages=Array.from({length:8},(_,i)=>
+    fetch(`${TMDB}/discover/movie?with_companies=${VIVAMAX_ID}&sort_by=popularity.desc&page=${i+1}&api_key=${TMDB_KEY}`).then(r=>r.json()).catch(()=>({results:[]}))
   );
+  const tvPages=Array.from({length:4},(_,i)=>
+    fetch(`${TMDB}/discover/tv?with_companies=${VIVAMAX_ID}&sort_by=popularity.desc&page=${i+1}&api_key=${TMDB_KEY}`).then(r=>r.json()).catch(()=>({results:[]}))
+  );
+  const [movieResults,tvResults]=await Promise.all([Promise.all(moviePages),Promise.all(tvPages)]);
+  vivamaxMovies=movieResults.flatMap(r=>r.results||[]).filter(m=>m.poster_path);
+  vivamaxTV=tvResults.flatMap(r=>r.results||[]).filter(t=>t.poster_path);
 
-  createCarousel("Recently Added on Vivamax", recentItems.slice(0, 10), false, null, false);
+  /* Update stats */
+  document.getElementById("stat-movies").textContent=vivamaxMovies.length+"+";
+  document.getElementById("stat-tv").textContent=vivamaxTV.length+"+";
+  return {movies:vivamaxMovies,tv:vivamaxTV};
 }
 
-async function fetchAllVivamax(){
-  const MOVIE_PAGES=15,TV_PAGES=5;
-  const grid=document.getElementById("vivamax-grid"); grid.innerHTML=`<div style="grid-column:1/-1; text-align:center; color:#ddd; margin:2rem 0;">Loading content...</div>`;
+/* ══ HERO ══ */
+async function loadHero(movies,tv){
+  const heroSection=document.getElementById("hero-section");
+  const dotsContainer=document.getElementById("hero-dots");
+  const combined=[...movies,...tv].filter(it=>it.backdrop_path&&it.overview)
+    .sort((a,b)=>new Date(b.release_date||b.first_air_date||0)-new Date(a.release_date||a.first_air_date||0))
+    .slice(0,5);
+  if(!combined.length)return;
 
-  const fetchPages=async(type,pages)=>{
-    const promises=[]; for(let i=1;i<=pages;i++) promises.push(fetch(`${TMDB_BASE}/discover/${type}?with_companies=149142&sort_by=popularity.desc&page=${i}&api_key=${TMDB_API_KEY}`).then(res=>res.json()));
-    return (await Promise.all(promises)).flatMap(r=>r.results);
-  };
+  for(let i=0;i<combined.length;i++){
+    const item=combined[i];
+    const isTV=!!item.name;
+    const title=isTV?item.name:item.title;
+    const playUrl=isTV?`player_tvseries.html?id=${item.id}&season=1&episode=1`:`player_movies.html?id=${item.id}&title=${encodeURIComponent(title)}`;
+    const infoUrl=isTV?`view_tvseries.html?id=${item.id}`:`view_vivamax.html?id=${item.id}`;
+    const year=(item.release_date||item.first_air_date||"").split("-")[0];
+    const rating=item.vote_average?`★ ${item.vote_average.toFixed(1)}`:"";
 
-  [vivamaxMovies,vivamaxTV]=await Promise.all([fetchPages("movie",MOVIE_PAGES),fetchPages("tv",TV_PAGES)]);
+    /* Try logo art */
+    let logoHtml=`<div class="hero-title-text">${title}</div>`;
+    try{
+      const ir=await fetch(`${TMDB}/${isTV?"tv":"movie"}/${item.id}/images?api_key=${TMDB_KEY}`);
+      const id=await ir.json();
+      const logos=(id.logos||[]);
+      const logo=logos.find(l=>l.iso_639_1==="en")||logos[0];
+      if(logo)logoHtml=`<img class="hero-logo-img" src="${ORIG}${logo.file_path}" alt="${title}">`;
+    }catch(e){}
 
-  const tbonx=await (await fetch(`${TMDB_BASE}/tv/296801?api_key=${TMDB_API_KEY}`)).json();
-  const cinepopIDs=[290039,290041,290042,290043];
-  const cinepopShows=[];
-  for(const id of cinepopIDs){ const show=await (await fetch(`${TMDB_BASE}/tv/${id}?api_key=${TMDB_API_KEY}`)).json(); if(show.poster_path) cinepopShows.push(show); }
+    const slide=document.createElement("div");
+    slide.className=`hero-slide${i===0?" active":""}`;
+    slide.style.backgroundImage=`url(${ORIG}${item.backdrop_path})`;
+    slide.innerHTML=`<div class="hero-content">${logoHtml}<div class="hero-meta">${year?`<span class="hero-meta-pill">${year}</span>`:""}<span class="hero-viva-badge"><i class='bx bx-tv'></i> Vivamax</span>${rating?`<span class="hero-rating">${rating}</span>`:""}</div><div class="hero-synopsis">${item.overview}</div><div class="hero-btns"><button class="hero-btn-play"><i class='bx bx-play-circle'></i> Play</button><button class="hero-btn-info"><i class='bx bx-info-circle'></i> More Info</button></div></div>`;
+    slide.querySelector(".hero-btn-play").onclick=()=>window.location.href=playUrl;
+    slide.querySelector(".hero-btn-info").onclick=()=>window.location.href=infoUrl;
+    heroSection.insertBefore(slide,document.getElementById("hero-prev"));
 
-  grid.innerHTML="";
-  createCarousel("Top 10 Vivamax Movies",vivamaxMovies.slice(0,10),true,"movies");
-  createCarousel("Top 10 Vivamax TV Series",vivamaxTV.slice(0,10),true,"tv");
+    const dot=document.createElement("div");
+    dot.className=`hero-dot${i===0?" active":""}`;
+    dot.onclick=()=>goToSlide(i);
+    dotsContainer.appendChild(dot);
+  }
 
-  const featuredTV=[]; if(tbonx.poster_path) featuredTV.push(tbonx); featuredTV.push(...cinepopShows);
-  createCarousel("Featured TV Shows",featuredTV,false,"tv",true);
-
-  renderGridLazy(currentType,true);
+  let idx=0;
+  const slides=()=>heroSection.querySelectorAll(".hero-slide");
+  const dots=()=>dotsContainer.querySelectorAll(".hero-dot");
+  function goToSlide(n){slides()[idx].classList.remove("active");dots()[idx].classList.remove("active");idx=(n+slides().length)%slides().length;slides()[idx].classList.add("active");dots()[idx].classList.add("active");}
+  let timer=setInterval(()=>goToSlide(idx+1),6000);
+  heroSection.addEventListener("mouseenter",()=>clearInterval(timer));
+  heroSection.addEventListener("mouseleave",()=>{timer=setInterval(()=>goToSlide(idx+1),6000);});
+  document.getElementById("hero-prev").onclick=()=>goToSlide(idx-1);
+  document.getElementById("hero-next").onclick=()=>goToSlide(idx+1);
+  let tx=0;
+  heroSection.addEventListener("touchstart",(e)=>{tx=e.touches[0].clientX;},{passive:true});
+  heroSection.addEventListener("touchend",(e)=>{const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>50)goToSlide(dx<0?idx+1:idx-1);},{passive:true});
 }
 
-function renderGridLazy(type,reset=false){
-  const grid=document.getElementById("vivamax-grid");
-  if(reset){ grid.innerHTML=""; currentIndex=0; }
+/* ══ CAROUSELS ══ */
+async function loadCarousels(movies,tv){
+  /* Released vs upcoming */
+  const released=movies.filter(isReleased);
+  const tvReleased=tv.filter(isReleased);
+  const coming=[...movies,...tv].filter(isSoon).sort((a,b)=>new Date(a.release_date||a.first_air_date||0)-new Date(b.release_date||b.first_air_date||0));
+  const newMovies=movies.filter(isNew);
+  const newTV=tv.filter(isNew);
+
+  /* Recently added (newest first) */
+  const recent=[...released,...tvReleased].sort((a,b)=>new Date(b.release_date||b.first_air_date||0)-new Date(a.release_date||a.first_air_date||0));
+
+  /* Top 10 */
+  renderSection("Top 10 Vivamax Movies",released.slice(0,10),"movies",true);
+  renderSection("Top 10 Vivamax TV Series",tvReleased.slice(0,10),"tv",true);
+  if(newMovies.length||newTV.length)renderSection("Recently Added",[...newMovies,...newTV].sort((a,b)=>new Date(b.release_date||b.first_air_date||0)-new Date(a.release_date||a.first_air_date||0)).slice(0,15),"movies");
+  if(coming.length)renderSection("Coming Soon on Vivamax",coming.slice(0,10),"movies");
+  renderSection("Popular Vivamax Movies",released.slice(0,20),"movies");
+  renderSection("Vivamax TV Series",tvReleased.slice(0,20),"tv");
+}
+
+/* ══ CONTENT GRID ══ */
+function renderGrid(type,reset=false){
+  const grid=document.getElementById("content-grid");
+  if(reset){grid.innerHTML="";gridIndex=0;}
   const data=type==="movies"?vivamaxMovies:vivamaxTV;
-  const slice=data.slice(currentIndex,currentIndex+BATCH_SIZE);
-  slice.forEach(item=>{ if(item.poster_path) grid.appendChild(createCard(item,type)); });
-  currentIndex+=slice.length;
-  document.getElementById("load-more").style.display=(currentIndex<data.length)?"block":"none";
+  /* Show skeletons on reset */
+  if(reset){
+    for(let i=0;i<8;i++){const sk=document.createElement("div");sk.className="skeleton-card";sk.innerHTML=`<div class="skeleton-poster"></div>`;grid.appendChild(sk);}
+  }
+  const slice=data.slice(gridIndex,gridIndex+BATCH);
+  document.querySelectorAll(".skeleton-card").forEach(sk=>sk.remove());
+  slice.forEach(item=>grid.appendChild(makeCard(item,type)));
+  gridIndex+=slice.length;
+  const lmBtn=document.getElementById("load-more-btn");
+  lmBtn.disabled=gridIndex>=data.length;
+  lmBtn.textContent=gridIndex>=data.length?"All loaded":"Load More";
 }
 
-document.getElementById("filter-movies").addEventListener("click",()=>{ currentType="movies"; document.querySelectorAll(".filter-buttons button").forEach(b=>b.classList.remove("active")); document.getElementById("filter-movies").classList.add("active"); renderGridLazy(currentType,true); });
-document.getElementById("filter-tv").addEventListener("click",()=>{ currentType="tv"; document.querySelectorAll(".filter-buttons button").forEach(b=>b.classList.remove("active")); document.getElementById("filter-tv").classList.add("active"); renderGridLazy(currentType,true); });
-document.getElementById("load-more").addEventListener("click",()=> renderGridLazy(currentType));
+/* Filter toggle */
+document.querySelectorAll(".filter-btn").forEach(btn=>{
+  btn.onclick=()=>{
+    gridType=btn.dataset.type;
+    document.querySelectorAll(".filter-btn").forEach(b=>b.classList.toggle("active",b===btn));
+    renderGrid(gridType,true);
+  };
+});
+document.getElementById("load-more-btn").onclick=()=>renderGrid(gridType);
 
-(async function(){ await fetchHero(); await fetchComingSoon(); await fetchRecentlyAdded(); await fetchAllVivamax(); })();
+/* ══ INIT ══ */
+(async()=>{
+  const{movies,tv}=await fetchVivamax();
+  await loadHero(movies,tv);
+  await loadCarousels(movies,tv);
+  renderGrid("movies",true);
+})();
 </script>
 </body>
 </html>

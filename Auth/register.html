@@ -1,222 +1,265 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>VNCEFLIX - Register</title>
-<link rel="icon" type="image/png" href="../img/BG/logo.png">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+<title>VNCEFLIX — Create Account</title>
+<link rel="icon" type="image/png" href="../img/logo.png">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
-  body {
-    margin: 0; padding: 0; min-height: 100vh;
-    font-family: 'Segoe UI', sans-serif;
-    display: flex; flex-direction: column; justify-content: space-between;
-    background-image: url('../img/BG/loginbg.jpg'); background-size: cover; background-position: center;
-    color: white;
-  }
-  body::before {
-    content: "";
-    position: fixed; top:0; left:0; width:100%; height:100%;
-    background: inherit; filter: blur(1px); z-index: -1;
-  }
-  .logo-wrapper { position: absolute; top:20px; left:100px; z-index:999; }
-  .register-wrapper { flex:1; display:flex; align-items:center; justify-content:center; padding:40px 0; }
-  #registerForm {
-    background-color: rgba(0,0,0,0.65); backdrop-filter: blur(8px);
-    padding:2.5rem 2rem; border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.7);
-    width:100%; max-width:400px; transition: all 0.3s ease;
-  }
-  #registerForm h4 { color:#fff; }
-  .form-group { position: relative; margin-bottom:1.5rem; }
-  .form-control {
-    width:100%; padding:16px 15px; border-radius:5px; border:none;
-    background-color: rgba(255,255,255,0.1); color:#fff; font-size:1rem;
-    transition: all 0.3s ease;
-  }
-  .form-control::placeholder { color: rgba(255,255,255,0.6); transition: all 0.2s ease; }
-  .form-control:focus {
-    background-color: rgba(255,255,255,0.2); outline:none; color:#fff;
-    box-shadow: 0 0 8px #E50914;
-  }
-  .form-group input:focus::placeholder,
-  .form-group input:not(:placeholder-shown)::placeholder {
-    font-size:0.75rem; transform: translateY(-1.5rem); opacity:1; color:#fff;
-  }
-  .password-wrapper { position: relative; }
-  #togglePassword {
-    position: absolute; top:50%; right:15px; transform: translateY(-50%);
-    cursor: pointer; color:#fff; font-size:1.1rem;
-  }
-  .btn-primary { background-color:#E50914; border:none; font-weight:600; transition: background-color 0.3s ease; }
-  .btn-primary:hover { background-color:#b0070f; box-shadow:none; }
-  a { color:#fff; text-decoration:none; }
-  a:hover { text-decoration: underline; }
-
-  /* Preloader */
-  #preloader { position:fixed; top:0; left:0; width:100%; height:100%;
-    background-color: rgba(0,0,0,0.7); display:flex; justify-content:center; align-items:center; z-index:9999; }
-  .four-box-spinner { width:50px; height:50px; display:flex; flex-wrap:wrap; gap:5px; }
-  .four-box-spinner div { width:20px; height:20px; background-color:red;
-    animation: boxFade 1.2s infinite ease-in-out; }
-  .four-box-spinner div:nth-child(2) { animation-delay:0.2s; }
-  .four-box-spinner div:nth-child(3) { animation-delay:0.4s; }
-  .four-box-spinner div:nth-child(4) { animation-delay:0.6s; }
-  @keyframes boxFade { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.3; transform:scale(0.7); } }
-
-  /* Toast */
-  .toast-container { position: fixed; top: 20px; right: 20px; z-index: 10000; }
+:root{
+  --accent:#E50914;--bg-deep:#05080f;--bg-base:#080d18;--bg-card:#0d1626;
+  --bg-card-hover:#111e33;--border-subtle:rgba(255,255,255,0.06);--border-mid:rgba(255,255,255,0.12);
+  --text-primary:#f0f2f5;--text-secondary:#8896aa;--text-muted:#3d5068;
+  --font-display:'Outfit',sans-serif;--font-body:'DM Sans',sans-serif;
+  --radius-sm:6px;--radius-md:10px;--radius-lg:14px;--radius-xl:20px;--transition:0.22s ease;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow-x:hidden;}
+body{background:var(--bg-deep);color:var(--text-primary);font-family:var(--font-body);-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 80% 60% at 80% 10%,rgba(229,9,20,0.06) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 20% 80%,rgba(56,100,220,0.04) 0%,transparent 55%);}
+#preloader{position:fixed;inset:0;background:rgba(5,8,15,0.92);display:flex;justify-content:center;align-items:center;z-index:9999;transition:opacity 0.3s ease;}
+#preloader.hide{opacity:0;pointer-events:none;}
+.four-box-spinner{display:flex;flex-wrap:wrap;gap:5px;width:46px;height:46px;}
+.four-box-spinner div{width:19px;height:19px;background:var(--accent);border-radius:3px;animation:boxFade 1.2s infinite ease-in-out;}
+.four-box-spinner div:nth-child(2){animation-delay:.2s;}.four-box-spinner div:nth-child(3){animation-delay:.4s;}.four-box-spinner div:nth-child(4){animation-delay:.6s;}
+@keyframes boxFade{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.2;transform:scale(0.65);}}
+.auth-topbar{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:1.2rem 2.5rem;border-bottom:1px solid var(--border-subtle);}
+.auth-topbar img{height:28px;}
+.topbar-link{font-family:var(--font-display);font-size:0.82rem;color:var(--text-muted);text-decoration:none;transition:color var(--transition);}
+.topbar-link:hover{color:var(--text-secondary);}
+.auth-page{flex:1;display:flex;align-items:center;justify-content:center;padding:2.5rem 1rem;position:relative;z-index:1;}
+.auth-card{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:2.5rem 2.2rem;width:100%;max-width:420px;box-shadow:0 24px 80px rgba(0,0,0,0.6);animation:cardIn 0.4s ease forwards;}
+@keyframes cardIn{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+.auth-card-title{font-family:var(--font-display);font-size:1.55rem;font-weight:800;color:var(--text-primary);margin-bottom:0.25rem;}
+.auth-card-sub{font-size:0.84rem;color:var(--text-muted);margin-bottom:2rem;}
+.field-wrap{display:flex;flex-direction:column;gap:0.4rem;margin-bottom:1rem;}
+.field-label{font-family:var(--font-display);font-size:0.72rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;}
+.field-input-wrap{position:relative;display:flex;align-items:center;}
+.field-input{width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border-mid);border-radius:var(--radius-md);padding:0.7rem 0.9rem;color:var(--text-primary);font-family:var(--font-body);font-size:0.9rem;outline:none;transition:all var(--transition);}
+.field-input::placeholder{color:var(--text-muted);}
+.field-input:focus{background:rgba(255,255,255,0.08);border-color:rgba(229,9,20,0.5);box-shadow:0 0 0 3px rgba(229,9,20,0.12);}
+.field-input.has-icon{padding-right:2.8rem;}
+.field-icon-btn{position:absolute;right:10px;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1rem;padding:4px;display:flex;align-items:center;transition:color var(--transition);}
+.field-icon-btn:hover{color:var(--text-secondary);}
+.field-error{font-size:0.75rem;color:#ff6b6b;margin-top:0.2rem;display:none;}
+.field-error.show{display:block;}
+/* Password strength */
+.pw-strength-bar{height:3px;border-radius:2px;background:var(--border-subtle);margin-top:6px;overflow:hidden;}
+.pw-strength-fill{height:100%;border-radius:2px;transition:width 0.3s ease,background 0.3s ease;width:0%;}
+.pw-strength-text{font-size:0.7rem;color:var(--text-muted);margin-top:3px;}
+.btn-primary-full{display:flex;align-items:center;justify-content:center;gap:0.5rem;width:100%;padding:0.8rem;border:none;border-radius:var(--radius-xl);background:var(--accent);color:#fff;font-family:var(--font-display);font-size:0.9rem;font-weight:700;cursor:pointer;transition:all var(--transition);margin-bottom:0.85rem;}
+.btn-primary-full:hover{background:#ff1a25;transform:translateY(-1px);box-shadow:0 8px 24px rgba(229,9,20,0.35);}
+.btn-primary-full:disabled{opacity:0.6;cursor:default;transform:none;}
+.btn-google{display:flex;align-items:center;justify-content:center;gap:0.6rem;width:100%;padding:0.75rem;border:1px solid var(--border-mid);border-radius:var(--radius-xl);background:rgba(255,255,255,0.04);color:var(--text-primary);font-family:var(--font-display);font-size:0.88rem;font-weight:600;cursor:pointer;transition:all var(--transition);margin-bottom:1.4rem;}
+.btn-google:hover{background:rgba(255,255,255,0.09);border-color:rgba(255,255,255,0.2);}
+.google-icon{width:18px;height:18px;flex-shrink:0;}
+.auth-divider{display:flex;align-items:center;gap:0.75rem;margin-bottom:1.2rem;}
+.auth-divider-line{flex:1;height:1px;background:var(--border-subtle);}
+.auth-divider-text{font-size:0.72rem;color:var(--text-muted);white-space:nowrap;}
+.auth-footer-text{text-align:center;font-size:0.82rem;color:var(--text-muted);}
+.auth-footer-text a{color:var(--accent);text-decoration:none;font-weight:600;transition:color var(--transition);}
+.auth-footer-text a:hover{color:#ff4444;}
+#toast-container{position:fixed;top:1.2rem;right:1.2rem;z-index:10000;display:flex;flex-direction:column;gap:0.5rem;}
+.toast-item{background:var(--bg-card);border:1px solid var(--border-mid);color:var(--text-primary);border-radius:var(--radius-md);padding:0.75rem 1.1rem;font-family:var(--font-body);font-size:0.83rem;box-shadow:0 8px 32px rgba(0,0,0,0.7);opacity:0;transform:translateX(20px);transition:all 0.3s ease;max-width:320px;display:flex;align-items:center;gap:0.5rem;}
+.toast-item.show{opacity:1;transform:translateX(0);}
+.toast-item.success{border-left:3px solid #22c55e;}
+.toast-item.danger{border-left:3px solid var(--accent);}
+.toast-item.warning{border-left:3px solid #f59e0b;}
+.auth-page-footer{position:relative;z-index:1;text-align:center;padding:1.2rem;font-size:0.72rem;color:var(--text-muted);border-top:1px solid var(--border-subtle);}
+@media(max-width:480px){.auth-topbar{padding:1rem 1.2rem;}.auth-card{padding:2rem 1.4rem;border-radius:var(--radius-md);}.auth-card-title{font-size:1.3rem;}}
 </style>
 </head>
 <body>
-<div id="preloader">
-  <div class="four-box-spinner"><div></div><div></div><div></div><div></div></div>
-</div>
 
-<div class="logo-wrapper">
-  <a href="login.html"><img src="../img/BG/vnceflix.png" alt="VNCEFLIX Logo" style="height:40px;"></a>
-</div>
+<div id="preloader"><div class="four-box-spinner"><div></div><div></div><div></div><div></div></div></div>
+<div id="toast-container"></div>
 
-<section class="vh-100 w-100 register-wrapper">
-  <div class="container h-100">
-    <div class="row d-flex justify-content-center align-items-center h-100">
-      <div class="col-md-8 col-lg-6 col-xl-4">
-        <form id="registerForm">
-          <h4 class="fw-bold mb-4">Sign Up</h4>
+<header class="auth-topbar">
+  <a href="../index.html"><img src="../img/vnceflix.png" alt="VNCEFLIX"></a>
+  <a href="login.html" class="topbar-link">Already have an account? <strong style="color:var(--text-secondary);">Sign in</strong></a>
+</header>
 
-          <div class="form-group mb-3">
-            <input type="text" id="username" class="form-control" placeholder="Username" required />
-          </div>
+<main class="auth-page">
+  <div class="auth-card">
+    <h1 class="auth-card-title">Create account</h1>
+    <p class="auth-card-sub">Start streaming in seconds — it's free</p>
 
-          <div class="form-group mb-3">
-            <input type="email" id="email" class="form-control" placeholder="Email" required />
-          </div>
+    <!-- Google -->
+    <button class="btn-google" id="google-btn">
+      <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Continue with Google
+    </button>
 
-          <div class="form-group password-wrapper mb-3">
-            <input type="password" id="password" class="form-control" placeholder="Password" required />
-            <i class="bi bi-eye-slash" id="togglePassword"></i>
-          </div>
-
-          <button type="submit" class="btn btn-primary btn-lg w-100">Sign Up</button>
-          <p class="text-center mt-3">Already have an account? <a href="login.html">Login</a></p>
-        </form>
-      </div>
+    <div class="auth-divider">
+      <div class="auth-divider-line"></div><span class="auth-divider-text">or create with email</span><div class="auth-divider-line"></div>
     </div>
-  </div>
-</section>
 
-<!-- Toast container -->
-<div class="toast-container" id="toastContainer"></div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBeCgogR5-ZgaU9eD_XwzH_L5LkT0TOcPc",
-  authDomain: "vnce-7b54c.firebaseapp.com",
-  projectId: "vnce-7b54c",
-  storageBucket: "vnce-7b54c.firebasestorage.app",
-  messagingSenderId: "137661927526",
-  appId: "1:137661927526:web:5a016a3e9de198b3945da7",
-  measurementId: "G-3EQTYXT8W0"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-window.addEventListener('load', () => {
-  document.getElementById('preloader').style.display = 'none';
-});
-
-// Toast helper
-function showToast(message, bg='danger') {
-  const toastId = 'toast' + Date.now();
-  const toastHTML = `
-    <div id="${toastId}" class="toast align-items-center text-white bg-${bg} border-0 mb-2" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="d-flex">
-        <div class="toast-body">${message}</div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    <form id="register-form" novalidate>
+      <div class="field-wrap">
+        <label class="field-label" for="reg-name">Display name</label>
+        <div class="field-input-wrap">
+          <input type="text" id="reg-name" class="field-input" placeholder="Your name" required autocomplete="name">
+        </div>
+        <div class="field-error" id="name-error">Please enter your name.</div>
       </div>
-    </div>`;
-  const container = document.getElementById('toastContainer');
-  container.insertAdjacentHTML('beforeend', toastHTML);
-  const toastEl = document.getElementById(toastId);
-  const bsToast = new bootstrap.Toast(toastEl, { delay: 3000 });
-  bsToast.show();
+
+      <div class="field-wrap">
+        <label class="field-label" for="reg-email">Email address</label>
+        <div class="field-input-wrap">
+          <input type="email" id="reg-email" class="field-input" placeholder="you@example.com" required autocomplete="email">
+        </div>
+        <div class="field-error" id="email-error">Please enter a valid email.</div>
+      </div>
+
+      <div class="field-wrap">
+        <label class="field-label" for="reg-password">Password</label>
+        <div class="field-input-wrap">
+          <input type="password" id="reg-password" class="field-input has-icon" placeholder="Min. 6 characters" required autocomplete="new-password">
+          <button type="button" class="field-icon-btn" id="toggle-pw" aria-label="Toggle">
+            <i class='bx bx-hide'></i>
+          </button>
+        </div>
+        <div class="pw-strength-bar"><div class="pw-strength-fill" id="pw-fill"></div></div>
+        <div class="pw-strength-text" id="pw-text"></div>
+        <div class="field-error" id="pass-error">Password must be at least 6 characters.</div>
+      </div>
+
+      <button type="submit" class="btn-primary-full" id="reg-btn">
+        <i class='bx bx-user-plus'></i> Create Account
+      </button>
+    </form>
+
+    <p class="auth-footer-text">Already have an account? <a href="login.html">Sign in</a></p>
+  </div>
+</main>
+
+<footer class="auth-page-footer">&copy; 2026 VNCEFLIX · Stream. Discover. Enjoy.</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module">
+import { initializeApp }          from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword,
+         GoogleAuthProvider, signInWithPopup }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc,
+         collection, addDoc, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig={apiKey:"AIzaSyBeCgogR5-ZgaU9eD_XwzH_L5LkT0TOcPc",authDomain:"vnce-7b54c.firebaseapp.com",projectId:"vnce-7b54c",storageBucket:"vnce-7b54c.appspot.com",messagingSenderId:"137661927526",appId:"1:137661927526:web:5a016a3e9de198b3945da7"};
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const gProvider=new GoogleAuthProvider();
+gProvider.setCustomParameters({prompt:"select_account"});
+
+window.addEventListener("load",()=>document.getElementById("preloader").classList.add("hide"));
+
+function showToast(msg,type="info"){
+  const el=document.createElement("div");
+  el.className=`toast-item ${type}`;
+  el.innerHTML=`<i class='bx ${type==="success"?"bx-check-circle":type==="danger"?"bx-error-circle":"bx-info-circle"}'></i><span>${msg}</span>`;
+  document.getElementById("toast-container").appendChild(el);
+  setTimeout(()=>el.classList.add("show"),30);
+  setTimeout(()=>{el.classList.remove("show");setTimeout(()=>el.remove(),350);},3500);
 }
 
-const registerForm = document.getElementById('registerForm');
-registerForm.addEventListener('submit', async (e) => {
+/* Password strength meter */
+document.getElementById("reg-password").addEventListener("input",function(){
+  const v=this.value;
+  const fill=document.getElementById("pw-fill");
+  const text=document.getElementById("pw-text");
+  if(!v){fill.style.width="0%";fill.style.background="transparent";text.textContent="";return;}
+  let score=0;
+  if(v.length>=6)score++;if(v.length>=10)score++;
+  if(/[A-Z]/.test(v))score++;if(/[0-9]/.test(v))score++;if(/[^A-Za-z0-9]/.test(v))score++;
+  const levels=[
+    {pct:"20%",color:"#E50914",label:"Very weak"},
+    {pct:"40%",color:"#f97316",label:"Weak"},
+    {pct:"60%",color:"#eab308",label:"Fair"},
+    {pct:"80%",color:"#22c55e",label:"Strong"},
+    {pct:"100%",color:"#16a34a",label:"Very strong"}
+  ];
+  const l=levels[Math.min(score,4)];
+  fill.style.width=l.pct;fill.style.background=l.color;
+  text.textContent=l.label;text.style.color=l.color;
+});
+
+/* Toggle password */
+document.getElementById("toggle-pw").onclick=function(){
+  const inp=document.getElementById("reg-password");
+  const icon=this.querySelector("i");
+  inp.type=inp.type==="password"?"text":"password";
+  icon.className=inp.type==="password"?"bx bx-hide":"bx bx-show";
+};
+
+async function getGeoInfo(){
+  let ip="Unknown",location="Unknown";
+  try{const r=await fetch("https://ipapi.co/json/");const d=await r.json();ip=d.ip||"Unknown";location=[d.city,d.region,d.country_name].filter(Boolean).join(", ")||"Unknown";}catch{}
+  return{ip,location};
+}
+
+/* ── Redirect after account created → subscription ── */
+function goToSubscription(){window.location.href="../subscription.html";}
+
+/* ── Email register ── */
+document.getElementById("register-form").addEventListener("submit",async(e)=>{
   e.preventDefault();
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value.trim();
-  const username = document.getElementById('username').value.trim();
+  const name=document.getElementById("reg-name").value.trim();
+  const email=document.getElementById("reg-email").value.trim().toLowerCase();
+  const password=document.getElementById("reg-password").value;
+  let ok=true;
+  if(!name){document.getElementById("name-error").classList.add("show");ok=false;}else document.getElementById("name-error").classList.remove("show");
+  if(!email||!/\S+@\S+\.\S+/.test(email)){document.getElementById("email-error").classList.add("show");ok=false;}else document.getElementById("email-error").classList.remove("show");
+  if(password.length<6){document.getElementById("pass-error").classList.add("show");ok=false;}else document.getElementById("pass-error").classList.remove("show");
+  if(!ok)return;
 
-  document.getElementById('preloader').style.display = 'flex';
+  const btn=document.getElementById("reg-btn");
+  btn.disabled=true;btn.innerHTML=`<div class="four-box-spinner" style="width:20px;height:20px;gap:2px;"><div style="width:8px;height:8px;"></div><div style="width:8px;height:8px;"></div><div style="width:8px;height:8px;"></div><div style="width:8px;height:8px;"></div></div>`;
 
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-
-    // Detect device info
-    const device = navigator.userAgent || "Unknown";
-    // Get IP + location
-    let ip = "Unknown", location = "Unknown";
-    try {
-      const res = await fetch("https://ipapi.co/json/");
-      const data = await res.json();
-      ip = data.ip || "Unknown";
-      location = `${data.city || ''}, ${data.country_name || ''}`;
-    } catch (err) {
-      console.warn("Failed to fetch IP/location", err);
-    }
-
-    // Save user profile with initial values
-    await setDoc(doc(db, "users", user.uid), {
-      username: username,
-      email: email,
-      createdAt: serverTimestamp(),
-      failedAttempts: 0,
-      locked: false
-    });
-
-    // Log registration
-    await addDoc(collection(db, "user_registrations"), {
-      uid: user.uid,
-      username: username,
-      email: email,
-      ip,
-      location,
-      device,
-      registeredAt: serverTimestamp()
-    });
-
-    registerForm.reset();
-    showToast("Account successfully created!", "success");
-    setTimeout(() => { window.location.href = 'login.html'; }, 1200);
-
-  } catch (error) {
-    let msg = "Registration failed.";
-    if (error.code === "auth/email-already-in-use") msg = "This email is already registered.";
-    else if (error.code === "auth/weak-password") msg = "Password should be at least 6 characters.";
-    else if (error.code === "auth/invalid-email") msg = "Invalid email format.";
-    showToast(msg, "danger");
-    document.getElementById('preloader').style.display = 'none';
+  try{
+    const cred=await createUserWithEmailAndPassword(auth,email,password);
+    const uid=cred.user.uid;
+    const{ip,location}=await getGeoInfo();
+    await setDoc(doc(db,"users",uid),{username:name,email,createdAt:serverTimestamp(),failedAttempts:0,locked:false,authProvider:"email",plan:"none"});
+    await addDoc(collection(db,"user_registrations"),{uid,username:name,email,ip,location,device:navigator.userAgent,registeredAt:serverTimestamp()});
+    showToast("Account created! Setting up your experience…","success");
+    setTimeout(goToSubscription,900);
+  }catch(err){
+    const msg=err.code==="auth/email-already-in-use"?"This email is already registered."
+      :err.code==="auth/weak-password"?"Password must be at least 6 characters."
+      :`Registration failed: ${err.message}`;
+    showToast(msg,"danger");
+    btn.disabled=false;btn.innerHTML=`<i class='bx bx-user-plus'></i> Create Account`;
   }
 });
 
-// Toggle password visibility
-document.getElementById('togglePassword').addEventListener('click', function () {
-  const passwordInput = document.getElementById('password');
-  const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-  passwordInput.setAttribute('type', type);
-  this.classList.toggle('bi-eye');
-  this.classList.toggle('bi-eye-slash');
-});
+/* ── Google register ── */
+document.getElementById("google-btn").onclick=async()=>{
+  const btn=document.getElementById("google-btn");btn.disabled=true;btn.textContent="Connecting…";
+  try{
+    const result=await signInWithPopup(auth,gProvider);
+    const user=result.user;
+    const snap=await getDoc(doc(db,"users",user.uid));
+    if(snap.exists()&&snap.data().plan&&snap.data().plan!=="none"){
+      /* Existing user with plan → go straight to site */
+      window.location.href="../../index.html";return;
+    }
+    if(!snap.exists()){
+      const{ip,location}=await getGeoInfo();
+      await setDoc(doc(db,"users",user.uid),{username:user.displayName||user.email.split("@")[0],email:user.email,createdAt:serverTimestamp(),failedAttempts:0,locked:false,authProvider:"google",plan:"none"});
+      await addDoc(collection(db,"user_registrations"),{uid:user.uid,username:user.displayName||"",email:user.email,ip,location,device:navigator.userAgent,registeredAt:serverTimestamp()});
+    }
+    showToast("Account ready! Choose your plan.","success");
+    setTimeout(goToSubscription,600);
+  }catch(err){
+    showToast(`Google sign-in failed: ${err.message}`,"danger");
+    btn.disabled=false;
+    btn.innerHTML=`<svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Continue with Google`;
+  }
+};
 </script>
 </body>
 </html>

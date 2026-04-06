@@ -677,7 +677,7 @@ onAuthStateChanged(auth,async(user)=>{
 function setupPlayButton(){
   document.getElementById("play-btn").onclick=()=>{
     if(!currentUser){showLoginPrompt("Sign in to watch","Sign in to start watching this movie.");return;}
-    navigateTo(`player_movies.html?id=${movieId}`,"Loading player…");
+    navigateTo(`player_vivamax.html?id=${movieId}&title=${encodeURIComponent(movieTitle)}&poster=${encodeURIComponent(movieData_global?.poster_path||"")}`,"Loading player…");
   };
 }
 
